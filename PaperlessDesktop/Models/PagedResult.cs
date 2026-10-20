@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaperlessDesktop.Models
 {
-    internal class PagedResult<T>
+    public class PagedResult<T>
     {
         public int Count { get; set; }
         public string? Next { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaperlessDesktop.Models
 {
-    internal class DocumentQuery
+    public class DocumentQuery
     {
 
         public int Page { get; set; } = 1;

@@ -1,16 +1,17 @@
-﻿using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Windows;
+﻿using System.Windows;
+using PaperlessDesktop.Models;
+using PaperlessDesktop.Services;
 
 namespace PaperlessDesktop;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    private readonly PaperlessApiClient _api;
+
+    public MainWindow(PaperlessApiClient api)
     {
         InitializeComponent();
+        _api = api;
     }
 
     private async void TestButton_Click(object sender, RoutedEventArgs e)
@@ -21,45 +22,28 @@ public partial class MainWindow : Window
 
         try
         {
-            // 1. Read server URL and token from appsettings.json
-            string configPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-            string configJson = await File.ReadAllTextAsync(configPath);
-            using var config = JsonDocument.Parse(configJson);
-            string serverUrl = config.RootElement.GetProperty("ServerUrl").GetString()!;
-            string token = config.RootElement.GetProperty("ApiToken").GetString()!;
+            // Run both requests in parallel
+            var tagsTask = _api.GetAllTagsAsync();
+            var docsTask = _api.GetDocumentsAsync(new DocumentQuery { PageSize = 5 });
+            await Task.WhenAll(tagsTask, docsTask);
 
-            // 2. Call the Paperless API
-            using var http = new HttpClient
+            List<Tag> tags = await tagsTask;
+            PagedResult<Document> docs = await docsTask;
+
+            var tagNames = tags.ToDictionary(t => t.Id, t => t.Name);
+
+            var lines = docs.Results.Select(d =>
             {
-                BaseAddress = new Uri(serverUrl),
-                Timeout = TimeSpan.FromSeconds(15)
-            };
-            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token);
+                string tagText = string.Join(", ", d.TagIds.Select(id => tagNames.GetValueOrDefault(id, "?")));
+                return $"• {d.Title}  ({d.Created:dd.MM.yyyy})  [{tagText}]";
+            });
 
-            string response = await http.GetStringAsync("/api/documents/?page_size=5");
-
-            // 3. Show the result
-            using var data = JsonDocument.Parse(response);
-            int count = data.RootElement.GetProperty("count").GetInt32();
-            var titles = data.RootElement.GetProperty("results")
-                                         .EnumerateArray()
-                                         .Select(d => "• " + d.GetProperty("title").GetString());
-
-            ResultText.Text = $"✅ Connected! The server has {count} documents.\n\n" +
-                              "First few:\n" + string.Join("\n", titles);
+            ResultText.Text = $"✅ Connected! {docs.Count} documents, {tags.Count} tags.\n\n" +
+                              string.Join("\n", lines);
         }
-        catch (FileNotFoundException)
+        catch (ApiException ex)
         {
-            ResultText.Text = "❌ appsettings.json was not found next to the .exe. " +
-                              "Check that 'CopyToOutputDirectory' is set in the .csproj.";
-        }
-        catch (TaskCanceledException)
-        {
-            ResultText.Text = "❌ The server did not respond in 15 seconds.";
-        }
-        catch (HttpRequestException ex)
-        {
-            ResultText.Text = $"❌ Could not reach the server: {ex.Message}";
+            ResultText.Text = $"❌ {ex.Message}";
         }
         catch (Exception ex)
         {

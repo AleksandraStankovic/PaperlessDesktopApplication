@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaperlessDesktop.Models
 {
-    internal class Correspondent
+    public class Correspondent
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
