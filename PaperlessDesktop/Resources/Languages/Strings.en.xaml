@@ -13,7 +13,7 @@
     
     <sys:String x:Key="Documents_Title">Documents</sys:String>
     <sys:String x:Key="Documents_Subtitle">All your documents in one place.</sys:String>
-    <sys:String x:Key="Documents_Load">Load</sys:String>
+   
     <sys:String x:Key="Documents_Total">Total documents:</sys:String>
 
    
@@ -32,4 +32,26 @@
     <sys:String x:Key="Error_ServerError">Server error. Please try again later.</sys:String>
     <sys:String x:Key="Error_InvalidResponse">The server returned unexpected data.</sys:String>
     <sys:String x:Key="Error_Unexpected">An unexpected error occurred.</sys:String>
+
+
+    <!-- Common -->
+    <sys:String x:Key="Common_Refresh">Refresh</sys:String>
+
+    <!-- Document list -->
+    <sys:String x:Key="Documents_Empty">No documents to show.</sys:String>
+    <sys:String x:Key="Col_Title">Title</sys:String>
+    <sys:String x:Key="Col_Created">Document date</sys:String>
+    <sys:String x:Key="Col_Added">Added</sys:String>
+    <sys:String x:Key="Col_Correspondent">Correspondent</sys:String>
+    <sys:String x:Key="Col_DocumentType">Document type</sys:String>
+    <sys:String x:Key="Col_Tags">Tags</sys:String>
+
+    <!-- Pagination -->
+    <sys:String x:Key="Pagination_Page">Page</sys:String>
+    <sys:String x:Key="Pagination_Of">of</sys:String>
+    <sys:String x:Key="Pagination_PageSize">Per page:</sys:String>
+    <sys:String x:Key="Pagination_Previous">Previous page</sys:String>
+    <sys:String x:Key="Pagination_Next">Next page</sys:String>
+    
+    
 </ResourceDictionary>

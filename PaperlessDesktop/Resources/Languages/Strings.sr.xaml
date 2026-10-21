@@ -13,7 +13,7 @@
     <!-- Documents page -->
     <sys:String x:Key="Documents_Title">Dokumenti</sys:String>
     <sys:String x:Key="Documents_Subtitle">Svi vaši dokumenti na jednom mjestu.</sys:String>
-    <sys:String x:Key="Documents_Load">Učitaj</sys:String>
+
     <sys:String x:Key="Documents_Total">Ukupno dokumenata:</sys:String>
 
     <!-- Other pages -->
@@ -32,4 +32,27 @@
     <sys:String x:Key="Error_ServerError">Greška na serveru. Pokušajte kasnije.</sys:String>
     <sys:String x:Key="Error_InvalidResponse">Server je vratio neočekivane podatke.</sys:String>
     <sys:String x:Key="Error_Unexpected">Došlo je do neočekivane greške.</sys:String>
+
+
+    <!-- Common -->
+    <sys:String x:Key="Common_Refresh">Osvježi</sys:String>
+
+    <!-- Document list -->
+    <sys:String x:Key="Documents_Empty">Nema dokumenata za prikaz.</sys:String>
+    <sys:String x:Key="Col_Title">Naziv</sys:String>
+    <sys:String x:Key="Col_Created">Datum dokumenta</sys:String>
+    <sys:String x:Key="Col_Added">Dodato</sys:String>
+    <sys:String x:Key="Col_Correspondent">Korespondent</sys:String>
+    <sys:String x:Key="Col_DocumentType">Tip dokumenta</sys:String>
+    <sys:String x:Key="Col_Tags">Tagovi</sys:String>
+
+    <!-- Pagination -->
+    <sys:String x:Key="Pagination_Page">Strana</sys:String>
+    <sys:String x:Key="Pagination_Of">od</sys:String>
+    <sys:String x:Key="Pagination_PageSize">Po strani:</sys:String>
+    <sys:String x:Key="Pagination_Previous">Prethodna strana</sys:String>
+    <sys:String x:Key="Pagination_Next">Sljedeća strana</sys:String>
+    
+    
+    
 </ResourceDictionary>

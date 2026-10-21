@@ -1,20 +1,148 @@
 ﻿<UserControl x:Class="PaperlessDesktop.Views.DocumentsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel>
-        <TextBlock Text="{DynamicResource Documents_Title}" FontSize="26" FontWeight="SemiBold" />
-        <TextBlock Text="{DynamicResource Documents_Subtitle}" Opacity="0.7" Margin="0,4,0,24" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- header -->
+            <RowDefinition Height="*" />
+            <!-- table -->
+            <RowDefinition Height="Auto" />
+            <!-- pagination -->
+        </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <Button Content="{DynamicResource Documents_Load}" Command="{Binding LoadCommand}" />
+        <!-- ===== Header ===== -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+            <Button DockPanel.Dock="Right" VerticalAlignment="Center"
+                    Command="{Binding RefreshCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource Common_Refresh}" Margin="8,0,0,0" />
+                </StackPanel>
+            </Button>
+            <StackPanel>
+                <TextBlock Text="{DynamicResource Documents_Title}" FontSize="26" FontWeight="SemiBold" />
+                <TextBlock Text="{DynamicResource Documents_Subtitle}" Opacity="0.7" Margin="0,4,0,0" />
+            </StackPanel>
+        </DockPanel>
+
+        <!-- ===== Table ===== -->
+        <Grid Grid.Row="1">
+            <DataGrid ItemsSource="{Binding Documents}"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserAddRows="False" CanUserDeleteRows="False"
+                      CanUserSortColumns="False"
+                      SelectionMode="Single" HeadersVisibility="Column">
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Binding="{Binding Title}" Width="2*">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource Col_Title}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+
+                    <!-- HCI: one date format everywhere + clearly labeled dates (problem 4 candidate) -->
+                    <DataGridTextColumn Binding="{Binding Created, StringFormat=dd.MM.yyyy}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource Col_Created}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding Added, StringFormat=dd.MM.yyyy}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource Col_Added}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding CorrespondentName}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource Col_Correspondent}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding DocumentTypeName}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource Col_DocumentType}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+
+                    <!-- Tags as colored chips -->
+                    <DataGridTemplateColumn Width="*" MinWidth="120">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource Col_Tags}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ItemsControl ItemsSource="{Binding Tags}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{Binding Color, Converter={StaticResource HexToBrush}}"
+                                                    CornerRadius="10" Padding="8,2" Margin="0,2,4,2">
+                                                <TextBlock Text="{Binding Name}" FontSize="12"
+                                                           Foreground="{Binding TextColor, Converter={StaticResource HexToBrush}, ConverterParameter=#000000}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Empty state -->
+            <TextBlock Text="{DynamicResource Documents_Empty}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontSize="16" Opacity="0.6"
+                       Visibility="{Binding HasNoDocuments, Converter={StaticResource BoolToVis}}" />
+
+            <!-- Loading indicator -->
             <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
-                         IsIndeterminate="True" Margin="16,0,0,0"
+                         IsIndeterminate="True" Width="48" Height="48"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
                          Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
-        </StackPanel>
+        </Grid>
 
-        <TextBlock Margin="0,16,0,0" FontSize="16">
-            <Run Text="{DynamicResource Documents_Total}" />
-            <Run Text="{Binding DocumentCount, Mode=OneWay}" FontWeight="Bold" />
-        </TextBlock>
-    </StackPanel>
+        <!-- ===== Pagination ===== -->
+        <DockPanel Grid.Row="2" Margin="0,12,0,0" LastChildFill="False">
+            <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Opacity="0.7">
+                <Run Text="{DynamicResource Documents_Total}" />
+                <Run Text="{Binding TotalCount, Mode=OneWay}" />
+            </TextBlock>
+
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <TextBlock Text="{DynamicResource Pagination_PageSize}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ComboBox ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding PageSize}"
+                          Width="70" Margin="0,0,24,0" VerticalAlignment="Center" />
+
+                <!-- HCI: icon buttons always have tooltips -->
+                <Button Command="{Binding PreviousPageCommand}"
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        ToolTip="{DynamicResource Pagination_Previous}">
+                    <materialDesign:PackIcon Kind="ChevronLeft" />
+                </Button>
+
+                <TextBlock VerticalAlignment="Center" Margin="8,0">
+                    <Run Text="{DynamicResource Pagination_Page}" />
+                    <Run Text="{Binding CurrentPage, Mode=OneWay}" FontWeight="SemiBold" />
+                    <Run Text="{DynamicResource Pagination_Of}" />
+                    <Run Text="{Binding TotalPages, Mode=OneWay}" FontWeight="SemiBold" />
+                </TextBlock>
+
+                <Button Command="{Binding NextPageCommand}"
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        ToolTip="{DynamicResource Pagination_Next}">
+                    <materialDesign:PackIcon Kind="ChevronRight" />
+                </Button>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
 </UserControl>

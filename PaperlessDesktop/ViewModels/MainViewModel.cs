@@ -26,6 +26,7 @@ public partial class MainViewModel : ObservableObject
         _pages = new ObservableObject[] { documents, upload, tags, settings };
         CurrentPage = documents;
         MessageQueue = notifications.MessageQueue;
+        _ = documents.InitializeAsync();
     }
 
     partial void OnSelectedPageIndexChanged(int value)
