@@ -1,0 +1,35 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- App & navigation -->
+    <sys:String x:Key="App_Title">Paperless Desktop</sys:String>
+    <sys:String x:Key="Nav_Documents">Dokumenti</sys:String>
+    <sys:String x:Key="Nav_Upload">Dodaj dokument</sys:String>
+    <sys:String x:Key="Nav_Tags">Tagovi</sys:String>
+    <sys:String x:Key="Nav_Settings">Podešavanja</sys:String>
+    <sys:String x:Key="Common_ComingSoon">Uskoro...</sys:String>
+
+    <!-- Documents page -->
+    <sys:String x:Key="Documents_Title">Dokumenti</sys:String>
+    <sys:String x:Key="Documents_Subtitle">Svi vaši dokumenti na jednom mjestu.</sys:String>
+    <sys:String x:Key="Documents_Load">Učitaj</sys:String>
+    <sys:String x:Key="Documents_Total">Ukupno dokumenata:</sys:String>
+
+    <!-- Other pages -->
+    <sys:String x:Key="Upload_Title">Dodavanje dokumenta</sys:String>
+    <sys:String x:Key="Tags_Title">Upravljanje tagovima</sys:String>
+    <sys:String x:Key="Settings_Title">Podešavanja</sys:String>
+    <sys:String x:Key="Settings_Language">Jezik</sys:String>
+
+    <!-- Errors (key = "Error_" + ApiErrorKind) -->
+    <sys:String x:Key="Error_Unreachable">Server je nedostupan. Provjerite internet konekciju.</sys:String>
+    <sys:String x:Key="Error_Timeout">Server ne odgovara. Pokušajte ponovo.</sys:String>
+    <sys:String x:Key="Error_Unauthorized">Pristup odbijen. API token nije ispravan.</sys:String>
+    <sys:String x:Key="Error_Forbidden">Nemate dozvolu za ovu akciju.</sys:String>
+    <sys:String x:Key="Error_NotFound">Traženi sadržaj nije pronađen.</sys:String>
+    <sys:String x:Key="Error_BadRequest">Server je odbio zahtjev. Provjerite unesene podatke.</sys:String>
+    <sys:String x:Key="Error_ServerError">Greška na serveru. Pokušajte kasnije.</sys:String>
+    <sys:String x:Key="Error_InvalidResponse">Server je vratio neočekivane podatke.</sys:String>
+    <sys:String x:Key="Error_Unexpected">Došlo je do neočekivane greške.</sys:String>
+</ResourceDictionary>

@@ -1,0 +1,35 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    
+    <sys:String x:Key="App_Title">Paperless Desktop</sys:String>
+    <sys:String x:Key="Nav_Documents">Documents</sys:String>
+    <sys:String x:Key="Nav_Upload">Upload</sys:String>
+    <sys:String x:Key="Nav_Tags">Tags</sys:String>
+    <sys:String x:Key="Nav_Settings">Settings</sys:String>
+    <sys:String x:Key="Common_ComingSoon">Coming soon...</sys:String>
+
+    
+    <sys:String x:Key="Documents_Title">Documents</sys:String>
+    <sys:String x:Key="Documents_Subtitle">All your documents in one place.</sys:String>
+    <sys:String x:Key="Documents_Load">Load</sys:String>
+    <sys:String x:Key="Documents_Total">Total documents:</sys:String>
+
+   
+    <sys:String x:Key="Upload_Title">Upload document</sys:String>
+    <sys:String x:Key="Tags_Title">Manage tags</sys:String>
+    <sys:String x:Key="Settings_Title">Settings</sys:String>
+    <sys:String x:Key="Settings_Language">Language</sys:String>
+
+    
+    <sys:String x:Key="Error_Unreachable">The server is unreachable. Check your internet connection.</sys:String>
+    <sys:String x:Key="Error_Timeout">The server is not responding. Please try again.</sys:String>
+    <sys:String x:Key="Error_Unauthorized">Access denied. The API token is invalid.</sys:String>
+    <sys:String x:Key="Error_Forbidden">You don't have permission for this action.</sys:String>
+    <sys:String x:Key="Error_NotFound">The requested item was not found.</sys:String>
+    <sys:String x:Key="Error_BadRequest">The server rejected the request. Check the entered data.</sys:String>
+    <sys:String x:Key="Error_ServerError">Server error. Please try again later.</sys:String>
+    <sys:String x:Key="Error_InvalidResponse">The server returned unexpected data.</sys:String>
+    <sys:String x:Key="Error_Unexpected">An unexpected error occurred.</sys:String>
+</ResourceDictionary>
