@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="PaperlessDesktop.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <TextBlock Text="{DynamicResource Settings_Title}" FontSize="26" FontWeight="SemiBold" Margin="0,0,0,24" />
+
+        <TextBlock Text="{DynamicResource Settings_Language}" FontSize="16" Margin="0,0,0,8" />
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Srpski"
+                    Command="{Binding SetLanguageCommand}" CommandParameter="sr"
+                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+            <Button Content="English"
+                    Command="{Binding SetLanguageCommand}" CommandParameter="en"
+                    Style="{StaticResource MaterialDesignOutlinedButton}" Margin="8,0,0,0" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
