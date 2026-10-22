@@ -10,12 +10,13 @@ namespace PaperlessDesktop.ViewModels;
 public partial class DocumentsViewModel : ObservableObject
 {
     private const int ParallelThumbnailDownloads = 4;
+    private const int SearchDelayMilliseconds = 300;
 
     private readonly PaperlessApiClient _api;
     private readonly LookupCache _lookups;
     private readonly NotificationService _notifications;
 
-    // The current request. Search (Phase 4) and filters (Phase 5) will also change this object.
+    // The current request: page, search text and (Phase 5) filters
     private readonly DocumentQuery _query = new();
 
     // Thumbnails already downloaded (by document ID), so going back a page is instant
@@ -23,14 +24,19 @@ public partial class DocumentsViewModel : ObservableObject
 
     private CancellationTokenSource? _loadCts;
     private CancellationTokenSource? _thumbnailCts;
+    private CancellationTokenSource? _searchDelayCts;
     private bool _initialized;
 
     public ObservableCollection<DocumentItemViewModel> Documents { get; } = new();
 
     public int[] PageSizeOptions { get; } = { 10, 25, 50, 100 };
 
+    // ---------- State ----------
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasNoDocuments))]
+    [NotifyPropertyChangedFor(nameof(ShowEmptyState))]
+    [NotifyPropertyChangedFor(nameof(ShowNoResults))]
     private bool _isLoading;
 
     [ObservableProperty]
@@ -57,8 +63,26 @@ public partial class DocumentsViewModel : ObservableObject
     public bool IsTableView => ViewModeIndex != 1;
     public bool IsCardView => ViewModeIndex == 1;
 
-    /// <summary>True when loading is finished and there is nothing to show.</summary>
+    // ---------- Search ----------
+
+    /// <summary>What the user is typing right now (bound to the search box).</summary>
+    [ObservableProperty]
+    private string _searchText = "";
+
+    /// <summary>The search that the currently shown results belong to.</summary>
+    public string ActiveSearchText => _query.SearchText ?? "";
+
+    public bool IsSearchActive => !string.IsNullOrEmpty(_query.SearchText);
+
+    // ---------- Empty states ----------
+
     public bool HasNoDocuments => !IsLoading && Documents.Count == 0;
+
+    /// <summary>No documents at all (no search active).</summary>
+    public bool ShowEmptyState => HasNoDocuments && !IsSearchActive;
+
+    /// <summary>A search is active but found nothing.</summary>
+    public bool ShowNoResults => HasNoDocuments && IsSearchActive;
 
     public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups, NotificationService notifications)
     {
@@ -76,7 +100,7 @@ public partial class DocumentsViewModel : ObservableObject
         await LoadPageAsync(1);
     }
 
-    // ---------- Commands (bound to buttons) ----------
+    // ---------- Commands (bound to buttons / keys) ----------
 
     [RelayCommand]
     private Task RefreshAsync()
@@ -94,6 +118,23 @@ public partial class DocumentsViewModel : ObservableObject
     private Task PreviousPageAsync() => LoadPageAsync(CurrentPage - 1);
 
     private bool CanGoToPreviousPage() => CurrentPage > 1;
+
+    /// <summary>Enter key: search immediately, without waiting for the delay.</summary>
+    [RelayCommand]
+    private Task SearchNowAsync()
+    {
+        _searchDelayCts?.Cancel();
+        return ApplySearchAsync();
+    }
+
+    /// <summary>Esc key / "Clear search" button.</summary>
+    [RelayCommand]
+    private Task ClearSearchAsync()
+    {
+        SearchText = "";
+        _searchDelayCts?.Cancel();
+        return ApplySearchAsync();
+    }
 
     // ---------- Reactions to property changes ----------
 
@@ -114,6 +155,48 @@ public partial class DocumentsViewModel : ObservableObject
 
         if (IsCardView)
             StartThumbnailLoading();
+    }
+
+    // Runs on every keystroke in the search box
+    partial void OnSearchTextChanged(string value)
+    {
+        // Restart the timer: only search when the user stops typing
+        _searchDelayCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _searchDelayCts = cts;
+        _ = SearchAfterDelayAsync(cts.Token);
+    }
+
+    // ---------- Search ----------
+
+    private async Task SearchAfterDelayAsync(CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(SearchDelayMilliseconds, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            return;   // user typed another character - a newer timer is running
+        }
+
+        await ApplySearchAsync();
+    }
+
+    private Task ApplySearchAsync()
+    {
+        string text = SearchText.Trim();
+
+        // Nothing changed (e.g. user typed "ab" and deleted it again) - no request needed
+        if (text == ActiveSearchText)
+            return Task.CompletedTask;
+
+        _query.SearchText = text.Length == 0 ? null : text;
+        OnPropertyChanged(nameof(ActiveSearchText));
+        OnPropertyChanged(nameof(IsSearchActive));
+
+        // New search always starts at page 1
+        return LoadPageAsync(1);
     }
 
     // ---------- Loading the list ----------

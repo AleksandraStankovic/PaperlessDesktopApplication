@@ -48,6 +48,12 @@
     <sys:String x:Key="View_Table">Table</sys:String>
     <sys:String x:Key="View_Cards">Cards</sys:String>
 
+    <!-- Search -->
+    <sys:String x:Key="Search_Hint">Search by title or content...</sys:String>
+    <sys:String x:Key="Search_KeyboardTip">Enter: search now · Esc: clear</sys:String>
+    <sys:String x:Key="Search_NoResults">No results for</sys:String>
+    <sys:String x:Key="Search_Clear">Clear search</sys:String>
+
     <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Page</sys:String>
     <sys:String x:Key="Pagination_Of">of</sys:String>

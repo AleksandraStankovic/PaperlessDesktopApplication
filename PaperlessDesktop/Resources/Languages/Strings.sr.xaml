@@ -48,6 +48,15 @@
     <sys:String x:Key="View_Table">Tabela</sys:String>
     <sys:String x:Key="View_Cards">Kartice</sys:String>
 
+
+    <!-- Search -->
+    <sys:String x:Key="Search_Hint">Pretraži po nazivu ili sadržaju...</sys:String>
+    <sys:String x:Key="Search_KeyboardTip">Enter: traži odmah · Esc: obriši</sys:String>
+    <sys:String x:Key="Search_NoResults">Nema rezultata za</sys:String>
+    <sys:String x:Key="Search_Clear">Obriši pretragu</sys:String>
+    
+    
+
     <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Strana</sys:String>
     <sys:String x:Key="Pagination_Of">od</sys:String>

@@ -64,11 +64,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <!-- header -->
-            <RowDefinition Height="*" />
-            <!-- table / cards -->
+            <!-- 0: header -->
             <RowDefinition Height="Auto" />
-            <!-- pagination -->
+            <!-- 1: search -->
+            <RowDefinition Height="*" />
+            <!-- 2: table / cards -->
+            <RowDefinition Height="Auto" />
+            <!-- 3: pagination -->
         </Grid.RowDefinitions>
 
         <!-- ===== Header ===== -->
@@ -106,8 +108,23 @@
             </StackPanel>
         </DockPanel>
 
+        <!-- ===== Search ===== -->
+        <TextBox Grid.Row="1" Margin="0,0,0,16" MaxWidth="600" HorizontalAlignment="Left" MinWidth="360"
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 materialDesign:HintAssist.Hint="{DynamicResource Search_Hint}"
+                 materialDesign:HintAssist.HelperText="{DynamicResource Search_KeyboardTip}"
+                 materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                 materialDesign:TextFieldAssist.LeadingIcon="Magnify"
+                 materialDesign:TextFieldAssist.HasClearButton="True">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding SearchNowCommand}" />
+                <KeyBinding Key="Escape" Command="{Binding ClearSearchCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
+
         <!-- ===== Content ===== -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2" Margin="0,8,0,0">
 
             <!-- Table view -->
             <DataGrid ItemsSource="{Binding Documents}"
@@ -175,11 +192,25 @@
                 </ListBox.ItemsPanel>
             </ListBox>
 
-            <!-- Empty state -->
+            <!-- Empty state: no documents at all -->
             <TextBlock Text="{DynamicResource Documents_Empty}"
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="16" Opacity="0.6"
-                       Visibility="{Binding HasNoDocuments, Converter={StaticResource BoolToVis}}" />
+                       Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVis}}" />
+
+            <!-- HCI: search found nothing - say so clearly and offer a way out (H9, H3) -->
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Visibility="{Binding ShowNoResults, Converter={StaticResource BoolToVis}}">
+                <materialDesign:PackIcon Kind="FileSearchOutline" Width="56" Height="56"
+                                         HorizontalAlignment="Center" Opacity="0.4" />
+                <TextBlock FontSize="16" Margin="0,12,0,0" HorizontalAlignment="Center" TextAlignment="Center">
+                    <Run Text="{DynamicResource Search_NoResults}" />
+                    <Run Text="„" /><Run Text="{Binding ActiveSearchText, Mode=OneWay}" FontWeight="SemiBold" /><Run Text="“" />
+                </TextBlock>
+                <Button Content="{DynamicResource Search_Clear}" Command="{Binding ClearSearchCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        HorizontalAlignment="Center" Margin="0,16,0,0" />
+            </StackPanel>
 
             <!-- Loading indicator -->
             <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
@@ -189,7 +220,7 @@
         </Grid>
 
         <!-- ===== Pagination ===== -->
-        <DockPanel Grid.Row="2" Margin="0,12,0,0" LastChildFill="False">
+        <DockPanel Grid.Row="3" Margin="0,12,0,0" LastChildFill="False">
             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Opacity="0.7">
                 <Run Text="{DynamicResource Documents_Total}" />
                 <Run Text="{Binding TotalCount, Mode=OneWay}" />
