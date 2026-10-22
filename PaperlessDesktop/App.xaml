@@ -21,8 +21,8 @@
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True" />
             <converters:HexToBrushConverter x:Key="HexToBrush" />
+            <converters:BoolToGridLengthConverter x:Key="PreviewColumnWidth" TrueLength="2*" />
 
-            <!-- ViewModel → View mapping: "when you need to show this ViewModel, use this View" -->
             <DataTemplate DataType="{x:Type vm:DocumentsViewModel}">
                 <views:DocumentsView />
             </DataTemplate>

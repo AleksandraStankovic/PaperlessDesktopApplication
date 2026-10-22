@@ -73,6 +73,17 @@
     <sys:String x:Key="Pagination_PageSize">Per page:</sys:String>
     <sys:String x:Key="Pagination_Previous">Previous page</sys:String>
     <sys:String x:Key="Pagination_Next">Next page</sys:String>
-    
-    
+
+    <!-- Preview panel -->
+    <sys:String x:Key="Preview_Close">Close preview (Esc)</sys:String>
+    <sys:String x:Key="Preview_OpenExternal">Open in default app</sys:String>
+    <sys:String x:Key="Preview_MoreDetails">More details</sys:String>
+    <sys:String x:Key="Preview_Modified">Last modified</sys:String>
+    <sys:String x:Key="Preview_OriginalFile">Original file</sys:String>
+    <sys:String x:Key="Preview_Pages">Pages</sys:String>
+    <sys:String x:Key="Preview_Asn">Archive number (ASN)</sys:String>
+    <sys:String x:Key="Preview_Failed">Preview is not available for this document.</sys:String>
+    <sys:String x:Key="Preview_OpenFailed">The file can't be opened. No app is set up for this file type.</sys:String>
+
+
 </ResourceDictionary>

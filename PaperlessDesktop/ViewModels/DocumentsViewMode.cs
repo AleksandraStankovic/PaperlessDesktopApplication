@@ -34,6 +34,13 @@ public partial class DocumentsViewModel : ObservableObject
     /// <summary>Filter dropdowns and active filter chips.</summary>
     public DocumentFiltersViewModel Filters { get; } = new();
 
+    /// <summary>Side panel with the selected document's preview and metadata.</summary>
+    public DocumentPreviewViewModel Preview { get; }
+
+    /// <summary>Selected row/card (shared by table and card view).</summary>
+    [ObservableProperty]
+    private DocumentItemViewModel? _selectedDocument;
+
     // ---------- State ----------
 
     [ObservableProperty]
@@ -90,11 +97,15 @@ public partial class DocumentsViewModel : ObservableObject
     /// <summary>Search/filters are active but nothing matches.</summary>
     public bool ShowNoResults => HasNoDocuments && IsQueryActive;
 
-    public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups, NotificationService notifications)
+    public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups,
+                            DocumentFileService files, NotificationService notifications)
     {
         _api = api;
         _lookups = lookups;
         _notifications = notifications;
+
+        Preview = new DocumentPreviewViewModel(files, notifications);
+        Preview.CloseRequested += (_, _) => SelectedDocument = null;
 
         Filters.FiltersChanged += (_, _) => OnFiltersChanged();
     }
@@ -165,6 +176,11 @@ public partial class DocumentsViewModel : ObservableObject
         if (_initialized)
             _ = LoadPageAsync(1);
     }
+
+    // Clicking a row/card (or moving with arrow keys) opens it in the preview panel
+    partial void OnSelectedDocumentChanged(DocumentItemViewModel? value)
+        => _ = Preview.ShowAsync(value);
+
 
     partial void OnViewModeIndexChanged(int oldValue, int newValue)
     {

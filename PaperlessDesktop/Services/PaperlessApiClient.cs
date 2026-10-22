@@ -43,6 +43,14 @@ namespace PaperlessDesktop.Services
         public Task<byte[]> GetThumbnailAsync(int id, CancellationToken ct = default)
     => GetBytesAsync($"api/documents/{id}/thumb/", ct);
 
+        /// <summary>Downloads the document file for preview (usually a PDF). Also returns its type.</summary>
+        public async Task<(byte[] Data, string? ContentType)> GetPreviewAsync(int id, CancellationToken ct = default)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/documents/{id}/preview/");
+            using var response = await SendAsync(request, ct);
+            byte[] data = await response.Content.ReadAsByteArrayAsync(ct);
+            return (data, response.Content.Headers.ContentType?.MediaType);
+        }
 
 
         public Task<Document> GetDocumentAsync(int id, CancellationToken ct = default)

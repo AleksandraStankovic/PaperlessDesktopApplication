@@ -14,6 +14,10 @@ public partial class DocumentItemViewModel : ObservableObject
     public string Title => Model.Title;
     public DateTime? Created => Model.Created;
     public DateTime? Added => Model.Added;
+    public DateTime? Modified => Model.Modified;
+    public string? OriginalFileName => Model.OriginalFileName;
+    public int? PageCount => Model.PageCount;
+    public int? ArchiveSerialNumber => Model.ArchiveSerialNumber;
 
     public string CorrespondentName { get; }
     public string DocumentTypeName { get; }

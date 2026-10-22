@@ -67,6 +67,7 @@
     <sys:String x:Key="Filter_DocumentType">Tip</sys:String>
     <sys:String x:Key="Filter_NoResults">Nema dokumenata koji odgovaraju pretrazi i filterima.</sys:String>
     <sys:String x:Key="Filter_ResetAll">Poništi pretragu i filtere</sys:String>
+    
 
     <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Strana</sys:String>
@@ -74,7 +75,18 @@
     <sys:String x:Key="Pagination_PageSize">Po strani:</sys:String>
     <sys:String x:Key="Pagination_Previous">Prethodna strana</sys:String>
     <sys:String x:Key="Pagination_Next">Sljedeća strana</sys:String>
-    
-    
-    
+
+    <!-- Preview panel -->
+    <sys:String x:Key="Preview_Close">Zatvori pregled (Esc)</sys:String>
+    <sys:String x:Key="Preview_OpenExternal">Otvori u podrazumijevanoj aplikaciji</sys:String>
+    <sys:String x:Key="Preview_MoreDetails">Više detalja</sys:String>
+    <sys:String x:Key="Preview_Modified">Posljednja izmjena</sys:String>
+    <sys:String x:Key="Preview_OriginalFile">Originalni fajl</sys:String>
+    <sys:String x:Key="Preview_Pages">Broj strana</sys:String>
+    <sys:String x:Key="Preview_Asn">Arhivski broj (ASN)</sys:String>
+    <sys:String x:Key="Preview_Failed">Pregled nije dostupan za ovaj dokument.</sys:String>
+    <sys:String x:Key="Preview_OpenFailed">Fajl nije moguće otvoriti. Nijedna aplikacija nije podešena za ovaj tip fajla.</sys:String>
+
+
+
 </ResourceDictionary>

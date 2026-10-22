@@ -17,6 +17,9 @@ public partial class App : Application
             var api = new PaperlessApiClient(config);
             var lookups = new LookupCache(api);
 
+            var files = new DocumentFileService(api);
+            files.CleanUp();   // remove preview files left from the previous session
+
             var localization = new LocalizationService();
             localization.SetLanguage("sr");   // Phase 9: load from saved settings
 
@@ -24,7 +27,7 @@ public partial class App : Application
 
             // ----- ViewModels -----
             var mainViewModel = new MainViewModel(
-                new DocumentsViewModel(api, lookups, notifications),
+                new DocumentsViewModel(api, lookups, files, notifications),
                 new UploadViewModel(),
                 new TagsViewModel(),
                 new SettingsViewModel(localization),
