@@ -16,7 +16,7 @@ public partial class DocumentsViewModel : ObservableObject
     private readonly LookupCache _lookups;
     private readonly NotificationService _notifications;
 
-    // The current request: page, search text and (Phase 5) filters
+    // The current request: page, search text and filters
     private readonly DocumentQuery _query = new();
 
     // Thumbnails already downloaded (by document ID), so going back a page is instant
@@ -30,6 +30,9 @@ public partial class DocumentsViewModel : ObservableObject
     public ObservableCollection<DocumentItemViewModel> Documents { get; } = new();
 
     public int[] PageSizeOptions { get; } = { 10, 25, 50, 100 };
+
+    /// <summary>Filter dropdowns and active filter chips.</summary>
+    public DocumentFiltersViewModel Filters { get; } = new();
 
     // ---------- State ----------
 
@@ -74,21 +77,26 @@ public partial class DocumentsViewModel : ObservableObject
 
     public bool IsSearchActive => !string.IsNullOrEmpty(_query.SearchText);
 
+    /// <summary>True if a search or any filter is narrowing the results.</summary>
+    public bool IsQueryActive => IsSearchActive || Filters.HasActiveFilters;
+
     // ---------- Empty states ----------
 
     public bool HasNoDocuments => !IsLoading && Documents.Count == 0;
 
-    /// <summary>No documents at all (no search active).</summary>
-    public bool ShowEmptyState => HasNoDocuments && !IsSearchActive;
+    /// <summary>No documents at all (no search or filter active).</summary>
+    public bool ShowEmptyState => HasNoDocuments && !IsQueryActive;
 
-    /// <summary>A search is active but found nothing.</summary>
-    public bool ShowNoResults => HasNoDocuments && IsSearchActive;
+    /// <summary>Search/filters are active but nothing matches.</summary>
+    public bool ShowNoResults => HasNoDocuments && IsQueryActive;
 
     public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups, NotificationService notifications)
     {
         _api = api;
         _lookups = lookups;
         _notifications = notifications;
+
+        Filters.FiltersChanged += (_, _) => OnFiltersChanged();
     }
 
     /// <summary>Called once when the app starts.</summary>
@@ -127,13 +135,27 @@ public partial class DocumentsViewModel : ObservableObject
         return ApplySearchAsync();
     }
 
-    /// <summary>Esc key / "Clear search" button.</summary>
+    /// <summary>Esc key in the search box.</summary>
     [RelayCommand]
     private Task ClearSearchAsync()
     {
         SearchText = "";
         _searchDelayCts?.Cancel();
         return ApplySearchAsync();
+    }
+
+    /// <summary>"Reset search and filters" button in the no-results panel.</summary>
+    [RelayCommand]
+    private Task ResetAllAsync()
+    {
+        Filters.ClearSilently();
+        SearchText = "";
+        _searchDelayCts?.Cancel();   // setting SearchText started a timer - stop it
+
+        _query.SearchText = null;
+        Filters.ApplyTo(_query);
+        NotifyQueryStateChanged();
+        return LoadPageAsync(1);     // one reload for both changes
     }
 
     // ---------- Reactions to property changes ----------
@@ -167,7 +189,7 @@ public partial class DocumentsViewModel : ObservableObject
         _ = SearchAfterDelayAsync(cts.Token);
     }
 
-    // ---------- Search ----------
+    // ---------- Search & filters ----------
 
     private async Task SearchAfterDelayAsync(CancellationToken ct)
     {
@@ -185,18 +207,34 @@ public partial class DocumentsViewModel : ObservableObject
 
     private Task ApplySearchAsync()
     {
-        string text = SearchText.Trim();
+        // The ✕ button in the search box sets the text to null, not "" - treat both as empty
+        string text = SearchText?.Trim() ?? "";
 
         // Nothing changed (e.g. user typed "ab" and deleted it again) - no request needed
         if (text == ActiveSearchText)
             return Task.CompletedTask;
 
         _query.SearchText = text.Length == 0 ? null : text;
-        OnPropertyChanged(nameof(ActiveSearchText));
-        OnPropertyChanged(nameof(IsSearchActive));
+        NotifyQueryStateChanged();
 
         // New search always starts at page 1
         return LoadPageAsync(1);
+    }
+
+    private void OnFiltersChanged()
+    {
+        Filters.ApplyTo(_query);
+        NotifyQueryStateChanged();
+        _ = LoadPageAsync(1);   // new filters always start at page 1
+    }
+
+    private void NotifyQueryStateChanged()
+    {
+        OnPropertyChanged(nameof(ActiveSearchText));
+        OnPropertyChanged(nameof(IsSearchActive));
+        OnPropertyChanged(nameof(IsQueryActive));
+        OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(ShowNoResults));
     }
 
     // ---------- Loading the list ----------
@@ -213,7 +251,10 @@ public partial class DocumentsViewModel : ObservableObject
         try
         {
             if (!_lookups.IsLoaded || reloadLookups)
+            {
                 await _lookups.LoadAsync(cts.Token);
+                Filters.UpdateOptions(_lookups);   // fill the filter dropdowns
+            }
 
             _query.Page = page;
             _query.PageSize = PageSize;

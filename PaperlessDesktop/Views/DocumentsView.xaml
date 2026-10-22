@@ -5,7 +5,40 @@
 
     <UserControl.Resources>
         <!-- Reused by table AND cards, so tags look the same everywhere (consistency, H4) -->
+        <!-- Dropdown item: name + number of documents, e.g. "računi (12)" -->
+        <DataTemplate x:Key="NameWithCountTemplate">
+            <TextBlock>
+                <Run Text="{Binding Name, Mode=OneWay}" /><Run Text=" (" /><Run Text="{Binding DocumentCount, Mode=OneWay}" /><Run Text=")" />
+            </TextBlock>
+        </DataTemplate>
+
+        <!-- Tag dropdown item: color dot + name + count -->
+        <DataTemplate x:Key="TagOptionTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Border Width="12" Height="12" CornerRadius="6" Margin="0,0,8,0" VerticalAlignment="Center"
+                        Background="{Binding Color, Converter={StaticResource HexToBrush}}" />
+                <TextBlock VerticalAlignment="Center">
+                    <Run Text="{Binding Name, Mode=OneWay}" /><Run Text=" (" /><Run Text="{Binding DocumentCount, Mode=OneWay}" /><Run Text=")" />
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Chip label prefix ("Tag", "Korespondent", "Tip") - translated, changes with language -->
+        <Style x:Key="FilterKindLabelStyle" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Kind}" Value="Tag">
+                    <Setter Property="Text" Value="{DynamicResource Filter_Tag}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="Correspondent">
+                    <Setter Property="Text" Value="{DynamicResource Filter_Correspondent}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="DocumentType">
+                    <Setter Property="Text" Value="{DynamicResource Filter_DocumentType}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <ItemsPanelTemplate x:Key="WrapPanelTemplate">
+            
             <WrapPanel />
         </ItemsPanelTemplate>
 
@@ -109,19 +142,79 @@
         </DockPanel>
 
         <!-- ===== Search ===== -->
-        <TextBox Grid.Row="1" Margin="0,0,0,16" MaxWidth="600" HorizontalAlignment="Left" MinWidth="360"
-                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                 materialDesign:HintAssist.Hint="{DynamicResource Search_Hint}"
-                 materialDesign:HintAssist.HelperText="{DynamicResource Search_KeyboardTip}"
-                 materialDesign:TextFieldAssist.HasLeadingIcon="True"
-                 materialDesign:TextFieldAssist.LeadingIcon="Magnify"
-                 materialDesign:TextFieldAssist.HasClearButton="True">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding SearchNowCommand}" />
-                <KeyBinding Key="Escape" Command="{Binding ClearSearchCommand}" />
-            </TextBox.InputBindings>
-        </TextBox>
+        <!-- ===== Search & filters ===== -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,8">
+
+            <WrapPanel>
+                <!-- Search -->
+                <TextBox Margin="0,0,16,8" MinWidth="320" MaxWidth="500" VerticalAlignment="Top"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="{DynamicResource Search_Hint}"
+                         materialDesign:HintAssist.HelperText="{DynamicResource Search_KeyboardTip}"
+                         materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                         materialDesign:TextFieldAssist.LeadingIcon="Magnify"
+                         materialDesign:TextFieldAssist.HasClearButton="True">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding SearchNowCommand}" />
+                        <KeyBinding Key="Escape" Command="{Binding ClearSearchCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <!-- Filter pickers: choosing an item adds a chip below -->
+                <ComboBox Width="190" Margin="0,0,12,8" VerticalAlignment="Top"
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          materialDesign:HintAssist.Hint="{DynamicResource Filter_AddTag}"
+                          ToolTip="{DynamicResource Filter_TagTooltip}"
+                          ItemsSource="{Binding Filters.AvailableTags}"
+                          SelectedItem="{Binding Filters.TagToAdd}"
+                          ItemTemplate="{StaticResource TagOptionTemplate}" />
+
+                <ComboBox Width="190" Margin="0,0,12,8" VerticalAlignment="Top"
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          materialDesign:HintAssist.Hint="{DynamicResource Filter_AddCorrespondent}"
+                          ItemsSource="{Binding Filters.AvailableCorrespondents}"
+                          SelectedItem="{Binding Filters.CorrespondentToSet}"
+                          ItemTemplate="{StaticResource NameWithCountTemplate}" />
+
+                <ComboBox Width="190" Margin="0,0,12,8" VerticalAlignment="Top"
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          materialDesign:HintAssist.Hint="{DynamicResource Filter_AddDocumentType}"
+                          ItemsSource="{Binding Filters.AvailableDocumentTypes}"
+                          SelectedItem="{Binding Filters.DocumentTypeToSet}"
+                          ItemTemplate="{StaticResource NameWithCountTemplate}" />
+            </WrapPanel>
+
+            <!-- HCI problem 1: active filters always visible, each removable with ONE click (H1, H3) -->
+            <WrapPanel Margin="0,4,0,0"
+                       Visibility="{Binding Filters.HasActiveFilters, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{DynamicResource Filter_Active}" VerticalAlignment="Center"
+                           Opacity="0.7" Margin="0,0,8,0" />
+
+                <ItemsControl ItemsSource="{Binding Filters.ActiveFilters}"
+                              ItemsPanel="{StaticResource WrapPanelTemplate}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <materialDesign:Chip Margin="0,4,8,4" IsDeletable="True"
+                                                 DeleteCommand="{Binding DataContext.Filters.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                 DeleteCommandParameter="{Binding}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource FilterKindLabelStyle}" Opacity="0.7" />
+                                    <TextBlock Text=": " Opacity="0.7" />
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </materialDesign:Chip>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- "Clear all" sits right next to the chips, so it's clear what it will remove -->
+                <Button Content="{DynamicResource Filter_ClearAll}"
+                        Command="{Binding Filters.ClearAllCommand}"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        VerticalAlignment="Center" />
+            </WrapPanel>
+        </StackPanel>
 
         <!-- ===== Content ===== -->
         <Grid Grid.Row="2" Margin="0,8,0,0">
@@ -199,15 +292,14 @@
                        Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVis}}" />
 
             <!-- HCI: search found nothing - say so clearly and offer a way out (H9, H3) -->
+            <!-- HCI: search/filters found nothing - say so clearly and offer a way out (H9, H3) -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                         Visibility="{Binding ShowNoResults, Converter={StaticResource BoolToVis}}">
                 <materialDesign:PackIcon Kind="FileSearchOutline" Width="56" Height="56"
                                          HorizontalAlignment="Center" Opacity="0.4" />
-                <TextBlock FontSize="16" Margin="0,12,0,0" HorizontalAlignment="Center" TextAlignment="Center">
-                    <Run Text="{DynamicResource Search_NoResults}" />
-                    <Run Text="„" /><Run Text="{Binding ActiveSearchText, Mode=OneWay}" FontWeight="SemiBold" /><Run Text="“" />
-                </TextBlock>
-                <Button Content="{DynamicResource Search_Clear}" Command="{Binding ClearSearchCommand}"
+                <TextBlock Text="{DynamicResource Filter_NoResults}" FontSize="16"
+                           Margin="0,12,0,0" HorizontalAlignment="Center" TextAlignment="Center" />
+                <Button Content="{DynamicResource Filter_ResetAll}" Command="{Binding ResetAllCommand}"
                         Style="{StaticResource MaterialDesignOutlinedButton}"
                         HorizontalAlignment="Center" Margin="0,16,0,0" />
             </StackPanel>

@@ -54,8 +54,19 @@
     <sys:String x:Key="Search_KeyboardTip">Enter: traži odmah · Esc: obriši</sys:String>
     <sys:String x:Key="Search_NoResults">Nema rezultata za</sys:String>
     <sys:String x:Key="Search_Clear">Obriši pretragu</sys:String>
-    
-    
+
+    <!-- Filters -->
+    <sys:String x:Key="Filter_AddTag">+ Tag</sys:String>
+    <sys:String x:Key="Filter_AddCorrespondent">+ Korespondent</sys:String>
+    <sys:String x:Key="Filter_AddDocumentType">+ Tip dokumenta</sys:String>
+    <sys:String x:Key="Filter_TagTooltip">Prikazuju se dokumenti koji imaju SVE izabrane tagove</sys:String>
+    <sys:String x:Key="Filter_Active">Aktivni filteri:</sys:String>
+    <sys:String x:Key="Filter_ClearAll">Poništi sve filtere</sys:String>
+    <sys:String x:Key="Filter_Tag">Tag</sys:String>
+    <sys:String x:Key="Filter_Correspondent">Korespondent</sys:String>
+    <sys:String x:Key="Filter_DocumentType">Tip</sys:String>
+    <sys:String x:Key="Filter_NoResults">Nema dokumenata koji odgovaraju pretrazi i filterima.</sys:String>
+    <sys:String x:Key="Filter_ResetAll">Poništi pretragu i filtere</sys:String>
 
     <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Strana</sys:String>

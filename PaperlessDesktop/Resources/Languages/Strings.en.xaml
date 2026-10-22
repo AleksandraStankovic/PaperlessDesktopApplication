@@ -54,6 +54,19 @@
     <sys:String x:Key="Search_NoResults">No results for</sys:String>
     <sys:String x:Key="Search_Clear">Clear search</sys:String>
 
+    <!-- Filters -->
+    <sys:String x:Key="Filter_AddTag">+ Tag</sys:String>
+    <sys:String x:Key="Filter_AddCorrespondent">+ Correspondent</sys:String>
+    <sys:String x:Key="Filter_AddDocumentType">+ Document type</sys:String>
+    <sys:String x:Key="Filter_TagTooltip">Shows documents that have ALL selected tags</sys:String>
+    <sys:String x:Key="Filter_Active">Active filters:</sys:String>
+    <sys:String x:Key="Filter_ClearAll">Clear all filters</sys:String>
+    <sys:String x:Key="Filter_Tag">Tag</sys:String>
+    <sys:String x:Key="Filter_Correspondent">Correspondent</sys:String>
+    <sys:String x:Key="Filter_DocumentType">Type</sys:String>
+    <sys:String x:Key="Filter_NoResults">No documents match your search and filters.</sys:String>
+    <sys:String x:Key="Filter_ResetAll">Reset search and filters</sys:String>
+
     <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Page</sys:String>
     <sys:String x:Key="Pagination_Of">of</sys:String>
