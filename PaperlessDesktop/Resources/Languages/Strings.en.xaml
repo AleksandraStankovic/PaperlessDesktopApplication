@@ -45,6 +45,8 @@
     <sys:String x:Key="Col_Correspondent">Correspondent</sys:String>
     <sys:String x:Key="Col_DocumentType">Document type</sys:String>
     <sys:String x:Key="Col_Tags">Tags</sys:String>
+    <sys:String x:Key="View_Table">Table</sys:String>
+    <sys:String x:Key="View_Cards">Cards</sys:String>
 
     <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Page</sys:String>

@@ -39,6 +39,12 @@ namespace PaperlessDesktop.Services
         public Task<PagedResult<Document>> GetDocumentsAsync(DocumentQuery query, CancellationToken ct = default)
         => GetAsync<PagedResult<Document>>("api/documents/" + query.ToQueryString(), ct);
 
+
+        public Task<byte[]> GetThumbnailAsync(int id, CancellationToken ct = default)
+    => GetBytesAsync($"api/documents/{id}/thumb/", ct);
+
+
+
         public Task<Document> GetDocumentAsync(int id, CancellationToken ct = default)
             => GetAsync<Document>($"api/documents/{id}/", ct);
 
@@ -75,6 +81,13 @@ namespace PaperlessDesktop.Services
             using var request = new HttpRequestMessage(HttpMethod.Get, relativeUrl);
             using var response = await SendAsync(request, ct);
             return await ReadJsonAsync<T>(response, ct);
+        }
+
+        private async Task<byte[]> GetBytesAsync(string relativeUrl, CancellationToken ct)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, relativeUrl);
+            using var response = await SendAsync(request, ct);
+            return await response.Content.ReadAsByteArrayAsync(ct);
         }
 
         private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)

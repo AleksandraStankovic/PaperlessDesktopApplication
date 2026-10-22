@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Windows.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using PaperlessDesktop.Models;
 using PaperlessDesktop.Services;
 
 namespace PaperlessDesktop.ViewModels;
 
+/// <summary>One row/card in the document list: a Document with names resolved.</summary>
 public partial class DocumentItemViewModel : ObservableObject
 {
     public Document Model { get; }
@@ -16,6 +18,16 @@ public partial class DocumentItemViewModel : ObservableObject
     public string CorrespondentName { get; }
     public string DocumentTypeName { get; }
     public IReadOnlyList<Tag> Tags { get; }
+
+    // Thumbnail arrives later (downloaded in the background)
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasThumbnail))]
+    private ImageSource? _thumbnail;
+
+    public bool HasThumbnail => Thumbnail is not null;
+
+    /// <summary>True once a download has been started, so we don't request it twice.</summary>
+    public bool ThumbnailRequested { get; set; }
 
     public DocumentItemViewModel(Document model, LookupCache lookups)
     {

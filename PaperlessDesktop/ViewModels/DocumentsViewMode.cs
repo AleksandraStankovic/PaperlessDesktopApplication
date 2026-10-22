@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PaperlessDesktop.Models;
@@ -8,6 +9,8 @@ namespace PaperlessDesktop.ViewModels;
 
 public partial class DocumentsViewModel : ObservableObject
 {
+    private const int ParallelThumbnailDownloads = 4;
+
     private readonly PaperlessApiClient _api;
     private readonly LookupCache _lookups;
     private readonly NotificationService _notifications;
@@ -15,7 +18,11 @@ public partial class DocumentsViewModel : ObservableObject
     // The current request. Search (Phase 4) and filters (Phase 5) will also change this object.
     private readonly DocumentQuery _query = new();
 
+    // Thumbnails already downloaded (by document ID), so going back a page is instant
+    private readonly Dictionary<int, ImageSource> _thumbnailCache = new();
+
     private CancellationTokenSource? _loadCts;
+    private CancellationTokenSource? _thumbnailCts;
     private bool _initialized;
 
     public ObservableCollection<DocumentItemViewModel> Documents { get; } = new();
@@ -41,6 +48,15 @@ public partial class DocumentsViewModel : ObservableObject
     [ObservableProperty]
     private int _pageSize = 25;
 
+    // 0 = table, 1 = cards (bound to the toggle in the header)
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsTableView))]
+    [NotifyPropertyChangedFor(nameof(IsCardView))]
+    private int _viewModeIndex;
+
+    public bool IsTableView => ViewModeIndex != 1;
+    public bool IsCardView => ViewModeIndex == 1;
+
     /// <summary>True when loading is finished and there is nothing to show.</summary>
     public bool HasNoDocuments => !IsLoading && Documents.Count == 0;
 
@@ -63,7 +79,11 @@ public partial class DocumentsViewModel : ObservableObject
     // ---------- Commands (bound to buttons) ----------
 
     [RelayCommand]
-    private Task RefreshAsync() => LoadPageAsync(CurrentPage, reloadLookups: true);
+    private Task RefreshAsync()
+    {
+        _thumbnailCache.Clear();
+        return LoadPageAsync(CurrentPage, reloadLookups: true);
+    }
 
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
     private Task NextPageAsync() => LoadPageAsync(CurrentPage + 1);
@@ -75,19 +95,34 @@ public partial class DocumentsViewModel : ObservableObject
 
     private bool CanGoToPreviousPage() => CurrentPage > 1;
 
-    // Runs automatically when the user picks a different page size
+    // ---------- Reactions to property changes ----------
+
     partial void OnPageSizeChanged(int value)
     {
         if (_initialized)
             _ = LoadPageAsync(1);
     }
 
-    // ---------- Loading ----------
+    partial void OnViewModeIndexChanged(int oldValue, int newValue)
+    {
+        // Clicking the already-selected toggle button would deselect it (-1). Keep the old mode instead.
+        if (newValue < 0)
+        {
+            ViewModeIndex = oldValue;
+            return;
+        }
+
+        if (IsCardView)
+            StartThumbnailLoading();
+    }
+
+    // ---------- Loading the list ----------
 
     private async Task LoadPageAsync(int page, bool reloadLookups = false)
     {
         // Cancel a previous load that is still running (e.g. user clicked "next" twice quickly)
         _loadCts?.Cancel();
+        _thumbnailCts?.Cancel();
         var cts = new CancellationTokenSource();
         _loadCts = cts;
 
@@ -103,14 +138,24 @@ public partial class DocumentsViewModel : ObservableObject
 
             Documents.Clear();
             foreach (var doc in result.Results)
-                Documents.Add(new DocumentItemViewModel(doc, _lookups));
+            {
+                var item = new DocumentItemViewModel(doc, _lookups);
+                if (_thumbnailCache.TryGetValue(doc.Id, out var cached))
+                    item.Thumbnail = cached;
+                Documents.Add(item);
+            }
 
             TotalCount = result.Count;
             TotalPages = Math.Max(1, (int)Math.Ceiling(result.Count / (double)PageSize));
             CurrentPage = page;
+
+            // Thumbnails are only needed in card view
+            if (IsCardView)
+                StartThumbnailLoading();
         }
         catch (OperationCanceledException)
         {
+            // A newer load replaced this one - nothing to report
         }
         catch (Exception ex)
         {
@@ -118,12 +163,69 @@ public partial class DocumentsViewModel : ObservableObject
         }
         finally
         {
+            // Only the most recent load is allowed to turn the spinner off
             if (_loadCts == cts)
             {
                 _loadCts = null;
                 IsLoading = false;
             }
             cts.Dispose();
+        }
+    }
+
+    // ---------- Loading thumbnails ----------
+
+    private void StartThumbnailLoading()
+    {
+        _thumbnailCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _thumbnailCts = cts;
+
+        var pending = Documents.Where(d => !d.HasThumbnail && !d.ThumbnailRequested).ToList();
+        foreach (var item in pending)
+            item.ThumbnailRequested = true;
+
+        _ = LoadThumbnailsAsync(pending, cts.Token);
+    }
+
+    private async Task LoadThumbnailsAsync(IReadOnlyList<DocumentItemViewModel> items, CancellationToken ct)
+    {
+        try
+        {
+            // Download 4 at a time: fast, but kind to the shared server
+            foreach (var batch in items.Chunk(ParallelThumbnailDownloads))
+            {
+                ct.ThrowIfCancellationRequested();
+                await Task.WhenAll(batch.Select(item => LoadThumbnailAsync(item, ct)));
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // User changed page - stop quietly
+        }
+    }
+
+    private async Task LoadThumbnailAsync(DocumentItemViewModel item, CancellationToken ct)
+    {
+        try
+        {
+            byte[] data = await _api.GetThumbnailAsync(item.Id, ct);
+
+            // Decode on a background thread so the UI doesn't stutter
+            var image = await Task.Run(() => ThumbnailDecoder.Decode(data), ct);
+            if (image is null)
+                return;
+
+            item.Thumbnail = image;
+            _thumbnailCache[item.Id] = image;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            // One broken thumbnail is not worth an error message - the card keeps its placeholder icon
         }
     }
 }
