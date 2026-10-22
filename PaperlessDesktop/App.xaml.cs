@@ -24,12 +24,19 @@ public partial class App : Application
             localization.SetLanguage("sr");   // Phase 9: load from saved settings
 
             var notifications = new NotificationService(localization);
+            var dialogs = new DialogService();
 
             // ----- ViewModels -----
+            var documentsViewModel = new DocumentsViewModel(api, lookups, files, notifications);
+            var tagsViewModel = new TagsViewModel(api, dialogs, notifications, localization);
+
+            // When tags change, the document list refreshes tag names, colors and filter options
+            tagsViewModel.TagsChanged += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
+
             var mainViewModel = new MainViewModel(
-                new DocumentsViewModel(api, lookups, files, notifications),
+                documentsViewModel,
                 new UploadViewModel(),
-                new TagsViewModel(),
+                tagsViewModel,
                 new SettingsViewModel(localization),
                 notifications);
 

@@ -40,13 +40,36 @@ public partial class DocumentFiltersViewModel : ObservableObject
         ActiveFilters.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasActiveFilters));
     }
 
-    /// <summary>Fills the dropdowns from the lookup cache (alphabetically, č/ć/š sorted correctly).</summary>
+    /// <summary>
+    /// Fills the dropdowns from the lookup cache (alphabetically, č/ć/š sorted correctly)
+    /// and keeps active chips in sync after tags were renamed, recolored or deleted.
+    /// </summary>
     public void UpdateOptions(LookupCache lookups)
     {
         var comparer = StringComparer.CurrentCultureIgnoreCase;
         Replace(AvailableTags, lookups.Tags.OrderBy(t => t.Name, comparer));
         Replace(AvailableCorrespondents, lookups.Correspondents.OrderBy(c => c.Name, comparer));
         Replace(AvailableDocumentTypes, lookups.DocumentTypes.OrderBy(t => t.Name, comparer));
+
+        for (int i = ActiveFilters.Count - 1; i >= 0; i--)
+        {
+            var chip = ActiveFilters[i];
+            FilterChip? updated = chip.Kind switch
+            {
+                FilterKind.Tag => lookups.GetTag(chip.Id) is { } tag
+                    ? FilterChip.ForTag(tag) : null,
+                FilterKind.Correspondent => lookups.GetCorrespondentName(chip.Id) is { } correspondentName
+                    ? new FilterChip(chip.Kind, chip.Id, correspondentName) : null,
+                FilterKind.DocumentType => lookups.GetDocumentTypeName(chip.Id) is { } typeName
+                    ? new FilterChip(chip.Kind, chip.Id, typeName) : null,
+                _ => null
+            };
+
+            if (updated is null)
+                ActiveFilters.RemoveAt(i);      // the item was deleted - drop its filter
+            else
+                ActiveFilters[i] = updated;     // refresh name / color
+        }
     }
 
     /// <summary>Copies the active filters into the API query.</summary>
@@ -94,7 +117,7 @@ public partial class DocumentFiltersViewModel : ObservableObject
         bool alreadyActive = ActiveFilters.Any(f => f.Kind == FilterKind.Tag && f.Id == value.Id);
         if (!alreadyActive)
         {
-            ActiveFilters.Add(new FilterChip(FilterKind.Tag, value.Id, value.Name));
+            ActiveFilters.Add(FilterChip.ForTag(value));
             RaiseFiltersChanged();
         }
         _ = ResetPickersAsync();

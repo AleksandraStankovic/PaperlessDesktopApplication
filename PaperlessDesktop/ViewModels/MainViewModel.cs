@@ -23,15 +23,25 @@ public partial class MainViewModel : ObservableObject
         SettingsViewModel settings,
         NotificationService notifications)
     {
+        // Order must match the order of items in the sidebar
         _pages = new ObservableObject[] { documents, upload, tags, settings };
         CurrentPage = documents;
         MessageQueue = notifications.MessageQueue;
+
+        // Start loading documents right away, so the list is ready when the app opens
         _ = documents.InitializeAsync();
     }
 
+    // Generated hook: runs automatically whenever SelectedPageIndex changes
     partial void OnSelectedPageIndexChanged(int value)
     {
-        if (value >= 0 && value < _pages.Length)
-            CurrentPage = _pages[value];
+        if (value < 0 || value >= _pages.Length)
+            return;
+
+        CurrentPage = _pages[value];
+
+        // Let the page know it was opened (e.g. Tags loads its list the first time)
+        if (CurrentPage is INavigationAware page)
+            page.OnNavigatedTo();
     }
 }

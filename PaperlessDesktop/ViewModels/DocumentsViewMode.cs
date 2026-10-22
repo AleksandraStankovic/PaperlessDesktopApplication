@@ -119,6 +119,10 @@ public partial class DocumentsViewModel : ObservableObject
         await LoadPageAsync(1);
     }
 
+    /// <summary>Called after tags were created/edited/deleted on the Tags page.</summary>
+    public Task ReloadLookupsAsync()
+        => _initialized ? LoadPageAsync(CurrentPage, reloadLookups: true) : Task.CompletedTask;
+
     // ---------- Commands (bound to buttons / keys) ----------
 
     [RelayCommand]
@@ -269,7 +273,8 @@ public partial class DocumentsViewModel : ObservableObject
             if (!_lookups.IsLoaded || reloadLookups)
             {
                 await _lookups.LoadAsync(cts.Token);
-                Filters.UpdateOptions(_lookups);   // fill the filter dropdowns
+                Filters.UpdateOptions(_lookups);   
+                Filters.ApplyTo(_query); 
             }
 
             _query.Page = page;

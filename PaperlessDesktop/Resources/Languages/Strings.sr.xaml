@@ -87,6 +87,37 @@
     <sys:String x:Key="Preview_Failed">Pregled nije dostupan za ovaj dokument.</sys:String>
     <sys:String x:Key="Preview_OpenFailed">Fajl nije moguće otvoriti. Nijedna aplikacija nije podešena za ovaj tip fajla.</sys:String>
 
+    <!-- Common actions -->
+    <sys:String x:Key="Common_Cancel">Odustani</sys:String>
+    <sys:String x:Key="Common_Save">Sačuvaj</sys:String>
+    <sys:String x:Key="Common_Edit">Uredi</sys:String>
+    <sys:String x:Key="Common_Delete">Obriši</sys:String>
+
+    <!-- Tags page -->
+    <sys:String x:Key="Tags_Subtitle">Kreirajte, uredite i obrišite tagove.</sys:String>
+    <sys:String x:Key="Tags_New">Novi tag</sys:String>
+    <sys:String x:Key="Tags_Col_Tag">Tag</sys:String>
+    <sys:String x:Key="Tags_Col_Documents">Broj dokumenata</sys:String>
+    <sys:String x:Key="Tags_Empty">Još nema tagova. Kreirajte prvi klikom na „Novi tag“.</sys:String>
+
+    <!-- Tag editor -->
+    <sys:String x:Key="Tags_NewTitle">Novi tag</sys:String>
+    <sys:String x:Key="Tags_EditTitle">Uredi tag</sys:String>
+    <sys:String x:Key="Tags_Name">Naziv taga</sys:String>
+    <sys:String x:Key="Tags_Color">Boja</sys:String>
+    <sys:String x:Key="Tags_Preview">Pregled:</sys:String>
+    <sys:String x:Key="Tags_Error_NameRequired">Naziv je obavezan.</sys:String>
+    <sys:String x:Key="Tags_Error_NameTooLong">Naziv može imati najviše 128 znakova.</sys:String>
+    <sys:String x:Key="Tags_Error_NameExists">Tag sa ovim nazivom već postoji.</sys:String>
+    <sys:String x:Key="Tags_Error_Rejected">Server nije prihvatio tag.</sys:String>
+
+    <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
+    <sys:String x:Key="Tags_Created">Tag „{0}“ je kreiran.</sys:String>
+    <sys:String x:Key="Tags_Updated">Tag „{0}“ je sačuvan.</sys:String>
+    <sys:String x:Key="Tags_Deleted">Tag „{0}“ je obrisan.</sys:String>
+    <sys:String x:Key="Tags_DeleteTitle">Obrisati tag?</sys:String>
+    <sys:String x:Key="Tags_DeleteConfirm">Da li ste sigurni da želite obrisati tag „{0}“? Ova radnja se ne može poništiti.</sys:String>
+    <sys:String x:Key="Tags_DeleteConfirmUsed">Tag „{0}“ je dodijeljen dokumentima: {1}. Tag će biti uklonjen sa svih njih, a sami dokumenti ostaju sačuvani. Ova radnja se ne može poništiti.</sys:String>
 
 
 </ResourceDictionary>

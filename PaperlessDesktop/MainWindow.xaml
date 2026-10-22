@@ -8,50 +8,55 @@
         Background="{DynamicResource MaterialDesign.Brush.Background}"
         TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <!-- Dialogs (confirmations, tag editor) appear on top of everything inside this host -->
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <!-- ===== Sidebar ===== -->
-        <materialDesign:ColorZone Grid.Column="0" Mode="PrimaryMid" VerticalAlignment="Stretch">
-            <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource App_Title}"
-                           FontSize="20" FontWeight="SemiBold" Margin="20,24,20,16" />
+            <!-- ===== Sidebar ===== -->
+            <materialDesign:ColorZone Grid.Column="0" Mode="PrimaryMid" VerticalAlignment="Stretch">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{DynamicResource App_Title}"
+                               FontSize="20" FontWeight="SemiBold" Margin="20,24,20,16" />
 
-                <ListBox SelectedIndex="{Binding SelectedPageIndex}">
-                    <ListBoxItem Padding="20,12">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="FileDocumentMultipleOutline" Width="22" Height="22" VerticalAlignment="Center" />
-                            <TextBlock Text="{DynamicResource Nav_Documents}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-                    <ListBoxItem Padding="20,12">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Upload" Width="22" Height="22" VerticalAlignment="Center" />
-                            <TextBlock Text="{DynamicResource Nav_Upload}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-                    <ListBoxItem Padding="20,12">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="TagMultipleOutline" Width="22" Height="22" VerticalAlignment="Center" />
-                            <TextBlock Text="{DynamicResource Nav_Tags}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-                    <ListBoxItem Padding="20,12">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="CogOutline" Width="22" Height="22" VerticalAlignment="Center" />
-                            <TextBlock Text="{DynamicResource Nav_Settings}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-                </ListBox>
-            </DockPanel>
-        </materialDesign:ColorZone>
+                    <ListBox SelectedIndex="{Binding SelectedPageIndex}">
+                        <ListBoxItem Padding="20,12">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FileDocumentMultipleOutline" Width="22" Height="22" VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource Nav_Documents}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Padding="20,12">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Upload" Width="22" Height="22" VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource Nav_Upload}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Padding="20,12">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="TagMultipleOutline" Width="22" Height="22" VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource Nav_Tags}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Padding="20,12">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="CogOutline" Width="22" Height="22" VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource Nav_Settings}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+                </DockPanel>
+            </materialDesign:ColorZone>
 
-        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="32,24"
-                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            <!-- ===== Current page ===== -->
+            <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="32,24"
+                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
 
-        <materialDesign:Snackbar Grid.Column="1" MessageQueue="{Binding MessageQueue}" />
-    </Grid>
+            <!-- ===== Notifications (errors, success messages) ===== -->
+            <materialDesign:Snackbar Grid.Column="1" MessageQueue="{Binding MessageQueue}" />
+        </Grid>
+    </materialDesign:DialogHost>
 </Window>

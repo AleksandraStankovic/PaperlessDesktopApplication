@@ -48,13 +48,6 @@
             <WrapPanel />
         </ItemsPanelTemplate>
 
-        <DataTemplate x:Key="TagChipTemplate">
-            <Border Background="{Binding Color, Converter={StaticResource HexToBrush}}"
-                    CornerRadius="10" Padding="8,2" Margin="0,2,4,2">
-                <TextBlock Text="{Binding Name}" FontSize="12"
-                           Foreground="{Binding TextColor, Converter={StaticResource HexToBrush}, ConverterParameter=#000000}" />
-            </Border>
-        </DataTemplate>
 
         <!-- Label/value text styles for the preview panel -->
         <Style x:Key="MetaLabel" TargetType="TextBlock">
@@ -213,6 +206,17 @@
                             <materialDesign:Chip Margin="0,4,8,4" IsDeletable="True"
                                                  DeleteCommand="{Binding DataContext.Filters.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                  DeleteCommandParameter="{Binding}">
+                                <!-- Tag filters are shown in the tag's own color (consistent with the list, H4) -->
+                                <materialDesign:Chip.Style>
+                                    <Style TargetType="materialDesign:Chip">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Kind}" Value="Tag">
+                                                <Setter Property="Background" Value="{Binding Color, Converter={StaticResource HexToBrush}}" />
+                                                <Setter Property="Foreground" Value="{Binding TextColor, Converter={StaticResource HexToBrush}, ConverterParameter=#000000}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </materialDesign:Chip.Style>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource FilterKindLabelStyle}" Opacity="0.7" />
                                     <TextBlock Text=": " Opacity="0.7" />
@@ -416,7 +420,7 @@
 
                     <!-- File preview fills the remaining space -->
                     <Grid Margin="8,0,8,8">
-                        <wv2:WebView2 Source="{Binding PreviewUri}"
+                        <wv2:WebView2 Source="{Binding PreviewUri, FallbackValue=about:blank, TargetNullValue=about:blank}"
                                       Visibility="{Binding ShowPreview, Converter={StaticResource BoolToVis}}" />
 
                         <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"

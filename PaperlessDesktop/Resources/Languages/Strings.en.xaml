@@ -85,5 +85,36 @@
     <sys:String x:Key="Preview_Failed">Preview is not available for this document.</sys:String>
     <sys:String x:Key="Preview_OpenFailed">The file can't be opened. No app is set up for this file type.</sys:String>
 
+    <!-- Common actions -->
+    <sys:String x:Key="Common_Cancel">Cancel</sys:String>
+    <sys:String x:Key="Common_Save">Save</sys:String>
+    <sys:String x:Key="Common_Edit">Edit</sys:String>
+    <sys:String x:Key="Common_Delete">Delete</sys:String>
+
+    <!-- Tags page -->
+    <sys:String x:Key="Tags_Subtitle">Create, edit and delete tags.</sys:String>
+    <sys:String x:Key="Tags_New">New tag</sys:String>
+    <sys:String x:Key="Tags_Col_Tag">Tag</sys:String>
+    <sys:String x:Key="Tags_Col_Documents">Documents</sys:String>
+    <sys:String x:Key="Tags_Empty">No tags yet. Create the first one with "New tag".</sys:String>
+
+    <!-- Tag editor -->
+    <sys:String x:Key="Tags_NewTitle">New tag</sys:String>
+    <sys:String x:Key="Tags_EditTitle">Edit tag</sys:String>
+    <sys:String x:Key="Tags_Name">Tag name</sys:String>
+    <sys:String x:Key="Tags_Color">Color</sys:String>
+    <sys:String x:Key="Tags_Preview">Preview:</sys:String>
+    <sys:String x:Key="Tags_Error_NameRequired">Name is required.</sys:String>
+    <sys:String x:Key="Tags_Error_NameTooLong">Name can have at most 128 characters.</sys:String>
+    <sys:String x:Key="Tags_Error_NameExists">A tag with this name already exists.</sys:String>
+    <sys:String x:Key="Tags_Error_Rejected">The server did not accept the tag.</sys:String>
+
+    <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
+    <sys:String x:Key="Tags_Created">Tag "{0}" was created.</sys:String>
+    <sys:String x:Key="Tags_Updated">Tag "{0}" was saved.</sys:String>
+    <sys:String x:Key="Tags_Deleted">Tag "{0}" was deleted.</sys:String>
+    <sys:String x:Key="Tags_DeleteTitle">Delete tag?</sys:String>
+    <sys:String x:Key="Tags_DeleteConfirm">Are you sure you want to delete the tag "{0}"? This can't be undone.</sys:String>
+    <sys:String x:Key="Tags_DeleteConfirmUsed">The tag "{0}" is assigned to {1} documents. It will be removed from all of them; the documents themselves are kept. This can't be undone.</sys:String>
 
 </ResourceDictionary>

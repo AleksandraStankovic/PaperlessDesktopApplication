@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="PaperlessDesktop.Views.TagEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </UserControl.InputBindings>
+
+    <StackPanel Margin="24" Width="440"
+                FocusManager.FocusedElement="{Binding ElementName=NameBox}">
+
+        <!-- Title: "Novi tag" or "Uredi tag" -->
+        <TextBlock Text="{DynamicResource Tags_NewTitle}" FontSize="20" FontWeight="SemiBold"
+                   Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}}" />
+        <TextBlock Text="{DynamicResource Tags_EditTitle}" FontSize="20" FontWeight="SemiBold"
+                   Visibility="{Binding IsNew, Converter={StaticResource InverseBoolToVis}}" />
+
+        <!-- Name -->
+        <TextBox x:Name="NameBox" Margin="0,20,0,0"
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                 materialDesign:HintAssist.Hint="{DynamicResource Tags_Name}"
+                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding SaveCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
+
+        <!-- HCI: validation message right under the field, while typing (H5, H9) -->
+        <TextBlock Text="{Binding NameError}" Foreground="#D32F2F" FontSize="12" Margin="4,4,0,0"
+                   TextWrapping="Wrap"
+                   Visibility="{Binding HasNameError, Converter={StaticResource BoolToVis}}" />
+
+        <!-- Color: quick presets + full picker -->
+        <TextBlock Text="{DynamicResource Tags_Color}" Margin="0,20,0,8" Opacity="0.7" />
+
+        <ItemsControl ItemsSource="{Binding PresetColors}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Margin="0,0,6,6" Cursor="Hand" ToolTip="{Binding}"
+                            Command="{Binding DataContext.SetPresetColorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Width="28" Height="28" CornerRadius="14"
+                                        BorderBrush="#33000000" BorderThickness="1"
+                                        Background="{Binding Converter={StaticResource HexToBrush}}" />
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <materialDesign:ColorPicker Color="{Binding SelectedColor, Mode=TwoWay}" Height="140" Margin="0,8,0,0" />
+
+        <!-- HCI: live preview - the user sees the result before saving (H1) -->
+        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+            <TextBlock Text="{DynamicResource Tags_Preview}" VerticalAlignment="Center" Opacity="0.7" Margin="0,0,12,0" />
+            <Border Background="{Binding ColorHex, Converter={StaticResource HexToBrush}}"
+                    CornerRadius="10" Padding="10,3">
+                <TextBlock Text="{Binding PreviewName}"
+                           Foreground="{Binding TextColorHex, Converter={StaticResource HexToBrush}}" />
+            </Border>
+            <TextBlock Text="{Binding ColorHex}" VerticalAlignment="Center" Margin="12,0,0,0" Opacity="0.5" FontSize="12" />
+        </StackPanel>
+
+        <!-- Server error (dialog stays open so the user can fix it) -->
+        <TextBlock Text="{Binding ServerError}" Foreground="#D32F2F" Margin="0,16,0,0" TextWrapping="Wrap"
+                   Visibility="{Binding HasServerError, Converter={StaticResource BoolToVis}}" />
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True"
+                         Width="20" Height="20" Margin="0,0,12,0"
+                         Visibility="{Binding IsSaving, Converter={StaticResource BoolToVis}}" />
+            <Button Content="{DynamicResource Common_Cancel}" Command="{Binding CancelCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}" />
+            <Button Content="{DynamicResource Common_Save}" Command="{Binding SaveCommand}" Margin="8,0,0,0" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

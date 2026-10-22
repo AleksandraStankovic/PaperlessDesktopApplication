@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using PaperlessDesktop.Models;
+using System.Text;
 
 
 namespace PaperlessDesktop.Services
@@ -153,6 +154,35 @@ namespace PaperlessDesktop.Services
             }
         }
 
+
+
+        public Task<Tag> CreateTagAsync(string name, string color, CancellationToken ct = default)
+            => SendJsonAsync<Tag>(HttpMethod.Post, "api/tags/", new TagSaveRequest(name, color), ct);
+
+        public Task<Tag> UpdateTagAsync(int id, string name, string color, CancellationToken ct = default)
+            => SendJsonAsync<Tag>(HttpMethod.Patch, $"api/tags/{id}/", new TagSaveRequest(name, color), ct);
+
+        public async Task DeleteTagAsync(int id, CancellationToken ct = default)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Delete, $"api/tags/{id}/");
+            using var response = await SendAsync(request, ct);
+        }
+
+        /// <summary>What we send when saving a tag (becomes {"name": "...", "color": "#..."}).</summary>
+        private record TagSaveRequest(string Name, string Color);
+
+
+        /// <summary>Sends an object as JSON (POST/PATCH) and reads the JSON answer.</summary>
+        private async Task<T> SendJsonAsync<T>(HttpMethod method, string relativeUrl, object body, CancellationToken ct)
+        {
+            string json = JsonSerializer.Serialize(body, JsonOptions);
+            using var request = new HttpRequestMessage(method, relativeUrl)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+            using var response = await SendAsync(request, ct);
+            return await ReadJsonAsync<T>(response, ct);
+        }
 
     }
 }

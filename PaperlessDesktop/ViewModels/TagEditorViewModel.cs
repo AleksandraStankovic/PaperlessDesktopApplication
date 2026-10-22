@@ -1,0 +1,169 @@
+﻿using System.Windows.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using PaperlessDesktop.Models;
+using PaperlessDesktop.Services;
+
+namespace PaperlessDesktop.ViewModels;
+
+/// <summary>The "new tag" / "edit tag" dialog. Validates input and saves to the server.</summary>
+public partial class TagEditorViewModel : ObservableObject
+{
+    private const int MaxNameLength = 128;   // Paperless limit
+
+    // Paperless' own default palette, so tags made here look at home in the web UI too
+    private static readonly string[] PresetColorValues =
+    {
+        "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c",
+        "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928", "#000000", "#cccccc"
+    };
+
+    private readonly PaperlessApiClient _api;
+    private readonly LocalizationService _localization;
+    private readonly Tag? _original;
+    private readonly HashSet<string> _otherTagNames;
+    private readonly bool _initializing;
+    private bool _nameTouched;
+
+    public bool IsNew => _original is null;
+    public IReadOnlyList<string> PresetColors => PresetColorValues;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NameError))]
+    [NotifyPropertyChangedFor(nameof(HasNameError))]
+    [NotifyPropertyChangedFor(nameof(PreviewName))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    private string _name = "";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ColorHex))]
+    [NotifyPropertyChangedFor(nameof(TextColorHex))]
+    private Color _selectedColor;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    private bool _isSaving;
+
+    /// <summary>Error from the server (shown at the bottom of the dialog).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasServerError))]
+    private string? _serverError;
+
+    public string ColorHex => $"#{SelectedColor.R:x2}{SelectedColor.G:x2}{SelectedColor.B:x2}";
+
+    /// <summary>Black text on light colors, white on dark - same rule Paperless uses.</summary>
+    public string TextColorHex =>
+        0.299 * SelectedColor.R + 0.587 * SelectedColor.G + 0.114 * SelectedColor.B > 150 ? "#000000" : "#ffffff";
+
+    public string PreviewName => string.IsNullOrWhiteSpace(Name) ? "Tag" : Name.Trim();
+
+    /// <summary>Validation message for the name field, or null if valid / not touched yet.</summary>
+    public string? NameError => _nameTouched ? Validate() : null;
+    public bool HasNameError => NameError is not null;
+    public bool HasServerError => ServerError is not null;
+
+    public TagEditorViewModel(PaperlessApiClient api, LocalizationService localization,
+                              IEnumerable<Tag> existingTags, Tag? tagToEdit)
+    {
+        _api = api;
+        _localization = localization;
+        _original = tagToEdit;
+
+        // Names of all OTHER tags (renaming a tag to its own name is fine)
+        _otherTagNames = new HashSet<string>(
+            existingTags.Where(t => t.Id != tagToEdit?.Id).Select(t => t.Name),
+            StringComparer.CurrentCultureIgnoreCase);
+
+        _initializing = true;
+        Name = tagToEdit?.Name ?? "";
+        SelectedColor = ParseColor(tagToEdit?.Color ?? PresetColorValues[1]);
+        _initializing = false;
+    }
+
+    // ---------- Commands ----------
+
+    [RelayCommand]
+    private void SetPresetColor(string? hex)
+    {
+        if (hex is not null)
+            SelectedColor = ParseColor(hex);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSave))]
+    private async Task SaveAsync()
+    {
+        _nameTouched = true;
+        OnPropertyChanged(nameof(NameError));
+        OnPropertyChanged(nameof(HasNameError));
+        if (Validate() is not null)
+            return;
+
+        IsSaving = true;
+        ServerError = null;
+        try
+        {
+            string name = Name.Trim();
+            Tag saved = IsNew
+                ? await _api.CreateTagAsync(name, ColorHex)
+                : await _api.UpdateTagAsync(_original!.Id, name, ColorHex);
+
+            DialogService.Close(saved);   // hand the saved tag back to TagsViewModel
+        }
+        catch (ApiException ex) when (ex.Kind == ApiErrorKind.BadRequest)
+        {
+            // The server explains what's wrong (e.g. a name used by a tag we can't see)
+            ServerError = ex.TryGetServerMessage() ?? _localization.Get("Tags_Error_Rejected");
+        }
+        catch (ApiException ex)
+        {
+            ServerError = _localization.Get($"Error_{ex.Kind}");
+        }
+        catch (Exception)
+        {
+            ServerError = _localization.Get("Error_Unexpected");
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private bool CanSave() => !IsSaving && Validate() is null;
+
+    [RelayCommand]
+    private void Cancel() => DialogService.Close(null);
+
+    // ---------- Validation ----------
+
+    partial void OnNameChanged(string value)
+    {
+        if (!_initializing)
+            _nameTouched = true;   // only show errors after the user started typing
+    }
+
+    /// <summary>Returns an error message, or null if the name is valid.</summary>
+    private string? Validate()
+    {
+        string name = Name?.Trim() ?? "";
+
+        if (name.Length == 0)
+            return _localization.Get("Tags_Error_NameRequired");
+        if (name.Length > MaxNameLength)
+            return _localization.Get("Tags_Error_NameTooLong");
+        if (_otherTagNames.Contains(name))
+            return _localization.Get("Tags_Error_NameExists");
+        return null;
+    }
+
+    private static Color ParseColor(string hex)
+    {
+        try
+        {
+            return (Color)ColorConverter.ConvertFromString(hex);
+        }
+        catch (FormatException)
+        {
+            return Colors.SteelBlue;
+        }
+    }
+}
