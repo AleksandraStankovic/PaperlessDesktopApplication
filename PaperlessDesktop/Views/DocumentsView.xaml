@@ -64,7 +64,7 @@
             <materialDesign:Card Width="210" Margin="4">
                 <StackPanel>
                     <!-- Thumbnail area -->
-                    <Grid Height="230" Background="#11000000">
+                    <Grid Height="230" Background="#18808080">
                         <!-- Placeholder, shown until the thumbnail arrives -->
                         <materialDesign:PackIcon Kind="FileDocumentOutline" Width="64" Height="64" Opacity="0.3"
                                                  HorizontalAlignment="Center" VerticalAlignment="Center"

@@ -51,8 +51,8 @@
                     <Rectangle RadiusX="10" RadiusY="10" StrokeThickness="2" StrokeDashArray="5 3">
                         <Rectangle.Style>
                             <Style TargetType="Rectangle">
-                                <Setter Property="Stroke" Value="#55000000" />
-                                <Setter Property="Fill" Value="#08000000" />
+                                <Setter Property="Stroke" Value="#99808080" />
+                                <Setter Property="Fill" Value="#10808080" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsDragOver}" Value="True">
                                         <Setter Property="Stroke" Value="{DynamicResource MaterialDesign.Brush.Primary}" />

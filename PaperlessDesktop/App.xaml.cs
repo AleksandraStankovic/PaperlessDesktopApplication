@@ -20,8 +20,16 @@ public partial class App : Application
             var files = new DocumentFileService(api);
             files.CleanUp();   // remove preview files left from the previous session
 
+            // Saved user preferences (language, theme, color) - applied before the window opens
+            var settingsService = new SettingsService();
+            var userSettings = settingsService.Load();
+
             var localization = new LocalizationService();
-            localization.SetLanguage("sr");   // Phase 9: load from saved settings
+            localization.SetLanguage(userSettings.Language);
+
+            var themeService = new ThemeService();
+            themeService.Apply(userSettings.IsDarkTheme,
+                ThemeService.ParseColor(userSettings.PrimaryColor, ThemeService.DefaultPrimary));
 
             var notifications = new NotificationService(localization);
             var dialogs = new DialogService();
@@ -39,7 +47,7 @@ public partial class App : Application
                 documentsViewModel,
                 uploadViewModel,
                 tagsViewModel,
-                new SettingsViewModel(localization),
+                new SettingsViewModel(localization, themeService, settingsService, userSettings, notifications),
                 notifications);
 
             // ----- Window -----

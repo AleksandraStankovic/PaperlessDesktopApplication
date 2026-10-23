@@ -157,6 +157,25 @@
     <sys:String x:Key="Upload_Error_Processing">The server could not prepare the document. Details: {0}</sys:String>
     <sys:String x:Key="Upload_Error_Send">Sending failed: {0}</sys:String>
 
+
+    <!-- Settings page -->
+    <sys:String x:Key="Settings_Subtitle">Changes apply immediately and are saved automatically.</sys:String>
+    <sys:String x:Key="Settings_LanguageHint">Language of the whole app, including messages and notifications.</sys:String>
+    <sys:String x:Key="Settings_Theme">Theme</sys:String>
+    <sys:String x:Key="Settings_ThemeLight">Light</sys:String>
+    <sys:String x:Key="Settings_ThemeDark">Dark</sys:String>
+    <sys:String x:Key="Settings_Color">App color</sys:String>
+    <sys:String x:Key="Settings_ColorHint">Pick a suggested color or any other color in the picker.</sys:String>
+    <sys:String x:Key="Settings_Preview">Preview:</sys:String>
+    <sys:String x:Key="Settings_SampleButton">Button</sys:String>
+    <sys:String x:Key="Settings_SampleCheckbox">Option</sys:String>
+    <sys:String x:Key="Settings_Reset">Reset to defaults</sys:String>
+    <sys:String x:Key="Settings_SavedAt">Saved at {0}</sys:String>
+    <sys:String x:Key="Settings_SaveFailed">Settings could not be saved. Changes only apply while the app is open.</sys:String>
+    <sys:String x:Key="Settings_FileLocation">Settings are saved in:</sys:String>
+    
+    
+
     <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
     <sys:String x:Key="Tags_Created">Tag "{0}" was created.</sys:String>
     <sys:String x:Key="Tags_Updated">Tag "{0}" was saved.</sys:String>

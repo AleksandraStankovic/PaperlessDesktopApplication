@@ -48,7 +48,7 @@
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Width="28" Height="28" CornerRadius="14"
-                                        BorderBrush="#33000000" BorderThickness="1"
+                                        BorderBrush="#40808080" BorderThickness="1"
                                         Background="{Binding Converter={StaticResource HexToBrush}}" />
                             </ControlTemplate>
                         </Button.Template>

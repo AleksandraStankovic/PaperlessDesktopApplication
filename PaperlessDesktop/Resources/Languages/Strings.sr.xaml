@@ -157,8 +157,23 @@
     <sys:String x:Key="Upload_Error_Duplicate">Ovaj dokument već postoji u Paperless-u, pa nije ponovo dodat.</sys:String>
     <sys:String x:Key="Upload_Error_Processing">Server nije uspio pripremiti dokument. Detalji: {0}</sys:String>
     <sys:String x:Key="Upload_Error_Send">Slanje nije uspjelo: {0}</sys:String>
-    
-    
+
+    <!-- Settings page -->
+    <sys:String x:Key="Settings_Subtitle">Promjene se primjenjuju odmah i automatski čuvaju.</sys:String>
+    <sys:String x:Key="Settings_LanguageHint">Jezik cijele aplikacije, uključujući poruke i obavještenja.</sys:String>
+    <sys:String x:Key="Settings_Theme">Tema</sys:String>
+    <sys:String x:Key="Settings_ThemeLight">Svijetla</sys:String>
+    <sys:String x:Key="Settings_ThemeDark">Tamna</sys:String>
+    <sys:String x:Key="Settings_Color">Boja aplikacije</sys:String>
+    <sys:String x:Key="Settings_ColorHint">Izaberite ponuđenu boju ili bilo koju drugu u biraču boja.</sys:String>
+    <sys:String x:Key="Settings_Preview">Pregled:</sys:String>
+    <sys:String x:Key="Settings_SampleButton">Dugme</sys:String>
+    <sys:String x:Key="Settings_SampleCheckbox">Opcija</sys:String>
+    <sys:String x:Key="Settings_Reset">Vrati podrazumijevano</sys:String>
+    <sys:String x:Key="Settings_SavedAt">Sačuvano u {0}</sys:String>
+    <sys:String x:Key="Settings_SaveFailed">Podešavanja nije moguće sačuvati. Promjene važe samo dok je aplikacija otvorena.</sys:String>
+    <sys:String x:Key="Settings_FileLocation">Podešavanja se čuvaju u:</sys:String>
+
 
     <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
     <sys:String x:Key="Tags_Created">Tag „{0}“ je kreiran.</sys:String>
