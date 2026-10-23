@@ -84,6 +84,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void ResetToDefaults()
     {
+
         LanguageIndex = 0;
         ThemeIndex = 0;
         PrimaryColor = ThemeService.DefaultPrimary;

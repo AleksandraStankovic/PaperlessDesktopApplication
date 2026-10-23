@@ -32,7 +32,7 @@
     <sys:String x:Key="Error_ServerError">Server error. Please try again later.</sys:String>
     <sys:String x:Key="Error_InvalidResponse">The server returned unexpected data.</sys:String>
     <sys:String x:Key="Error_Unexpected">An unexpected error occurred.</sys:String>
-
+    <sys:String x:Key="Error_UnexpectedRecovered">An unexpected error occurred. The app keeps running, and the details were saved to the log file.</sys:String>
 
     <!-- Common -->
     <sys:String x:Key="Common_Refresh">Refresh</sys:String>

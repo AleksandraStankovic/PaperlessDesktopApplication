@@ -19,6 +19,9 @@ public class NotificationService
 
     public void ShowError(Exception ex)
     {
+        Log.Warning("Error shown to the user", ex);
+
+
         string key = ex is ApiException apiEx ? $"Error_{apiEx.Kind}" : "Error_Unexpected";
         MessageQueue.Enqueue(_localization.Get(key));
     }
