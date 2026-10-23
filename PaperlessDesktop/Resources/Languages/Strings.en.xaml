@@ -17,7 +17,7 @@
     <sys:String x:Key="Documents_Total">Total documents:</sys:String>
 
    
-    <sys:String x:Key="Upload_Title">Upload document</sys:String>
+    
     <sys:String x:Key="Tags_Title">Manage tags</sys:String>
     <sys:String x:Key="Settings_Title">Settings</sys:String>
     <sys:String x:Key="Settings_Language">Language</sys:String>
@@ -108,6 +108,54 @@
     <sys:String x:Key="Tags_Error_NameTooLong">Name can have at most 128 characters.</sys:String>
     <sys:String x:Key="Tags_Error_NameExists">A tag with this name already exists.</sys:String>
     <sys:String x:Key="Tags_Error_Rejected">The server did not accept the tag.</sys:String>
+
+    <!-- Upload page -->
+    <sys:String x:Key="Upload_Title">Upload document</sys:String>
+    <sys:String x:Key="Upload_Subtitle">Add a new document to Paperless.</sys:String>
+    <sys:String x:Key="Upload_DropHint">Drag a file here</sys:String>
+    <sys:String x:Key="Upload_Or">or</sys:String>
+    <sys:String x:Key="Upload_Browse">Choose a file...</sys:String>
+    <sys:String x:Key="Upload_SupportedFormats">Supported formats:</sys:String>
+    <sys:String x:Key="Upload_MaxSizePrefix">up to</sys:String>
+    <sys:String x:Key="Upload_DropRejected">This file type is not supported.</sys:String>
+    <sys:String x:Key="Upload_RemoveFile">Remove file</sys:String>
+    <sys:String x:Key="Upload_FileFilterName">Supported documents</sys:String>
+    <sys:String x:Key="Upload_OnlyOneFile">You dropped several files – only the first one is added.</sys:String>
+    <sys:String x:Key="Upload_CheckingDuplicate">Checking whether this document already exists...</sys:String>
+    <sys:String x:Key="Upload_DuplicateWarning">This document already exists in Paperless as "{0}" (added {1}), so there's no need to add it again. Please choose a different file.</sys:String>
+
+    <sys:String x:Key="Upload_MetadataHeader">Document details</sys:String>
+    <sys:String x:Key="Upload_TitleField">Document title *</sys:String>
+    <sys:String x:Key="Upload_TitleHelper">Required. The file name is suggested – you can change it.</sys:String>
+    <sys:String x:Key="Upload_Correspondent">Correspondent (optional)</sys:String>
+    <sys:String x:Key="Upload_DocumentType">Document type (optional)</sys:String>
+    <sys:String x:Key="Upload_AddTag">+ Add tag (optional)</sys:String>
+    <sys:String x:Key="Upload_Button">Upload document</sys:String>
+    <sys:String x:Key="Upload_Reset">Reset</sys:String>
+    <sys:String x:Key="Upload_UploadAnother">Upload another document</sys:String>
+
+    <!-- Upload status -->
+    <sys:String x:Key="Upload_StatusHeader">Status</sys:String>
+    <sys:String x:Key="Upload_Step_Send">1. Adding the document</sys:String>
+    <sys:String x:Key="Upload_Step_Ready">2. Document is ready</sys:String>
+    <sys:String x:Key="Upload_CancelSending">Cancel sending</sys:String>
+    <sys:String x:Key="Upload_Status_Sending">Sending the file...</sys:String>
+    <sys:String x:Key="Upload_Status_Processing">The document is being prepared. This can take up to a minute.</sys:String>
+    <sys:String x:Key="Upload_Status_Done">Document "{0}" was added and is ready to view.</sys:String>
+    <sys:String x:Key="Upload_Status_Cancelled">Sending was cancelled. The document was not added.</sys:String>
+    <sys:String x:Key="Upload_Status_StillProcessing">Preparation is taking longer than usual. The document will appear in the list when it's ready.</sys:String>
+
+    <!-- Upload errors -->
+    <sys:String x:Key="Upload_Error_Type">"{0}" files are not supported. You can add: {1}. Tip: save Word or Excel documents as PDF (File → Save as → PDF).</sys:String>
+    <sys:String x:Key="Upload_Error_TooLarge">The file is too large ({0}). The maximum size is {1}.</sys:String>
+    <sys:String x:Key="Upload_Error_Empty">The file is empty.</sys:String>
+    <sys:String x:Key="Upload_Error_NotFound">The file was not found or can't be accessed.</sys:String>
+    <sys:String x:Key="Upload_Error_CannotRead">The file can't be read. It may be open in another program.</sys:String>
+    <sys:String x:Key="Upload_Error_TitleRequired">Title is required.</sys:String>
+    <sys:String x:Key="Upload_Error_TitleTooLong">Title can have at most 128 characters.</sys:String>
+    <sys:String x:Key="Upload_Error_Duplicate">This document already exists in Paperless, so it was not added again.</sys:String>
+    <sys:String x:Key="Upload_Error_Processing">The server could not prepare the document. Details: {0}</sys:String>
+    <sys:String x:Key="Upload_Error_Send">Sending failed: {0}</sys:String>
 
     <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
     <sys:String x:Key="Tags_Created">Tag "{0}" was created.</sys:String>

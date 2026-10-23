@@ -17,7 +17,7 @@
     <sys:String x:Key="Documents_Total">Ukupno dokumenata:</sys:String>
 
     <!-- Other pages -->
-    <sys:String x:Key="Upload_Title">Dodavanje dokumenta</sys:String>
+    
     <sys:String x:Key="Tags_Title">Upravljanje tagovima</sys:String>
     <sys:String x:Key="Settings_Title">Podešavanja</sys:String>
     <sys:String x:Key="Settings_Language">Jezik</sys:String>
@@ -110,6 +110,55 @@
     <sys:String x:Key="Tags_Error_NameTooLong">Naziv može imati najviše 128 znakova.</sys:String>
     <sys:String x:Key="Tags_Error_NameExists">Tag sa ovim nazivom već postoji.</sys:String>
     <sys:String x:Key="Tags_Error_Rejected">Server nije prihvatio tag.</sys:String>
+
+    <!-- Upload page -->
+    <sys:String x:Key="Upload_Title">Dodavanje dokumenta</sys:String>
+    <sys:String x:Key="Upload_Subtitle">Dodajte novi dokument u Paperless.</sys:String>
+    <sys:String x:Key="Upload_DropHint">Prevucite fajl ovdje</sys:String>
+    <sys:String x:Key="Upload_Or">ili</sys:String>
+    <sys:String x:Key="Upload_Browse">Izaberite fajl...</sys:String>
+    <sys:String x:Key="Upload_SupportedFormats">Podržani formati:</sys:String>
+    <sys:String x:Key="Upload_MaxSizePrefix">najviše</sys:String>
+    <sys:String x:Key="Upload_DropRejected">Ovaj tip fajla nije podržan.</sys:String>
+    <sys:String x:Key="Upload_RemoveFile">Ukloni fajl</sys:String>
+    <sys:String x:Key="Upload_FileFilterName">Podržani dokumenti</sys:String>
+    <sys:String x:Key="Upload_OnlyOneFile">Prevukli ste više fajlova – dodaje se samo prvi.</sys:String>
+    <sys:String x:Key="Upload_CheckingDuplicate">Provjeravam da li ovaj dokument već postoji...</sys:String>
+    <sys:String x:Key="Upload_DuplicateWarning">Ovaj dokument već postoji u Paperless-u kao „{0}“ (dodat {1}), pa ga nije potrebno ponovo dodavati. Izaberite drugi fajl.</sys:String>
+    <sys:String x:Key="Upload_MetadataHeader">Podaci o dokumentu</sys:String>
+    <sys:String x:Key="Upload_TitleField">Naziv dokumenta *</sys:String>
+    <sys:String x:Key="Upload_TitleHelper">Obavezno. Predložen je naziv fajla – možete ga promijeniti.</sys:String>
+    <sys:String x:Key="Upload_Correspondent">Korespondent (opciono)</sys:String>
+    <sys:String x:Key="Upload_DocumentType">Tip dokumenta (opciono)</sys:String>
+    <sys:String x:Key="Upload_AddTag">+ Dodaj tag (opciono)</sys:String>
+    <sys:String x:Key="Upload_Button">Dodaj dokument</sys:String>
+    <sys:String x:Key="Upload_Reset">Poništi</sys:String>
+    <sys:String x:Key="Upload_UploadAnother">Dodaj još jedan dokument</sys:String>
+
+    <!-- Upload status -->
+    <sys:String x:Key="Upload_StatusHeader">Status</sys:String>
+    <sys:String x:Key="Upload_Step_Send">1. Dodavanje dokumenta</sys:String>
+    <sys:String x:Key="Upload_Step_Ready">2. Dokument je spreman</sys:String>
+    <sys:String x:Key="Upload_CancelSending">Prekini slanje</sys:String>
+    <sys:String x:Key="Upload_Status_Sending">Šaljem fajl...</sys:String>
+    <sys:String x:Key="Upload_Status_Processing">Dokument se priprema. Ovo može potrajati do minut.</sys:String>
+    <sys:String x:Key="Upload_Status_Done">Dokument „{0}“ je dodat i spreman je za pregled.</sys:String>
+    <sys:String x:Key="Upload_Status_Cancelled">Slanje je prekinuto. Dokument nije dodat.</sys:String>
+    <sys:String x:Key="Upload_Status_StillProcessing">Priprema traje duže nego obično. Dokument će se pojaviti u listi kada bude spreman.</sys:String>
+
+    <!-- Upload errors -->
+    <sys:String x:Key="Upload_Error_Type">Fajlovi tipa „{0}“ nisu podržani. Možete dodati: {1}. Savjet: Word ili Excel dokument sačuvajte kao PDF (Datoteka → Sačuvaj kao → PDF).</sys:String>
+    <sys:String x:Key="Upload_Error_TooLarge">Fajl je prevelik ({0}). Najveća dozvoljena veličina je {1}.</sys:String>
+    <sys:String x:Key="Upload_Error_Empty">Fajl je prazan.</sys:String>
+    <sys:String x:Key="Upload_Error_NotFound">Fajl nije pronađen ili mu se ne može pristupiti.</sys:String>
+    <sys:String x:Key="Upload_Error_CannotRead">Fajl nije moguće pročitati. Možda je otvoren u drugom programu.</sys:String>
+    <sys:String x:Key="Upload_Error_TitleRequired">Naziv je obavezan.</sys:String>
+    <sys:String x:Key="Upload_Error_TitleTooLong">Naziv može imati najviše 128 znakova.</sys:String>
+    <sys:String x:Key="Upload_Error_Duplicate">Ovaj dokument već postoji u Paperless-u, pa nije ponovo dodat.</sys:String>
+    <sys:String x:Key="Upload_Error_Processing">Server nije uspio pripremiti dokument. Detalji: {0}</sys:String>
+    <sys:String x:Key="Upload_Error_Send">Slanje nije uspjelo: {0}</sys:String>
+    
+    
 
     <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
     <sys:String x:Key="Tags_Created">Tag „{0}“ je kreiran.</sys:String>

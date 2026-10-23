@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using PaperlessDesktop.Models;
 using System.Text;
-
+using System.IO;
 
 namespace PaperlessDesktop.Services
 {
@@ -13,8 +13,8 @@ namespace PaperlessDesktop.Services
     public class PaperlessApiClient
     {
 
-        private readonly HttpClient _http;
-
+        private readonly HttpClient _http;         // normal requests: short timeout
+        private readonly HttpClient _uploadHttp;
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -25,15 +25,19 @@ namespace PaperlessDesktop.Services
 
         public PaperlessApiClient(AppConfig config)
         {
-            _http = new HttpClient
-            {
-                BaseAddress = new Uri(config.ServerUrl.TrimEnd('/') + "/"),
-                Timeout = TimeSpan.FromSeconds(20)
-            };
-            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", config.ApiToken);
+            var baseAddress = new Uri(config.ServerUrl.TrimEnd('/') + "/");
+            _http = CreateClient(baseAddress, config.ApiToken, TimeSpan.FromSeconds(20));
+            _uploadHttp = CreateClient(baseAddress, config.ApiToken, TimeSpan.FromMinutes(10));
+        }
 
-                
-            _http.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json; version=2");
+        private static HttpClient CreateClient(Uri baseAddress, string token, TimeSpan timeout)
+        {
+            var client = new HttpClient { BaseAddress = baseAddress, Timeout = timeout };
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token);
+
+            // API version 2+ returns tag colors as hex strings ("#ff0000") instead of numbers.
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json; version=2");
+            return client;
         }
 
 
@@ -53,6 +57,82 @@ namespace PaperlessDesktop.Services
             return (data, response.Content.Headers.ContentType?.MediaType);
         }
 
+        /// <summary>Documents whose original file has this MD5 checksum (candidates for a duplicate).</summary>
+        public Task<PagedResult<Document>> FindDocumentsByChecksumAsync(string md5, CancellationToken ct = default)
+            => GetAsync<PagedResult<Document>>(
+                $"api/documents/?checksum__iexact={Uri.EscapeDataString(md5)}&page_size=5&truncate_content=true", ct);
+
+        /// <summary>The MD5 checksum of a document's original file, from its metadata.</summary>
+        public async Task<string?> GetOriginalChecksumAsync(int id, CancellationToken ct = default)
+        {
+            var json = await GetAsync<JsonElement>($"api/documents/{id}/metadata/", ct);
+            return json.ValueKind == JsonValueKind.Object
+                   && json.TryGetProperty("original_checksum", out var checksum)
+                   && checksum.ValueKind == JsonValueKind.String
+                ? checksum.GetString()
+                : null;
+        }
+
+        // ---------- Upload ----------
+
+        /// <summary>
+        /// Uploads a file. The server accepts it and processes it in the background;
+        /// the returned task ID is used to ask whether processing has finished.
+        /// </summary>
+        public async Task<string> UploadDocumentAsync(DocumentUploadRequest upload, IProgress<double>? progress,
+                                                      CancellationToken ct = default)
+        {
+            using var form = new MultipartFormDataContent();
+
+            var fileContent = new ProgressStreamContent(File.OpenRead(upload.FilePath), progress);
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(MimeTypeFor(upload.FilePath));
+            form.Add(fileContent, "document", Path.GetFileName(upload.FilePath));
+
+            form.Add(new StringContent(upload.Title), "title");
+            if (upload.CorrespondentId is int correspondentId)
+                form.Add(new StringContent(correspondentId.ToString()), "correspondent");
+            if (upload.DocumentTypeId is int documentTypeId)
+                form.Add(new StringContent(documentTypeId.ToString()), "document_type");
+            foreach (int tagId in upload.TagIds)
+                form.Add(new StringContent(tagId.ToString()), "tags");   // one "tags" field per tag
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/documents/post_document/") { Content = form };
+            using var response = await SendAsync(request, ct, _uploadHttp);
+
+            // Usually the answer is just the task ID as a JSON string: "b8a4-..."
+            var json = await ReadJsonAsync<JsonElement>(response, ct);
+            if (json.ValueKind == JsonValueKind.String)
+                return json.GetString()!;
+            if (json.ValueKind == JsonValueKind.Object && json.TryGetProperty("task_id", out var id)
+                && id.ValueKind == JsonValueKind.String)
+                return id.GetString()!;
+
+            throw new ApiException(ApiErrorKind.InvalidResponse, "The server did not return a task ID.");
+        }
+
+        /// <summary>Asks the server about a background task. Returns null if it isn't known (yet).</summary>
+        public async Task<PaperlessTask?> GetTaskAsync(string taskId, CancellationToken ct = default)
+        {
+            var json = await GetAsync<JsonElement>($"api/tasks/?task_id={Uri.EscapeDataString(taskId)}", ct);
+
+            // Accept both a plain list and a paged {"results": [...]} answer
+            JsonElement list = json.ValueKind == JsonValueKind.Object && json.TryGetProperty("results", out var results)
+                ? results
+                : json;
+
+            if (list.ValueKind != JsonValueKind.Array || list.GetArrayLength() == 0)
+                return null;
+
+            try
+            {
+                return list[0].Deserialize<PaperlessTask>(JsonOptions);
+            }
+            catch (JsonException ex)
+            {
+                throw new ApiException(ApiErrorKind.InvalidResponse,
+                    "The server returned data in an unexpected format.", innerException: ex);
+            }
+        }
 
         public Task<Document> GetDocumentAsync(int id, CancellationToken ct = default)
             => GetAsync<Document>($"api/documents/{id}/", ct);
@@ -99,12 +179,13 @@ namespace PaperlessDesktop.Services
             return await response.Content.ReadAsByteArrayAsync(ct);
         }
 
-        private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct,
+                                                          HttpClient? client = null)
         {
             HttpResponseMessage response;
             try
             {
-                response = await _http.SendAsync(request, ct);
+                response = await (client ?? _http).SendAsync(request, ct);
             }
             catch (TaskCanceledException) when (!ct.IsCancellationRequested)
             {
@@ -184,5 +265,16 @@ namespace PaperlessDesktop.Services
             return await ReadJsonAsync<T>(response, ct);
         }
 
+        private static string MimeTypeFor(string path) => Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".pdf" => "application/pdf",
+            ".png" => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".tif" or ".tiff" => "image/tiff",
+            ".gif" => "image/gif",
+            ".webp" => "image/webp",
+            ".txt" => "text/plain",
+            _ => "application/octet-stream"
+        };
     }
 }

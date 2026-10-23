@@ -28,14 +28,16 @@ public partial class App : Application
 
             // ----- ViewModels -----
             var documentsViewModel = new DocumentsViewModel(api, lookups, files, notifications);
+            var uploadViewModel = new UploadViewModel(api, lookups, notifications, localization);
             var tagsViewModel = new TagsViewModel(api, dialogs, notifications, localization);
 
             // When tags change, the document list refreshes tag names, colors and filter options
             tagsViewModel.TagsChanged += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
+            uploadViewModel.DocumentUploaded += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
 
             var mainViewModel = new MainViewModel(
                 documentsViewModel,
-                new UploadViewModel(),
+                uploadViewModel,
                 tagsViewModel,
                 new SettingsViewModel(localization),
                 notifications);

@@ -1,8 +1,264 @@
 ﻿<UserControl x:Class="PaperlessDesktop.Views.UploadView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel>
-        <TextBlock Text="{DynamicResource Upload_Title}" FontSize="26" FontWeight="SemiBold" />
-        <TextBlock Text="{DynamicResource Common_ComingSoon}" Opacity="0.7" Margin="0,4,0,0" />
-    </StackPanel>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <UserControl.Resources>
+        <!-- Icon for one status step: pending circle, spinner, green check, red alert -->
+        <DataTemplate x:Key="StepIconTemplate">
+            <Grid Width="28" Height="28">
+                <materialDesign:PackIcon x:Name="Icon" Kind="CircleOutline" Width="26" Height="26"
+                                         Opacity="0.35" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <ProgressBar x:Name="Spinner" Style="{StaticResource MaterialDesignCircularProgressBar}"
+                             IsIndeterminate="True" Width="22" Height="22" Visibility="Collapsed" />
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="Active">
+                    <Setter TargetName="Icon" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="Spinner" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Done">
+                    <Setter TargetName="Icon" Property="Kind" Value="CheckCircle" />
+                    <Setter TargetName="Icon" Property="Foreground" Value="#2E7D32" />
+                    <Setter TargetName="Icon" Property="Opacity" Value="1" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Failed">
+                    <Setter TargetName="Icon" Property="Kind" Value="AlertCircle" />
+                    <Setter TargetName="Icon" Property="Foreground" Value="#D32F2F" />
+                    <Setter TargetName="Icon" Property="Opacity" Value="1" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <!-- ===== Header ===== -->
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+            <TextBlock Text="{DynamicResource Upload_Title}" FontSize="26" FontWeight="SemiBold" />
+            <TextBlock Text="{DynamicResource Upload_Subtitle}" Opacity="0.7" Margin="0,4,0,0" />
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="720" HorizontalAlignment="Left" Margin="0,0,16,16">
+
+                <!-- ===== Drop zone ===== -->
+                <Grid AllowDrop="True" Background="Transparent"
+                      DragEnter="DropZone_DragOver" DragOver="DropZone_DragOver"
+                      DragLeave="DropZone_DragLeave" Drop="DropZone_Drop"
+                      IsEnabled="{Binding IsFormEnabled}">
+
+                    <!-- Dashed border: color shows whether a dragged file is accepted -->
+                    <Rectangle RadiusX="10" RadiusY="10" StrokeThickness="2" StrokeDashArray="5 3">
+                        <Rectangle.Style>
+                            <Style TargetType="Rectangle">
+                                <Setter Property="Stroke" Value="#55000000" />
+                                <Setter Property="Fill" Value="#08000000" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsDragOver}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
+                                        <Setter Property="Fill" Value="#143F51B5" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsDragRejected}" Value="True">
+                                        <Setter Property="Stroke" Value="#D32F2F" />
+                                        <Setter Property="Fill" Value="#14D32F2F" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Rectangle.Style>
+                    </Rectangle>
+
+                    <StackPanel Margin="24,28" HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Kind="CloudUploadOutline" Width="48" Height="48"
+                                                 HorizontalAlignment="Center" Opacity="0.6" />
+                        <TextBlock Text="{DynamicResource Upload_DropHint}" FontSize="16"
+                                   HorizontalAlignment="Center" Margin="0,8,0,0" />
+                        <TextBlock Text="{DynamicResource Upload_Or}" Opacity="0.6"
+                                   HorizontalAlignment="Center" Margin="0,4" />
+                        <Button Content="{DynamicResource Upload_Browse}" Click="Browse_Click"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" HorizontalAlignment="Center" />
+
+                        <!-- HCI problem 3: allowed formats are visible BEFORE choosing a file (H5) -->
+                        <TextBlock FontSize="12" Opacity="0.7" Margin="0,14,0,0"
+                                   HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap">
+                            <Run Text="{DynamicResource Upload_SupportedFormats}" />
+                            <Run Text="{Binding SupportedFormatsText, Mode=OneWay}" FontWeight="SemiBold" />
+                            <Run Text="·" />
+                            <Run Text="{DynamicResource Upload_MaxSizePrefix}" />
+                            <Run Text="{Binding MaxFileSizeText, Mode=OneWay}" />
+                        </TextBlock>
+
+                        <!-- Shown while dragging an unsupported file -->
+                        <TextBlock Text="{DynamicResource Upload_DropRejected}" Foreground="#D32F2F"
+                                   FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"
+                                   Visibility="{Binding IsDragRejected, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- File error (wrong type, too big, ...) with a clear explanation (H9) -->
+                <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
+                            Visibility="{Binding HasFileError, Converter={StaticResource BoolToVis}}">
+                    <materialDesign:PackIcon Kind="AlertCircleOutline" Foreground="#D32F2F"
+                                             Width="20" Height="20" VerticalAlignment="Top" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding FileError}" Foreground="#D32F2F" TextWrapping="Wrap" MaxWidth="660" />
+                </StackPanel>
+
+                <!-- Selected file -->
+                <materialDesign:Card Margin="0,12,0,0" Padding="16,10"
+                                     Visibility="{Binding HasFile, Converter={StaticResource BoolToVis}}">
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Command="{Binding ClearFileCommand}"
+                                Style="{StaticResource MaterialDesignIconButton}"
+                                ToolTip="{DynamicResource Upload_RemoveFile}">
+                            <materialDesign:PackIcon Kind="Close" />
+                        </Button>
+                        <materialDesign:PackIcon Kind="FileDocumentOutline" Width="28" Height="28"
+                                                 VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding FileSizeText}" Opacity="0.6" FontSize="12" />
+                        </StackPanel>
+                    </DockPanel>
+                </materialDesign:Card>
+
+
+                <!-- HCI problem 3: "checking..." and the duplicate warning, BEFORE uploading (H1, H5) -->
+                <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
+                            Visibility="{Binding IsCheckingDuplicate, Converter={StaticResource BoolToVis}}">
+                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True"
+                                 Width="16" Height="16" Margin="0,0,8,0" />
+                    <TextBlock Text="{DynamicResource Upload_CheckingDuplicate}" Opacity="0.7" FontSize="12"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
+                            Visibility="{Binding HasDuplicateWarning, Converter={StaticResource BoolToVis}}">
+                    <materialDesign:PackIcon Kind="ContentDuplicate" Foreground="#E65100"
+                                             Width="20" Height="20" VerticalAlignment="Top" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding DuplicateWarning}" Foreground="#E65100" TextWrapping="Wrap" MaxWidth="660" />
+                </StackPanel>
+
+                <!-- ===== Metadata ===== -->
+                <TextBlock Text="{DynamicResource Upload_MetadataHeader}" FontSize="16" FontWeight="SemiBold"
+                           Margin="0,24,0,8" />
+
+                <StackPanel IsEnabled="{Binding IsFormEnabled}">
+                    <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="{DynamicResource Upload_TitleField}"
+                             materialDesign:HintAssist.HelperText="{DynamicResource Upload_TitleHelper}"
+                             Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="{Binding TitleError}" Foreground="#D32F2F" FontSize="12" Margin="4,20,0,0"
+                               Visibility="{Binding HasTitleError, Converter={StaticResource BoolToVis}}" />
+
+                    <ComboBox Margin="0,24,0,0"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              materialDesign:HintAssist.Hint="{DynamicResource Upload_Correspondent}"
+                              materialDesign:TextFieldAssist.HasClearButton="True"
+                              ItemsSource="{Binding AvailableCorrespondents}"
+                              SelectedItem="{Binding SelectedCorrespondent}"
+                              DisplayMemberPath="Name" />
+
+                    <ComboBox Margin="0,16,0,0"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              materialDesign:HintAssist.Hint="{DynamicResource Upload_DocumentType}"
+                              materialDesign:TextFieldAssist.HasClearButton="True"
+                              ItemsSource="{Binding AvailableDocumentTypes}"
+                              SelectedItem="{Binding SelectedDocumentType}"
+                              DisplayMemberPath="Name" />
+
+                    <!-- Tags: pick to add a chip, ✕ to remove (same pattern as the filters, H4) -->
+                    <ComboBox Margin="0,16,0,0"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              materialDesign:HintAssist.Hint="{DynamicResource Upload_AddTag}"
+                              ItemsSource="{Binding AvailableTags}"
+                              SelectedItem="{Binding TagToAdd}"
+                              DisplayMemberPath="Name" />
+
+                    <ItemsControl ItemsSource="{Binding SelectedTags}" Margin="0,8,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <materialDesign:Chip Margin="0,4,8,4" IsDeletable="True" Content="{Binding Name}"
+                                                     Background="{Binding Color, Converter={StaticResource HexToBrush}}"
+                                                     Foreground="{Binding TextColor, Converter={StaticResource HexToBrush}, ConverterParameter=#000000}"
+                                                     DeleteCommand="{Binding DataContext.RemoveTagCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                     DeleteCommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- ===== Actions ===== -->
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Command="{Binding UploadCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Upload" VerticalAlignment="Center" />
+                            <TextBlock Text="{DynamicResource Upload_Button}" Margin="8,0,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button Content="{DynamicResource Upload_Reset}" Command="{Binding ResetCommand}"
+                            Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <!-- ===== HCI problem 2: two simple steps in plain language (H1, H2, H8) ===== -->
+                <materialDesign:Card Margin="0,24,0,0" Padding="20,16"
+                                     Visibility="{Binding ShowStatus, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Upload_StatusHeader}" FontSize="16" FontWeight="SemiBold"
+                                   Margin="0,0,0,12" />
+
+                        <!-- Step 1: adding the document -->
+                        <DockPanel Margin="0,4">
+                            <ContentControl DockPanel.Dock="Left" Content="{Binding SendStep}"
+                                            ContentTemplate="{StaticResource StepIconTemplate}" Margin="0,0,12,0" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{DynamicResource Upload_Step_Send}" FontWeight="SemiBold" />
+                                <!-- Progress bar + cancel: only while the file is being sent -->
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
+                                            Visibility="{Binding IsSending, Converter={StaticResource BoolToVis}}">
+                                    <ProgressBar Value="{Binding UploadProgress}" Maximum="100" Width="260" Height="6"
+                                                 VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding UploadProgress, StringFormat={}{0:0}%}"
+                                               Margin="10,0,0,0" VerticalAlignment="Center" Opacity="0.7" />
+                                    <Button Content="{DynamicResource Upload_CancelSending}"
+                                            Command="{Binding CancelUploadCommand}"
+                                            Style="{StaticResource MaterialDesignFlatButton}" Margin="12,0,0,0" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- Step 2: ready -->
+                        <DockPanel Margin="0,10,0,4">
+                            <ContentControl DockPanel.Dock="Left" Content="{Binding ReadyStep}"
+                                            ContentTemplate="{StaticResource StepIconTemplate}" Margin="0,0,12,0" />
+                            <TextBlock Text="{DynamicResource Upload_Step_Ready}" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                        </DockPanel>
+
+                        <!-- Current status / result message -->
+                        <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" Margin="0,14,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StatusIsError}" Value="True">
+                                            <Setter Property="Foreground" Value="#D32F2F" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <Button Content="{DynamicResource Upload_UploadAnother}" Command="{Binding ResetCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                HorizontalAlignment="Left" Margin="0,16,0,0"
+                                Visibility="{Binding IsFinished, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
 </UserControl>
