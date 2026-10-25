@@ -18,19 +18,24 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel(
         DocumentsViewModel documents,
+        AnalyticsViewModel analytics,
         UploadViewModel upload,
         TagsViewModel tags,
         SettingsViewModel settings,
         NotificationService notifications)
     {
         // Order must match the order of items in the sidebar
-        _pages = new ObservableObject[] { documents, upload, tags, settings };
+        _pages = new ObservableObject[] { documents, analytics, upload, tags, settings };
         CurrentPage = documents;
         MessageQueue = notifications.MessageQueue;
 
         // Start loading documents right away, so the list is ready when the app opens
         _ = documents.InitializeAsync();
     }
+
+
+    /// <summary>Switches to the Documents page (e.g. after clicking a chart).</summary>
+    public void ShowDocuments() => SelectedPageIndex = 0;
 
     // Generated hook: runs automatically whenever SelectedPageIndex changes
     partial void OnSelectedPageIndexChanged(int value)

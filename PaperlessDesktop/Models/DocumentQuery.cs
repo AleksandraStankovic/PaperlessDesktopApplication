@@ -15,7 +15,10 @@ namespace PaperlessDesktop.Models
         public List<int> TagIds { get; set; } = new();
         public int? CorrespondentId { get; set; }
         public int? DocumentTypeId { get; set; }
-        public string Ordering { get; set; } = "-created";   
+        public string Ordering { get; set; } = "-created";
+
+        public int? CreatedYear { get; set; }
+        public int? CreatedMonth { get; set; }
 
         public string ToQueryString()
         {
@@ -38,6 +41,12 @@ namespace PaperlessDesktop.Models
 
             if (DocumentTypeId is int documentTypeId)
                 parts.Add($"document_type__id={documentTypeId}");
+
+            if (CreatedYear is int year)
+                parts.Add($"created__year={year}");
+
+            if (CreatedMonth is int month)
+                parts.Add($"created__month={month}");
 
             return "?" + string.Join("&", parts);
         }

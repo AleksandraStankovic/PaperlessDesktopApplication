@@ -125,6 +125,23 @@ public partial class DocumentsViewModel : ObservableObject
 
     // ---------- Commands (bound to buttons / keys) ----------
 
+
+    /// <summary>Called from Analytics: show exactly the documents behind a clicked chart element.</summary>
+    public void ShowWithFilter(FilterChip chip)
+    {
+        Filters.SetOnlySilently(chip);
+        SearchText = "";
+        _searchDelayCts?.Cancel();   // setting SearchText started a timer - stop it
+
+        _query.SearchText = null;
+        Filters.ApplyTo(_query);
+        NotifyQueryStateChanged();
+        _ = LoadPageAsync(1);
+    }
+
+
+
+
     [RelayCommand]
     private Task RefreshAsync()
     {

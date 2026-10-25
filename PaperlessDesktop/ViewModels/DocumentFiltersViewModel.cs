@@ -62,6 +62,7 @@ public partial class DocumentFiltersViewModel : ObservableObject
                     ? new FilterChip(chip.Kind, chip.Id, correspondentName) : null,
                 FilterKind.DocumentType => lookups.GetDocumentTypeName(chip.Id) is { } typeName
                     ? new FilterChip(chip.Kind, chip.Id, typeName) : null,
+                FilterKind.Month => chip,
                 _ => null
             };
 
@@ -81,10 +82,22 @@ public partial class DocumentFiltersViewModel : ObservableObject
             .ToList();
         query.CorrespondentId = ActiveFilters.FirstOrDefault(f => f.Kind == FilterKind.Correspondent)?.Id;
         query.DocumentTypeId = ActiveFilters.FirstOrDefault(f => f.Kind == FilterKind.DocumentType)?.Id;
+
+        var month = ActiveFilters.FirstOrDefault(f => f.Kind == FilterKind.Month);
+        query.CreatedYear = month is null ? null : month.Id / 100;
+        query.CreatedMonth = month is null ? null : month.Id % 100;
     }
 
     /// <summary>Removes all filters without raising FiltersChanged (used by "reset everything").</summary>
     public void ClearSilently() => ActiveFilters.Clear();
+
+
+    /// <summary>Replaces all filters with this one, without raising FiltersChanged (used by Analytics).</summary>
+    public void SetOnlySilently(FilterChip chip)
+    {
+        ActiveFilters.Clear();
+        ActiveFilters.Add(chip);
+    }
 
     // ---------- Commands ----------
 

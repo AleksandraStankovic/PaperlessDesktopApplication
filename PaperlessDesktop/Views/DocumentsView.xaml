@@ -40,7 +40,11 @@
                 <DataTrigger Binding="{Binding Kind}" Value="DocumentType">
                     <Setter Property="Text" Value="{DynamicResource Filter_DocumentType}" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="Month">
+                    <Setter Property="Text" Value="{DynamicResource Filter_Month}" />
+                </DataTrigger>
             </Style.Triggers>
+            
         </Style>
 
         <!-- Reused by table, cards AND preview, so tags look the same everywhere (consistency, H4) -->

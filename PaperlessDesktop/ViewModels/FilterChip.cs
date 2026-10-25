@@ -6,7 +6,8 @@ public enum FilterKind
 {
     Tag,
     Correspondent,
-    DocumentType
+    DocumentType,
+    Month
 }
 
 /// <summary>One active filter, shown as a removable chip.</summary>
@@ -30,4 +31,9 @@ public class FilterChip
     }
 
     public static FilterChip ForTag(Tag tag) => new(FilterKind.Tag, tag.Id, tag.Name, tag.Color, tag.TextColor);
+
+
+    /// <summary>A "documents from this month" filter. The ID stores both values: 2025 * 100 + 3 = 202503.</summary>
+    public static FilterChip ForMonth(int year, int month, string displayName)
+        => new(FilterKind.Month, year * 100 + month, displayName);
 }

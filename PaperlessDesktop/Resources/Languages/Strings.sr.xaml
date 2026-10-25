@@ -184,5 +184,28 @@
     <sys:String x:Key="Tags_DeleteConfirm">Da li ste sigurni da želite obrisati tag „{0}“? Ova radnja se ne može poništiti.</sys:String>
     <sys:String x:Key="Tags_DeleteConfirmUsed">Tag „{0}“ je dodijeljen dokumentima: {1}. Tag će biti uklonjen sa svih njih, a sami dokumenti ostaju sačuvani. Ova radnja se ne može poništiti.</sys:String>
 
+    <!-- Analytics -->
+    <sys:String x:Key="Nav_Analytics">Analitika</sys:String>
+    <sys:String x:Key="Analytics_Title">Analitika</sys:String>
+    <sys:String x:Key="Analytics_ClickHint">Kliknite na dio grafikona, mjesec ili tag da vidite te dokumente.</sys:String>
+    <sys:String x:Key="Analytics_TotalDocuments">Dokumenti</sys:String>
+    <sys:String x:Key="Analytics_Tags">Tagovi</sys:String>
+    <sys:String x:Key="Analytics_Correspondents">Korespondenti</sys:String>
+    <sys:String x:Key="Analytics_DocumentTypes">Tipovi dokumenata</sys:String>
+    <sys:String x:Key="Analytics_DocumentsShort">dokumenata</sys:String>
+    <sys:String x:Key="Analytics_ByType">Po tipu dokumenta</sys:String>
+    <sys:String x:Key="Analytics_OtherTypes">Ostali tipovi</sys:String>
+    <sys:String x:Key="Analytics_NoType">Bez tipa</sys:String>
+    <sys:String x:Key="Analytics_TagCloud">Najčešći tagovi</sys:String>
+    <sys:String x:Key="Analytics_TagCloudHint">Veći naziv znači da tag koristi više dokumenata.</sys:String>
+    <sys:String x:Key="Analytics_ByMonth">Po mjesecima</sys:String>
+    <sys:String x:Key="Analytics_Year">Godina</sys:String>
+    <sys:String x:Key="Analytics_FromMonth">Od mjeseca</sys:String>
+    <sys:String x:Key="Analytics_ToMonth">Do mjeseca</sys:String>
+    <sys:String x:Key="Analytics_InSelectedPeriod">U izabranom periodu:</sys:String>
+    <sys:String x:Key="Analytics_Empty">Još nema dokumenata za prikaz statistike.</sys:String>
+    <sys:String x:Key="Filter_Month">Mjesec</sys:String>
+    
+    
 
 </ResourceDictionary>

@@ -184,4 +184,27 @@
     <sys:String x:Key="Tags_DeleteConfirm">Are you sure you want to delete the tag "{0}"? This can't be undone.</sys:String>
     <sys:String x:Key="Tags_DeleteConfirmUsed">The tag "{0}" is assigned to {1} documents. It will be removed from all of them; the documents themselves are kept. This can't be undone.</sys:String>
 
+    <!-- Analytics -->
+    <sys:String x:Key="Nav_Analytics">Analytics</sys:String>
+    <sys:String x:Key="Analytics_Title">Analytics</sys:String>
+    <sys:String x:Key="Analytics_ClickHint">Click a chart slice, a month or a tag to see those documents.</sys:String>
+    <sys:String x:Key="Analytics_TotalDocuments">Documents</sys:String>
+    <sys:String x:Key="Analytics_Tags">Tags</sys:String>
+    <sys:String x:Key="Analytics_Correspondents">Correspondents</sys:String>
+    <sys:String x:Key="Analytics_DocumentTypes">Document types</sys:String>
+    <sys:String x:Key="Analytics_DocumentsShort">documents</sys:String>
+    <sys:String x:Key="Analytics_ByType">By document type</sys:String>
+    <sys:String x:Key="Analytics_OtherTypes">Other types</sys:String>
+    <sys:String x:Key="Analytics_NoType">No type</sys:String>
+    <sys:String x:Key="Analytics_TagCloud">Most used tags</sys:String>
+    <sys:String x:Key="Analytics_TagCloudHint">A bigger name means more documents use the tag.</sys:String>
+    <sys:String x:Key="Analytics_ByMonth">By month</sys:String>
+    <sys:String x:Key="Analytics_Year">Year</sys:String>
+    <sys:String x:Key="Analytics_FromMonth">From month</sys:String>
+    <sys:String x:Key="Analytics_ToMonth">To month</sys:String>
+    <sys:String x:Key="Analytics_InSelectedPeriod">In the selected period:</sys:String>
+    <sys:String x:Key="Analytics_Empty">There are no documents to show statistics for yet.</sys:String>
+    <sys:String x:Key="Filter_Month">Month</sys:String>
+
+
 </ResourceDictionary>

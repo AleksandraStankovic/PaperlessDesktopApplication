@@ -48,17 +48,28 @@ public partial class App : Application
             var documentsViewModel = new DocumentsViewModel(api, lookups, files, notifications);
             var uploadViewModel = new UploadViewModel(api, lookups, notifications, localization);
             var tagsViewModel = new TagsViewModel(api, dialogs, notifications, localization);
+            var analyticsViewModel = new AnalyticsViewModel(api, lookups, notifications, localization);
 
             // When tags change, the document list refreshes tag names, colors and filter options
             tagsViewModel.TagsChanged += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
+            tagsViewModel.TagsChanged += (_, _) => analyticsViewModel.Invalidate();
             uploadViewModel.DocumentUploaded += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
+            uploadViewModel.DocumentUploaded += (_, _) => analyticsViewModel.Invalidate();
+           
 
             var mainViewModel = new MainViewModel(
                 documentsViewModel,
+                analyticsViewModel,
                 uploadViewModel,
                 tagsViewModel,
                 new SettingsViewModel(localization, themeService, settingsService, userSettings, notifications),
                 notifications);
+
+            analyticsViewModel.FilterRequested += (_, chip) =>
+            {
+                documentsViewModel.ShowWithFilter(chip);
+                mainViewModel.ShowDocuments();
+            };
 
             // ----- Window -----
             new MainWindow(mainViewModel).Show();

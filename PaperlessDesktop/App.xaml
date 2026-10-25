@@ -45,6 +45,7 @@
             <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                 <views:SettingsView />
             </DataTemplate>
+            
 
             <!-- ViewModel → View mapping: dialogs -->
             <DataTemplate DataType="{x:Type vm:ConfirmDialogViewModel}">
@@ -53,6 +54,12 @@
             <DataTemplate DataType="{x:Type vm:TagEditorViewModel}">
                 <views:TagEditorView />
             </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:AnalyticsViewModel}">
+                <views:AnalyticsView />
+            </DataTemplate>
+            
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

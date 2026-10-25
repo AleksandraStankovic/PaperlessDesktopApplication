@@ -31,6 +31,12 @@
                         </ListBoxItem>
                         <ListBoxItem Padding="20,12">
                             <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ChartBoxOutline" Width="22" Height="22" VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource Nav_Analytics}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Padding="20,12">
+                            <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Upload" Width="22" Height="22" VerticalAlignment="Center" />
                                 <TextBlock Text="{DynamicResource Nav_Upload}" Margin="16,0,0,0" FontSize="15" VerticalAlignment="Center" />
                             </StackPanel>
