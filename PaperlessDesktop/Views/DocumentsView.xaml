@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="PaperlessDesktop.Views.DocumentsView"
+             SizeChanged="OnSizeChanged"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -120,46 +121,76 @@
         </Grid.RowDefinitions>
 
         <!-- ===== Header ===== -->
-        <DockPanel Grid.Row="0" Margin="0,0,0,16">
-            <Button DockPanel.Dock="Right" VerticalAlignment="Center"
-                    Command="{Binding RefreshCommand}"
-                    Style="{StaticResource MaterialDesignOutlinedButton}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" />
-                    <TextBlock Text="{DynamicResource Common_Refresh}" Margin="8,0,0,0" />
-                </StackPanel>
-            </Button>
+        <!-- Responsive: in a narrow window the view toggle + refresh move under the title
+             (see DocumentsView.xaml.cs, ApplyResponsiveLayout) -->
+        <Grid x:Name="HeaderGrid" Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <!-- HCI: view toggle shows icon AND text, and the active mode is highlighted (H1, H6) -->
-            <ListBox DockPanel.Dock="Right" Margin="0,0,12,0" VerticalAlignment="Center"
-                     Style="{StaticResource MaterialDesignToolToggleListBox}"
-                     SelectedIndex="{Binding ViewModeIndex}">
-                <ListBoxItem>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="TableLarge" VerticalAlignment="Center" />
-                        <TextBlock Text="{DynamicResource View_Table}" Margin="6,0,0,0" />
-                    </StackPanel>
-                </ListBoxItem>
-                <ListBoxItem>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="ViewGridOutline" VerticalAlignment="Center" />
-                        <TextBlock Text="{DynamicResource View_Cards}" Margin="6,0,0,0" />
-                    </StackPanel>
-                </ListBoxItem>
-            </ListBox>
-
-            <StackPanel>
-                <TextBlock Text="{DynamicResource Documents_Title}" FontSize="26" FontWeight="SemiBold" />
-                <TextBlock Text="{DynamicResource Documents_Subtitle}" Opacity="0.7" Margin="0,4,0,0" />
+            <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Text="{DynamicResource Documents_Title}" FontSize="26" FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{DynamicResource Documents_Subtitle}" Opacity="0.7" Margin="0,4,0,0"
+                           TextWrapping="Wrap" />
             </StackPanel>
-        </DockPanel>
+
+            <StackPanel x:Name="HeaderActions" Grid.Row="0" Grid.Column="1" Margin="16,0,0,0"
+                        Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- HCI: view toggle shows icon AND text, and the active mode is highlighted (H1, H6) -->
+                <ListBox Margin="0,0,12,0" VerticalAlignment="Center"
+                         Style="{StaticResource MaterialDesignToolToggleListBox}"
+                         SelectedIndex="{Binding ViewModeIndex}">
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="TableLarge" VerticalAlignment="Center" />
+                            <TextBlock Text="{DynamicResource View_Table}" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ViewGridOutline" VerticalAlignment="Center" />
+                            <TextBlock Text="{DynamicResource View_Cards}" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+
+                <Button VerticalAlignment="Center"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Common_Refresh}" Margin="8,0,0,0" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
 
         <!-- ===== Search & filters ===== -->
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
 
-            <WrapPanel>
+            <!-- Responsive filter row. Wide window: search + 3 dropdowns on one line, sharing the
+                 width proportionally. Narrow window: search on its own line, the 3 dropdowns
+                 share the line below. Positions are switched in DocumentsView.xaml.cs. -->
+            <Grid x:Name="FilterGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="SearchColumn" Width="1.6*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
                 <!-- Search -->
-                <TextBox Margin="0,0,16,8" MinWidth="320" MaxWidth="500" VerticalAlignment="Top"
+                <TextBox x:Name="SearchBox" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Top"
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          materialDesign:HintAssist.Hint="{DynamicResource Search_Hint}"
@@ -174,7 +205,7 @@
                 </TextBox>
 
                 <!-- Filter pickers: choosing an item adds a chip below -->
-                <ComboBox Width="190" Margin="0,0,12,8" VerticalAlignment="Top"
+                <ComboBox x:Name="TagFilter" Grid.Row="0" Grid.Column="1" Margin="0,0,12,8" VerticalAlignment="Top"
                           Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           materialDesign:HintAssist.Hint="{DynamicResource Filter_AddTag}"
                           ToolTip="{DynamicResource Filter_TagTooltip}"
@@ -182,20 +213,20 @@
                           SelectedItem="{Binding Filters.TagToAdd}"
                           ItemTemplate="{StaticResource TagOptionTemplate}" />
 
-                <ComboBox Width="190" Margin="0,0,12,8" VerticalAlignment="Top"
+                <ComboBox x:Name="CorrespondentFilter" Grid.Row="0" Grid.Column="2" Margin="0,0,12,8" VerticalAlignment="Top"
                           Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           materialDesign:HintAssist.Hint="{DynamicResource Filter_AddCorrespondent}"
                           ItemsSource="{Binding Filters.AvailableCorrespondents}"
                           SelectedItem="{Binding Filters.CorrespondentToSet}"
                           ItemTemplate="{StaticResource NameWithCountTemplate}" />
 
-                <ComboBox Width="190" Margin="0,0,12,8" VerticalAlignment="Top"
+                <ComboBox x:Name="DocumentTypeFilter" Grid.Row="0" Grid.Column="3" Margin="0,0,0,8" VerticalAlignment="Top"
                           Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           materialDesign:HintAssist.Hint="{DynamicResource Filter_AddDocumentType}"
                           ItemsSource="{Binding Filters.AvailableDocumentTypes}"
                           SelectedItem="{Binding Filters.DocumentTypeToSet}"
                           ItemTemplate="{StaticResource NameWithCountTemplate}" />
-            </WrapPanel>
+            </Grid>
 
             <!-- HCI problem 1: active filters always visible, each removable with ONE click (H1, H3) -->
             <WrapPanel Margin="0,4,0,0"
