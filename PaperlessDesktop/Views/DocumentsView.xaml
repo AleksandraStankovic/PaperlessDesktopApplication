@@ -144,7 +144,8 @@
                         Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Margin="0,0,12,0" VerticalAlignment="Center"
                         Command="{Binding RefreshCommand}"
-                        Style="{StaticResource MaterialDesignOutlinedButton}">
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" />
                         <TextBlock Text="{DynamicResource Common_Refresh}" Margin="8,0,0,0" />
@@ -286,6 +287,7 @@
                 <Button Content="{DynamicResource Filter_ClearAll}"
                         Command="{Binding Filters.ClearAllCommand}"
                         Style="{StaticResource MaterialDesignFlatButton}"
+                    Foreground="{DynamicResource Accent.Text}"
                         VerticalAlignment="Center" />
             </WrapPanel>
         </StackPanel>
@@ -381,6 +383,7 @@
                                Margin="0,12,0,0" HorizontalAlignment="Center" TextAlignment="Center" />
                     <Button Content="{DynamicResource Filter_ResetAll}" Command="{Binding ResetAllCommand}"
                             Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}"
                             HorizontalAlignment="Center" Margin="0,16,0,0" />
                 </StackPanel>
 

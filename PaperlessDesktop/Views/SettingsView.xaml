@@ -97,7 +97,8 @@
                 <!-- ===== Footer: reset + saved confirmation ===== -->
                 <DockPanel Margin="0,4,0,0">
                     <Button DockPanel.Dock="Left" Command="{Binding ResetToDefaultsCommand}"
-                            Style="{StaticResource MaterialDesignOutlinedButton}">
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Restore" VerticalAlignment="Center" />
                             <TextBlock Text="{DynamicResource Settings_Reset}" Margin="8,0,0,0" />

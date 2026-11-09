@@ -28,19 +28,6 @@
             <SolidColorBrush x:Key="Accent.Text" Color="#6D28D9" />
             <SolidColorBrush x:Key="Accent.SelectedOverlay" Color="#386D28D9" />
 
-            <!-- Outlined/flat buttons use the readable accent for text and outline, instead of the raw
-                 accent color (e.g. dark violet "Osvježi" was hard to read in dark mode).
-                 Same keys as MaterialDesign's styles, so every view picks this up automatically. -->
-            <Style x:Key="MaterialDesignOutlinedButton" TargetType="Button"
-                   BasedOn="{StaticResource MaterialDesignOutlinedButton}">
-                <Setter Property="Foreground" Value="{DynamicResource Accent.Text}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource Accent.Text}" />
-            </Style>
-            <Style x:Key="MaterialDesignFlatButton" TargetType="Button"
-                   BasedOn="{StaticResource MaterialDesignFlatButton}">
-                <Setter Property="Foreground" Value="{DynamicResource Accent.Text}" />
-            </Style>
-
             <!-- Converters -->
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True" />
