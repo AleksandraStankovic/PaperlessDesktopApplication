@@ -67,6 +67,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
+                                            Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                                             ToolTip="{DynamicResource Common_Edit}"
                                             Command="{Binding DataContext.EditTagCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">

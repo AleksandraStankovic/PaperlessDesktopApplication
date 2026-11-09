@@ -24,5 +24,25 @@ namespace PaperlessDesktop.Views
         {
             InitializeComponent();
         }
+
+        // The name box is focused when the dialog opens, which would normally paint its border and
+        // label in the accent color before the user has done anything. The XAML gives it neutral
+        // colors instead; as soon as the user types or leaves the box, the local values are cleared
+        // and the box goes back to the normal style (accent while focused, like every other text box).
+        private void OnNameBoxLoaded(object sender, RoutedEventArgs e)
+        {
+            NameBox.Loaded -= OnNameBoxLoaded;
+            NameBox.TextChanged += OnNameBoxInteracted;
+            NameBox.LostKeyboardFocus += OnNameBoxInteracted;
+        }
+
+        private void OnNameBoxInteracted(object sender, RoutedEventArgs e)
+        {
+            NameBox.TextChanged -= OnNameBoxInteracted;
+            NameBox.LostKeyboardFocus -= OnNameBoxInteracted;
+            NameBox.ClearValue(MaterialDesignThemes.Wpf.TextFieldAssist.UnderlineBrushProperty);
+            NameBox.ClearValue(MaterialDesignThemes.Wpf.TextFieldAssist.OutlinedBorderActiveThicknessProperty);
+            NameBox.ClearValue(MaterialDesignThemes.Wpf.HintAssist.ForegroundProperty);
+        }
     }
 }

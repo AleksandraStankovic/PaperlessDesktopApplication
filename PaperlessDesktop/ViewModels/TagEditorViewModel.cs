@@ -11,11 +11,15 @@ public partial class TagEditorViewModel : ObservableObject
 {
     private const int MaxNameLength = 128;   // Paperless limit
 
-    // Paperless' own default palette, so tags made here look at home in the web UI too
+    // Paperless' own default palette (so tags made here look at home in the web UI too), plus
+    // extra colors. 24 swatches = exactly 2 full rows of 12 in the 440 px wide dialog
+    // (28 px swatch + 6 px gap = 34 px each, 12 x 34 = 408 px; a 13th would not fit).
     private static readonly string[] PresetColorValues =
     {
         "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c",
-        "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928", "#000000", "#cccccc"
+        "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928", "#000000",
+        "#cccccc", "#ffff99", "#8dd3c7", "#17becf", "#80b1d3", "#7570b3",
+        "#e7298a", "#fccde5", "#66a61e", "#e6ab02", "#a6761d", "#666666"
     };
 
     private readonly PaperlessApiClient _api;

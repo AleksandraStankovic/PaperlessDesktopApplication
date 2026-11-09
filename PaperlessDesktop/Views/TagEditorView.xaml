@@ -17,10 +17,17 @@
                    Visibility="{Binding IsNew, Converter={StaticResource InverseBoolToVis}}" />
 
         <!-- Name -->
+        <!-- The box gets keyboard focus when the dialog opens (so the user can type right away),
+             but its border and label stay neutral, like an unfocused text box, until the user types
+             or leaves the box. After that it highlights normally (TagEditorView.xaml.cs). -->
         <TextBox x:Name="NameBox" Margin="0,20,0,0"
                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
                  materialDesign:HintAssist.Hint="{DynamicResource Tags_Name}"
-                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}">
+                 materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource MaterialDesign.Brush.TextBox.OutlineBorder}"
+                 materialDesign:TextFieldAssist.OutlinedBorderActiveThickness="1"
+                 materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
+                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                 Loaded="OnNameBoxLoaded">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SaveCommand}" />
             </TextBox.InputBindings>
