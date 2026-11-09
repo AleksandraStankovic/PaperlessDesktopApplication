@@ -61,6 +61,34 @@ namespace PaperlessDesktop.Views
         public DocumentsView()
         {
             InitializeComponent();
+
+            ((System.Collections.Specialized.INotifyCollectionChanged)DocumentsGrid.Items).CollectionChanged +=
+                (_, _) => QueueColumnWidthRefresh();
+        }
+
+        // The table's "Auto" columns (dates, correspondent, type) grow to fit the rows once a page
+        // loads, but the grid doesn't shrink the other columns again until it is resized: the table
+        // overflowed on first open and the open button at the end was cut off. Re-applying the
+        // column widths after the rows are shown makes the grid share the space again.
+        private bool _columnRefreshQueued;
+
+        private void QueueColumnWidthRefresh()
+        {
+            if (_columnRefreshQueued)
+                return;
+
+            _columnRefreshQueued = true;
+            Dispatcher.InvokeAsync(() =>
+            {
+                _columnRefreshQueued = false;
+
+                var widths = DocumentsGrid.Columns.Select(c => c.Width).ToList();
+                foreach (var column in DocumentsGrid.Columns)
+                    column.Width = new DataGridLength(0);
+                DocumentsGrid.UpdateLayout();
+                for (int i = 0; i < widths.Count; i++)
+                    DocumentsGrid.Columns[i].Width = widths[i];
+            }, System.Windows.Threading.DispatcherPriority.ContextIdle);
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
