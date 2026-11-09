@@ -10,16 +10,28 @@
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel MaxWidth="720" HorizontalAlignment="Left" Margin="0,0,16,16">
+            <StackPanel MaxWidth="720" HorizontalAlignment="Center" Margin="0,0,16,16">
 
                 <!-- ===== Language ===== -->
                 <materialDesign:Card Padding="20,16" Margin="0,0,0,16">
                     <StackPanel>
-                        <TextBlock Text="{DynamicResource Settings_Language}" FontSize="16" FontWeight="SemiBold" />
-                        <TextBlock Text="{DynamicResource Settings_LanguageHint}" Opacity="0.65" FontSize="12" Margin="0,2,0,12" />
+                        <TextBlock Text="{DynamicResource Settings_Language}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
                         <!-- Language names are not translated: everyone can find their own language -->
                         <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}"
                                  SelectedIndex="{Binding LanguageIndex}" HorizontalAlignment="Left">
+                            <!-- Selected option uses the same soft accent tint as the Tabela/Kartice toggle on Dokumenti -->
+                            <ListBox.Resources>
+                                <SolidColorBrush x:Key="MaterialDesign.Brush.ListBoxItem.Selected" Color="Transparent" />
+                            </ListBox.Resources>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignToolToggleListBoxItem}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Accent.SelectedOverlay}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                             <ListBoxItem Content="Srpski" />
                             <ListBoxItem Content="English" />
                         </ListBox>
@@ -32,6 +44,19 @@
                         <TextBlock Text="{DynamicResource Settings_Theme}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
                         <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}"
                                  SelectedIndex="{Binding ThemeIndex}" HorizontalAlignment="Left">
+                            <!-- Selected option uses the same soft accent tint as the Tabela/Kartice toggle on Dokumenti -->
+                            <ListBox.Resources>
+                                <SolidColorBrush x:Key="MaterialDesign.Brush.ListBoxItem.Selected" Color="Transparent" />
+                            </ListBox.Resources>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignToolToggleListBoxItem}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Accent.SelectedOverlay}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                             <ListBoxItem>
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="WeatherSunny" VerticalAlignment="Center" />
@@ -113,10 +138,6 @@
                     </StackPanel>
                 </DockPanel>
 
-                <TextBlock FontSize="11" Opacity="0.5" Margin="0,16,0,0" TextWrapping="Wrap">
-                    <Run Text="{DynamicResource Settings_FileLocation}" />
-                    <Run Text="{Binding SettingsFilePath, Mode=OneWay}" />
-                </TextBlock>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
