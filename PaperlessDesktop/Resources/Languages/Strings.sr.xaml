@@ -165,7 +165,7 @@
     <sys:String x:Key="Settings_ThemeLight">Svijetla</sys:String>
     <sys:String x:Key="Settings_ThemeDark">Tamna</sys:String>
     <sys:String x:Key="Settings_Color">Izaberite boju</sys:String>
-    <sys:String x:Key="Settings_ColorHint">Ova boja određuje gradijent bočnog menija i boju dugmadi, oznaka i izabranih opcija u cijeloj aplikaciji. Kliknite na ponuđeni gradijent ili izaberite bilo koju boju u biraču ispod.</sys:String>
+    <sys:String x:Key="Settings_ColorHint">Izaberite boju sistema</sys:String>
     <sys:String x:Key="Settings_Preview">Primjeri:</sys:String>
     <sys:String x:Key="Settings_SampleButton">Dugme</sys:String>
     <sys:String x:Key="Settings_SampleCheckbox">Opcija</sys:String>
