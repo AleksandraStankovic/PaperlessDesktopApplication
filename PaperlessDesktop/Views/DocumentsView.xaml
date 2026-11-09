@@ -409,6 +409,7 @@
                                     <Button Command="{Binding DataContext.Preview.OpenInDefaultAppCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
                                             Style="{StaticResource MaterialDesignIconButton}"
+                                            Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                                             Width="32" Height="32" VerticalAlignment="Center"
                                             ToolTip="{DynamicResource Preview_OpenExternal}">
                                         <materialDesign:PackIcon Kind="OpenInNew" Width="18" Height="18" />
@@ -476,11 +477,13 @@
                     <DockPanel DockPanel.Dock="Top" Margin="16,12,8,4">
                         <Button DockPanel.Dock="Right" Command="{Binding CloseCommand}"
                                 Style="{StaticResource MaterialDesignIconButton}"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                                 ToolTip="{DynamicResource Preview_Close}">
                             <materialDesign:PackIcon Kind="Close" />
                         </Button>
                         <Button DockPanel.Dock="Right" Command="{Binding OpenExternallyCommand}"
                                 Style="{StaticResource MaterialDesignIconButton}"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                                 ToolTip="{DynamicResource Preview_OpenExternal}">
                             <materialDesign:PackIcon Kind="OpenInNew" />
                         </Button>
@@ -590,6 +593,7 @@
                 <!-- HCI: icon buttons always have tooltips -->
                 <Button Command="{Binding PreviousPageCommand}"
                         Style="{StaticResource MaterialDesignIconButton}"
+                        Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                         ToolTip="{DynamicResource Pagination_Previous}">
                     <materialDesign:PackIcon Kind="ChevronLeft" />
                 </Button>
@@ -603,6 +607,7 @@
 
                 <Button Command="{Binding NextPageCommand}"
                         Style="{StaticResource MaterialDesignIconButton}"
+                        Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                         ToolTip="{DynamicResource Pagination_Next}">
                     <materialDesign:PackIcon Kind="ChevronRight" />
                 </Button>
