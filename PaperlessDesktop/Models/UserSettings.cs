@@ -9,7 +9,7 @@ namespace PaperlessDesktop.Models
     public class UserSettings
     {
         public const string DefaultLanguage = "sr";
-        public const string DefaultPrimaryColor = "#2563EB";   // Bright blue (same as ThemeService.DefaultPrimary)
+        public const string DefaultPrimaryColor = "#6D28D9";   // Violet "Sunset" (same as ThemeService.DefaultPrimary)
 
         public string Language { get; set; } = DefaultLanguage;
         public bool IsDarkTheme { get; set; }
