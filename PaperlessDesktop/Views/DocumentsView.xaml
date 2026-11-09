@@ -306,7 +306,10 @@
             <Grid Grid.Column="0">
 
                
-                <DataGrid ItemsSource="{Binding Documents}"
+                <!-- Responsive: when the list is narrow the two date columns are hidden so the
+                     title gets the room (DocumentsView.xaml.cs, UpdateListColumns) -->
+                <DataGrid x:Name="DocumentsGrid" SizeChanged="OnDocumentsGridSizeChanged"
+                          ItemsSource="{Binding Documents}"
                           SelectedItem="{Binding SelectedDocument}"
                           Visibility="{Binding IsTableView, Converter={StaticResource BoolToVis}}"
                           AutoGenerateColumns="False" IsReadOnly="True"
@@ -314,7 +317,13 @@
                           CanUserSortColumns="False"
                           SelectionMode="Single" HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Width="2*">
+                        <!-- Title wraps instead of being cut off -->
+                        <DataGridTextColumn Binding="{Binding Title}" Width="2*" MinWidth="160">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Title}" />
                             </DataGridTextColumn.Header>

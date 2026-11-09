@@ -42,6 +42,10 @@ namespace PaperlessDesktop.Views
         private const double PreviewMetaMaxShare = 0.35;
         private const double PreviewMetaMinHeight = 90;
 
+        // Below this list width the "Datum dokumenta" and "Dodato" columns are hidden so the title fits.
+        private const double ListDatesMinWidth = 720;
+        private bool? _listShowsDates;
+
         // List/preview split; equal by default, remembered after the user drags the splitter.
         private GridLength _listWidth = new(1, GridUnitType.Star);
         private GridLength _previewWidth = new(1, GridUnitType.Star);
@@ -118,6 +122,19 @@ namespace PaperlessDesktop.Views
         private void OnPreviewCardSizeChanged(object sender, SizeChangedEventArgs e)
         {
             PreviewMetaScroll.MaxHeight = Math.Max(PreviewMetaMinHeight, e.NewSize.Height * PreviewMetaMaxShare);
+        }
+
+        private void OnDocumentsGridSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            bool showDates = e.NewSize.Width >= ListDatesMinWidth;
+            if (_listShowsDates == showDates)
+                return;
+            _listShowsDates = showDates;
+
+            // Columns 1 and 2 are the document date and the date added (see DocumentsView.xaml).
+            var visibility = showDates ? Visibility.Visible : Visibility.Collapsed;
+            DocumentsGrid.Columns[1].Visibility = visibility;
+            DocumentsGrid.Columns[2].Visibility = visibility;
         }
 
         private void UpdateContentColumns()
