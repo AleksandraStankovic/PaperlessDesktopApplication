@@ -61,12 +61,16 @@
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
 
-                    <!-- Actions: icon buttons with tooltips -->
-                    <DataGridTemplateColumn Width="Auto">
+                    <!-- Actions: icon buttons with tooltips. Fixed width (2 x 48 px buttons + 2 x 16 px cell padding):
+                         with Width="Auto" the column was sized only after the rows loaded, when the * column had
+                         already taken all the space, so in the default (smaller) window the buttons were pushed
+                         out of view. -->
+                    <DataGridTemplateColumn Width="128" CanUserResize="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
+                                            Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                                             ToolTip="{DynamicResource Common_Edit}"
                                             Command="{Binding DataContext.EditTagCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
