@@ -152,28 +152,28 @@
                 </Button>
 
                 <!-- HCI: view toggle shows icon AND text, and the active mode is highlighted
-                     in the user's accent color (H1, H6, consistent with the sidebar - H4) -->
+                     with a tint of the user's accent color (H1, H6, consistent with the sidebar - H4) -->
                 <ListBox VerticalAlignment="Center"
                          Style="{StaticResource MaterialDesignToolToggleListBox}"
                          SelectedIndex="{Binding ViewModeIndex}">
                     <ListBox.Resources>
-                        <!-- Hide MaterialDesign's grey "selected" overlay so the accent background shows -->
+                        <!-- Hide MaterialDesign's grey "selected" overlay; the accent tint below replaces it -->
                         <SolidColorBrush x:Key="MaterialDesign.Brush.ListBoxItem.Selected" Color="Transparent" />
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignToolToggleListBoxItem}">
                             <Style.Triggers>
+                                <!-- Soft accent tint (ThemeService); text keeps the normal page color.
+                                     DynamicResource, so it follows a new accent from Settings right away. -->
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
-                                    <!-- MaterialDesign picks black/white text with enough contrast for the accent -->
-                                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                                    <Setter Property="Background" Value="{DynamicResource Accent.SelectedOverlay}" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBoxItem>
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="TableLarge" VerticalAlignment="Center" />
+                            <materialDesign:PackIcon Kind="FormatListBulleted" VerticalAlignment="Center" />
                             <TextBlock Text="{DynamicResource View_Table}" Margin="6,0,0,0" />
                         </StackPanel>
                     </ListBoxItem>

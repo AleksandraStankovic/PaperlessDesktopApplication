@@ -15,6 +15,16 @@ public class ThemeService
     public const string SidebarBackgroundKey = "Sidebar.Background";
     public const string SidebarSelectedBackgroundKey = "Sidebar.SelectedBackground";
 
+    /// <summary>Accent color for TEXT/outlines on the page background (outlined and flat buttons).</summary>
+    public const string AccentTextKey = "Accent.Text";
+    /// <summary>Light accent tint behind a selected toggle (e.g. Tabela / Kartice).</summary>
+    public const string AccentSelectedOverlayKey = "Accent.SelectedOverlay";
+
+    // Worst-case page surfaces the accent text must stay readable on:
+    // white in light mode, the lightest dark surface (cards/dialogs) in dark mode.
+    private static readonly Color LightSurface = Colors.White;
+    private static readonly Color DarkSurface = Color.FromRgb(0x42, 0x42, 0x42);
+
     // WCAG AA for normal text is 4.5:1 - keep a small margin above it
     private const float MinContrast = 4.6f;
     // Hue the gradient moves toward (raspberry), and how far it may move
@@ -33,6 +43,40 @@ public class ThemeService
         _palette.SetTheme(theme);
 
         ApplySidebar(primaryColor);
+        ApplyAccentBrushes(isDark, primaryColor);
+    }
+
+    /// <summary>
+    /// The accent color itself is not always readable as text on the page: dark violet on a dark
+    /// background, or yellow on a white one. For text and outlines we use the same hue, made
+    /// lighter (dark mode) or darker (light mode) until it meets WCAG AA (4.5:1) on the page.
+    /// </summary>
+    private static void ApplyAccentBrushes(bool isDark, Color primary)
+    {
+        Color text = ReadableOn(primary, isDark ? DarkSurface : LightSurface, lighten: isDark);
+
+        var textBrush = new SolidColorBrush(text);
+        textBrush.Freeze();
+
+        // A soft tint of the accent; text on it stays the normal page text color
+        var overlay = new SolidColorBrush(Color.FromArgb(isDark ? (byte)0x66 : (byte)0x38, primary.R, primary.G, primary.B));
+        overlay.Freeze();
+
+        var resources = Application.Current.Resources;
+        resources[AccentTextKey] = textBrush;
+        resources[AccentSelectedOverlayKey] = overlay;
+    }
+
+    private static Color ReadableOn(Color color, Color background, bool lighten)
+    {
+        ToHsl(color, out double h, out double s, out double l);
+        Color result = color;
+        while (result.ContrastRatio(background) < MinContrast && l > 0 && l < 1)
+        {
+            l = lighten ? Math.Min(1, l + 0.01) : Math.Max(0, l - 0.01);
+            result = FromHsl(h, s, l);
+        }
+        return result;
     }
 
     /// <summary>
