@@ -316,7 +316,10 @@
                      title gets the room (DocumentsView.xaml.cs, UpdateListColumns) -->
                 <DataGrid x:Name="DocumentsGrid" SizeChanged="OnDocumentsGridSizeChanged"
                           ItemsSource="{Binding Documents}"
-                          SelectedItem="{Binding SelectedDocument}"
+                          SelectedItem="{Binding SelectedDocument, Mode=OneWay}"
+                          SelectionChanged="OnDocumentsGridSelectionChanged"
+                          PreviewMouseLeftButtonDown="OnDocumentsGridPreviewMouseDown"
+                          PreviewMouseLeftButtonUp="OnDocumentsGridPreviewMouseUp"
                           Visibility="{Binding IsTableView, Converter={StaticResource BoolToVis}}"
                           AutoGenerateColumns="False" IsReadOnly="True"
                           CanUserAddRows="False" CanUserDeleteRows="False"
@@ -393,7 +396,8 @@
                         </DataGridTemplateColumn>
 
                         <!-- Open the document in the default app (same as ↗ in the preview).
-                             Clicking the row still only opens the preview. Kept narrow and last so it
+                             Clicking the row still only opens the preview; pressing this button does not
+                             select the row (DocumentsView.xaml.cs, OnDocumentsGridSelectionChanged). Kept narrow and last so it
                              stays visible at every list width (title MinWidth is small enough for title + tags + button). -->
                         <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.CellStyle>
@@ -406,7 +410,8 @@
                             </DataGridTemplateColumn.CellStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Command="{Binding DataContext.Preview.OpenInDefaultAppCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    <Button Tag="OpenDocument"
+                                            Command="{Binding DataContext.Preview.OpenInDefaultAppCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
                                             Style="{StaticResource MaterialDesignIconButton}"
                                             Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"

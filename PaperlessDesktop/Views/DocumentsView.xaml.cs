@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PaperlessDesktop.ViewModels;
 
 namespace PaperlessDesktop.Views
 {
@@ -152,6 +153,53 @@ namespace PaperlessDesktop.Views
                 DocumentsGrid.Columns[3].Visibility = visibility;
                 DocumentsGrid.Columns[4].Visibility = visibility;
             }
+        }
+
+        // The table's selection drives the preview. The grid selects a row on mouse down even when
+        // the click lands on the row's "open" button, which would open the preview (and shift the
+        // layout so the button's click never arrives). So the grid only shows the selection
+        // (one-way binding) and passes user changes on here, except while that button is pressed.
+        private bool _openButtonPressed;
+
+        private void OnDocumentsGridPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _openButtonPressed = FindOpenButton(e.OriginalSource as DependencyObject) is not null;
+        }
+
+        private void OnDocumentsGridPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _openButtonPressed = false;
+        }
+
+        private void OnDocumentsGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is not DocumentsViewModel vm)
+                return;
+
+            if (_openButtonPressed)
+            {
+                // Put the selection back (after the grid finishes handling the click); the preview stays as it was.
+                Dispatcher.InvokeAsync(() =>
+                    DocumentsGrid.SetCurrentValue(DataGrid.SelectedItemProperty, vm.SelectedDocument));
+                return;
+            }
+
+            if (!ReferenceEquals(vm.SelectedDocument, DocumentsGrid.SelectedItem))
+                vm.SelectedDocument = DocumentsGrid.SelectedItem as DocumentItemViewModel;
+        }
+
+        private static Button? FindOpenButton(DependencyObject? element)
+        {
+            while (element is not null and not DataGridRow)
+            {
+                if (element is Button { Tag: "OpenDocument" } button)
+                    return button;
+
+                element = element is Visual or System.Windows.Media.Media3D.Visual3D
+                    ? VisualTreeHelper.GetParent(element)
+                    : LogicalTreeHelper.GetParent(element);
+            }
+            return null;
         }
 
         private void UpdateContentColumns()
