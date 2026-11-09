@@ -106,6 +106,12 @@
                 </StackPanel>
             </materialDesign:Card>
         </DataTemplate>
+
+        <!-- Table cells that don't fit end with "…" (instead of looking empty) and show the full text on hover -->
+        <Style x:Key="TrimmedCellText" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -292,49 +298,82 @@
             </WrapPanel>
         </StackPanel>
 
-        <Grid Grid.Row="2" Margin="0,8,0,0">
+        <!-- List | splitter | preview. Column widths are managed in code-behind
+             (DocumentsView.xaml.cs, UpdateContentColumns): list and preview share the space
+             equally by default, the splitter lets the user resize them, and in a narrow
+             window the preview covers the list instead of squeezing both. -->
+        <Grid x:Name="ContentGrid" Grid.Row="2" Margin="0,8,0,0" SizeChanged="OnContentSizeChanged">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
-                <ColumnDefinition Width="{Binding Preview.IsOpen, Converter={StaticResource PreviewColumnWidth}}" />
+                <ColumnDefinition x:Name="ListColumn" Width="*" />
+                <ColumnDefinition x:Name="SplitterColumn" Width="0" />
+                <ColumnDefinition x:Name="PreviewColumn" Width="0" />
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0">
 
                
-                <DataGrid ItemsSource="{Binding Documents}"
+                <!-- Responsive: when the list is narrow the two date columns are hidden so the
+                     title gets the room (DocumentsView.xaml.cs, UpdateListColumns) -->
+                <DataGrid x:Name="DocumentsGrid" SizeChanged="OnDocumentsGridSizeChanged"
+                          ItemsSource="{Binding Documents}"
                           SelectedItem="{Binding SelectedDocument}"
                           Visibility="{Binding IsTableView, Converter={StaticResource BoolToVis}}"
                           AutoGenerateColumns="False" IsReadOnly="True"
                           CanUserAddRows="False" CanUserDeleteRows="False"
                           CanUserSortColumns="False"
-                          SelectionMode="Single" HeadersVisibility="Column">
+                          SelectionMode="Single" SelectionUnit="FullRow" HeadersVisibility="Column">
+                    <!-- Clicking selects the whole row; no focus border around the individual cell -->
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                        </Style>
+                    </DataGrid.CellStyle>
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Width="2*">
+                        <!-- Title wraps instead of being cut off -->
+                        <DataGridTextColumn Binding="{Binding Title}" Width="2*" MinWidth="160">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Title}" />
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
                         <!-- HCI: one date format everywhere + clearly labeled dates (problem 4 candidate) -->
-                        <DataGridTextColumn Binding="{Binding Created, StringFormat=dd.MM.yyyy}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding Created, StringFormat=dd.MM.yyyy}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Created}" />
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
-                        <DataGridTextColumn Binding="{Binding Added, StringFormat=dd.MM.yyyy}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding Added, StringFormat=dd.MM.yyyy}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Added}" />
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
-                        <DataGridTextColumn Binding="{Binding CorrespondentName}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding CorrespondentName}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Correspondent}" />
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
-                        <DataGridTextColumn Binding="{Binding DocumentTypeName}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding DocumentTypeName}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_DocumentType}" />
                             </DataGridTextColumn.Header>
@@ -395,9 +434,18 @@
             </Grid>
 
        
-            <materialDesign:Card Grid.Column="1" Margin="16,0,0,0"
+            <!-- Drag to resize list vs. preview (transparent; the 16px gap between them is the grab area) -->
+            <GridSplitter x:Name="PreviewSplitter" Grid.Column="1" Width="16"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext" ResizeDirection="Columns"
+                          Background="Transparent" Focusable="False"
+                          Visibility="Collapsed" DragCompleted="OnSplitterDragCompleted" />
+
+            <materialDesign:Card x:Name="PreviewCard" Grid.Column="2"
                                  DataContext="{Binding Preview}"
-                                 Visibility="{Binding IsOpen, Converter={StaticResource BoolToVis}}">
+                                 Visibility="{Binding IsOpen, Converter={StaticResource BoolToVis}}"
+                                 IsVisibleChanged="OnPreviewVisibilityChanged"
+                                 SizeChanged="OnPreviewCardSizeChanged">
                 <DockPanel>
 
                     <DockPanel DockPanel.Dock="Top" Margin="16,12,8,4">
@@ -415,8 +463,11 @@
                                    TextWrapping="Wrap" VerticalAlignment="Center" />
                     </DockPanel>
 
-                    <!-- Key metadata -->
-                    <StackPanel DockPanel.Dock="Top" Margin="16,0,16,8">
+                    <!-- Key metadata. Capped to part of the card height (code-behind) and scrolls,
+                         so the file preview below always keeps most of the space. -->
+                    <ScrollViewer x:Name="PreviewMetaScroll" DockPanel.Dock="Top"
+                                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="16,0,16,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -475,6 +526,7 @@
                             </Grid>
                         </Expander>
                     </StackPanel>
+                    </ScrollViewer>
 
                     <!-- File preview fills the remaining space -->
                     <Grid Margin="8,0,8,8">
