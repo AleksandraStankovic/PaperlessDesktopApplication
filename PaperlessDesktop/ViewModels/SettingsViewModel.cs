@@ -13,7 +13,7 @@ public partial class SettingsViewModel : ObservableObject
     // Quick choices for the accent color (Material Design palette)
     private static readonly string[] PresetColorValues =
     {
-        "#3F51B5", "#1976D2", "#00897B", "#388E3C", "#F57C00",
+        "#2563EB", "#3F51B5", "#00897B", "#388E3C", "#F57C00",
         "#D32F2F", "#C2185B", "#7B1FA2", "#5D4037", "#455A64"
     };
 

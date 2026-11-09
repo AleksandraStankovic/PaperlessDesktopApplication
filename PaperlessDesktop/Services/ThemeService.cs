@@ -6,7 +6,7 @@ namespace PaperlessDesktop.Services;
 /// <summary>Switches light/dark theme and the accent (primary) color at runtime.</summary>
 public class ThemeService
 {
-    public static readonly Color DefaultPrimary = Color.FromRgb(0x3F, 0x51, 0xB5);   // Indigo
+    public static readonly Color DefaultPrimary = Color.FromRgb(0x25, 0x63, 0xEB);   // Bright blue, white text 5.2:1 (WCAG AA)
 
     private readonly PaletteHelper _palette = new();
 
