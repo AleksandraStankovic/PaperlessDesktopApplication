@@ -30,6 +30,22 @@ namespace PaperlessDesktop.Views
         private bool? _filtersWide;
         private bool? _headerWide;
 
+        // Below this width of the list+preview area the preview covers the list (full width)
+        // instead of sitting next to it; side by side, both would be too narrow to be useful.
+        private const double PreviewOverlayMaxWidth = 760;
+
+        // Side-by-side minimums so the splitter can't squeeze either pane into a strip.
+        private const double ListMinWidth = 280;
+        private const double PreviewMinWidth = 320;
+
+        // The file preview keeps at least this share of the card height; metadata above it scrolls.
+        private const double PreviewMetaMaxShare = 0.35;
+        private const double PreviewMetaMinHeight = 90;
+
+        // List/preview split; equal by default, remembered after the user drags the splitter.
+        private GridLength _listWidth = new(1, GridUnitType.Star);
+        private GridLength _previewWidth = new(1, GridUnitType.Star);
+
         public DocumentsView()
         {
             InitializeComponent();
@@ -81,6 +97,62 @@ namespace PaperlessDesktop.Views
 
                 HeaderActions.HorizontalAlignment = headerWide ? HorizontalAlignment.Right : HorizontalAlignment.Left;
             }
+        }
+
+        private void OnContentSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateContentColumns();
+        }
+
+        private void OnPreviewVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            UpdateContentColumns();
+        }
+
+        private void OnSplitterDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            _listWidth = ListColumn.Width;
+            _previewWidth = PreviewColumn.Width;
+        }
+
+        private void OnPreviewCardSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            PreviewMetaScroll.MaxHeight = Math.Max(PreviewMetaMinHeight, e.NewSize.Height * PreviewMetaMaxShare);
+        }
+
+        private void UpdateContentColumns()
+        {
+            // Visibility (not IsVisible) so this doesn't react to the whole page being hidden.
+            bool open = PreviewCard.Visibility == Visibility.Visible;
+            bool overlay = ContentGrid.ActualWidth > 0 && ContentGrid.ActualWidth < PreviewOverlayMaxWidth;
+
+            if (!open)
+            {
+                SetColumns(new GridLength(1, GridUnitType.Star), 0, new GridLength(0), 0, splitter: false);
+            }
+            else if (overlay)
+            {
+                // Preview spans the whole area on top of the list; its close button brings the list back.
+                SetColumns(new GridLength(1, GridUnitType.Star), 0, new GridLength(0), 0, splitter: false);
+                Place(PreviewCard, 0, 0, 3, new Thickness(0));
+                return;
+            }
+            else
+            {
+                SetColumns(_listWidth, ListMinWidth, _previewWidth, PreviewMinWidth, splitter: true);
+            }
+
+            Place(PreviewCard, 0, 2, 1, new Thickness(0));
+        }
+
+        private void SetColumns(GridLength list, double listMin, GridLength preview, double previewMin, bool splitter)
+        {
+            ListColumn.Width = list;
+            ListColumn.MinWidth = listMin;
+            PreviewColumn.Width = preview;
+            PreviewColumn.MinWidth = previewMin;
+            SplitterColumn.Width = splitter ? GridLength.Auto : new GridLength(0);
+            PreviewSplitter.Visibility = splitter ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private static void Place(FrameworkElement element, int row, int column, int columnSpan, Thickness margin)
