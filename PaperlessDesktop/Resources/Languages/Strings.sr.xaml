@@ -165,8 +165,8 @@
     <sys:String x:Key="Settings_Theme">Tema</sys:String>
     <sys:String x:Key="Settings_ThemeLight">Svijetla</sys:String>
     <sys:String x:Key="Settings_ThemeDark">Tamna</sys:String>
-    <sys:String x:Key="Settings_Color">Boja aplikacije</sys:String>
-    <sys:String x:Key="Settings_ColorHint">Izaberite ponuđenu boju ili bilo koju drugu u biraču boja.</sys:String>
+    <sys:String x:Key="Settings_Color">Izaberite boju</sys:String>
+    <sys:String x:Key="Settings_ColorHint">Kliknite na ponuđeni gradijent ili izaberite bilo koju boju u biraču ispod.</sys:String>
     <sys:String x:Key="Settings_Preview">Pregled:</sys:String>
     <sys:String x:Key="Settings_SampleButton">Dugme</sys:String>
     <sys:String x:Key="Settings_SampleCheckbox">Opcija</sys:String>
