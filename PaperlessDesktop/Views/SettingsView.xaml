@@ -70,7 +70,7 @@
                                             <ControlTemplate TargetType="Button">
                                                 <Border Width="32" Height="32" CornerRadius="16"
                                                         BorderBrush="#40808080" BorderThickness="1"
-                                                        Background="{Binding Converter={StaticResource HexToBrush}}" />
+                                                        Background="{Binding Converter={StaticResource HexToGradient}}" />
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>

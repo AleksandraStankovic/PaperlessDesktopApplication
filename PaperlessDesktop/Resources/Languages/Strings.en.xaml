@@ -164,8 +164,8 @@
     <sys:String x:Key="Settings_Theme">Theme</sys:String>
     <sys:String x:Key="Settings_ThemeLight">Light</sys:String>
     <sys:String x:Key="Settings_ThemeDark">Dark</sys:String>
-    <sys:String x:Key="Settings_Color">App color</sys:String>
-    <sys:String x:Key="Settings_ColorHint">Pick a suggested color or any other color in the picker.</sys:String>
+    <sys:String x:Key="Settings_Color">Choose a color</sys:String>
+    <sys:String x:Key="Settings_ColorHint">Click a suggested gradient or pick any color in the picker below.</sys:String>
     <sys:String x:Key="Settings_Preview">Preview:</sys:String>
     <sys:String x:Key="Settings_SampleButton">Button</sys:String>
     <sys:String x:Key="Settings_SampleCheckbox">Option</sys:String>

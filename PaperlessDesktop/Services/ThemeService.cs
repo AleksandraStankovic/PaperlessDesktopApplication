@@ -20,6 +20,8 @@ public class ThemeService
     // Hue the gradient moves toward (raspberry), and how far it may move
     private const double GradientTargetHue = 335;
     private const double MaxHueShift = 72;
+    private const double MinGradientSaturation = 0.55;
+    private const double MinGradientLightness = 0.42;
 
     private readonly PaletteHelper _palette = new();
 
@@ -42,10 +44,7 @@ public class ThemeService
     private static void ApplySidebar(Color primary)
     {
         Color foreground = primary.ContrastingForegroundColor();
-        Color end = GradientEnd(primary, foreground);
-
-        var gradient = new LinearGradientBrush(primary, end, new Point(0, 0), new Point(0, 1));
-        gradient.Freeze();
+        LinearGradientBrush gradient = CreateSidebarGradient(primary);
 
         // Selected page: darken under white text, lighten under black text (contrast only goes up)
         var selected = new SolidColorBrush(foreground == Colors.White
@@ -56,6 +55,15 @@ public class ThemeService
         var resources = Application.Current.Resources;
         resources[SidebarBackgroundKey] = gradient;
         resources[SidebarSelectedBackgroundKey] = selected;
+    }
+
+    /// <summary>The sidebar gradient for an accent color (also used for the color swatches in Settings).</summary>
+    public static LinearGradientBrush CreateSidebarGradient(Color primary)
+    {
+        Color end = GradientEnd(primary, primary.ContrastingForegroundColor());
+        var gradient = new LinearGradientBrush(primary, end, new Point(0, 0), new Point(0, 1));
+        gradient.Freeze();
+        return gradient;
     }
 
     private static Color GradientEnd(Color primary, Color foreground)
@@ -72,6 +80,14 @@ public class ThemeService
         h = (h + shift + 360) % 360;
 
         bool darken = foreground == Colors.White;
+
+        // Muted/dark colors (brown, blue grey) barely change with a hue shift alone,
+        // so give the partner color some saturation and lightness to make the gradient visible.
+        // The contrast loop below still brings it back to a readable shade.
+        s = Math.Max(s, MinGradientSaturation);
+        if (darken)
+            l = Math.Max(l, MinGradientLightness);
+
         Color end = FromHsl(h, s, l);
         while (end.ContrastRatio(foreground) < MinContrast && l > 0 && l < 1)
         {

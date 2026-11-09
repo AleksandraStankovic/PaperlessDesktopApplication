@@ -28,6 +28,7 @@
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True" />
             <converters:HexToBrushConverter x:Key="HexToBrush" />
+            <converters:HexToGradientConverter x:Key="HexToGradient" />
             <converters:BoolToGridLengthConverter x:Key="PreviewColumnWidth" TrueLength="2*" />
 
             <!-- Shared templates (used on several pages, so tags look the same everywhere) -->
