@@ -106,6 +106,12 @@
                 </StackPanel>
             </materialDesign:Card>
         </DataTemplate>
+
+        <!-- Table cells that don't fit end with "…" (instead of looking empty) and show the full text on hover -->
+        <Style x:Key="TrimmedCellText" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -337,25 +343,37 @@
                         </DataGridTextColumn>
 
                         <!-- HCI: one date format everywhere + clearly labeled dates (problem 4 candidate) -->
-                        <DataGridTextColumn Binding="{Binding Created, StringFormat=dd.MM.yyyy}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding Created, StringFormat=dd.MM.yyyy}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Created}" />
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
-                        <DataGridTextColumn Binding="{Binding Added, StringFormat=dd.MM.yyyy}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding Added, StringFormat=dd.MM.yyyy}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Added}" />
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
-                        <DataGridTextColumn Binding="{Binding CorrespondentName}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding CorrespondentName}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_Correspondent}" />
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
-                        <DataGridTextColumn Binding="{Binding DocumentTypeName}" Width="Auto">
+                        <DataGridTextColumn Binding="{Binding DocumentTypeName}" Width="Auto" MinWidth="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
+                            </DataGridTextColumn.ElementStyle>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{DynamicResource Col_DocumentType}" />
                             </DataGridTextColumn.Header>
