@@ -46,6 +46,11 @@ namespace PaperlessDesktop.Views
         private const double ListDatesMinWidth = 720;
         private bool? _listShowsDates;
 
+        // Below this list width "Korespondent" and "Tip dokumenta" are hidden too, instead of
+        // being squeezed into empty slivers; title and tags remain.
+        private const double ListMetaMinWidth = 560;
+        private bool? _listShowsMeta;
+
         // List/preview split; equal by default, remembered after the user drags the splitter.
         private GridLength _listWidth = new(1, GridUnitType.Star);
         private GridLength _previewWidth = new(1, GridUnitType.Star);
@@ -126,15 +131,25 @@ namespace PaperlessDesktop.Views
 
         private void OnDocumentsGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
+            // Column order (see DocumentsView.xaml): 0 title, 1 document date, 2 date added,
+            // 3 correspondent, 4 document type, 5 tags.
             bool showDates = e.NewSize.Width >= ListDatesMinWidth;
-            if (_listShowsDates == showDates)
-                return;
-            _listShowsDates = showDates;
+            if (_listShowsDates != showDates)
+            {
+                _listShowsDates = showDates;
+                var visibility = showDates ? Visibility.Visible : Visibility.Collapsed;
+                DocumentsGrid.Columns[1].Visibility = visibility;
+                DocumentsGrid.Columns[2].Visibility = visibility;
+            }
 
-            // Columns 1 and 2 are the document date and the date added (see DocumentsView.xaml).
-            var visibility = showDates ? Visibility.Visible : Visibility.Collapsed;
-            DocumentsGrid.Columns[1].Visibility = visibility;
-            DocumentsGrid.Columns[2].Visibility = visibility;
+            bool showMeta = e.NewSize.Width >= ListMetaMinWidth;
+            if (_listShowsMeta != showMeta)
+            {
+                _listShowsMeta = showMeta;
+                var visibility = showMeta ? Visibility.Visible : Visibility.Collapsed;
+                DocumentsGrid.Columns[3].Visibility = visibility;
+                DocumentsGrid.Columns[4].Visibility = visibility;
+            }
         }
 
         private void UpdateContentColumns()
