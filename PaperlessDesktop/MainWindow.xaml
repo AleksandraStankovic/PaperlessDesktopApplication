@@ -22,7 +22,26 @@
                     <TextBlock DockPanel.Dock="Top" Text="{DynamicResource App_Title}"
                                FontSize="20" FontWeight="SemiBold" Margin="20,24,20,16" />
 
-                    <ListBox SelectedIndex="{Binding SelectedPageIndex}">
+                    <!-- HCI: menu text follows the sidebar color (black or white, whichever contrasts more),
+                         instead of the page text color. Keeps WCAG AA (4.5:1) for any accent color, in both themes. -->
+                    <ListBox SelectedIndex="{Binding SelectedPageIndex}"
+                             Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                <!-- Selected page: darker shade of the accent with its own contrasting text,
+                                     plus bold text so the selection is not shown by color alone -->
+                                <Setter Property="materialDesign:ListBoxItemAssist.SelectedFocusedBackground"
+                                        Value="{DynamicResource MaterialDesign.Brush.Primary.Dark}" />
+                                <Setter Property="materialDesign:ListBoxItemAssist.SelectedUnfocusedBackground"
+                                        Value="{DynamicResource MaterialDesign.Brush.Primary.Dark}" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Dark.Foreground}" />
+                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListBoxItem Padding="20,12">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FileDocumentMultipleOutline" Width="22" Height="22" VerticalAlignment="Center" />
