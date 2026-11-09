@@ -132,7 +132,7 @@ namespace PaperlessDesktop.Views
         private void OnDocumentsGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Column order (see DocumentsView.xaml): 0 title, 1 document date, 2 date added,
-            // 3 correspondent, 4 document type, 5 tags.
+            // 3 correspondent, 4 document type, 5 tags, 6 open button (always visible).
             bool showDates = e.NewSize.Width >= ListDatesMinWidth;
             if (_listShowsDates != showDates)
             {
