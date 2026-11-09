@@ -100,14 +100,40 @@ public partial class DocumentPreviewViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanOpenExternally))]
     private void OpenExternally()
     {
-        if (_previewFilePath is null)
-            return;
-
-        if (!_files.TryOpenWithDefaultApp(_previewFilePath))
-            _notifications.ShowLocalized("Preview_OpenFailed");
+        if (_previewFilePath is not null)
+            OpenFile(_previewFilePath);
     }
 
     private bool CanOpenExternally() => _previewFilePath is not null;
+
+    /// <summary>
+    /// The ↗ button on a list row: opens that document in the default app without opening
+    /// the preview panel. Uses the same downloaded file as the preview (cached, so a document
+    /// that was already previewed opens immediately). While a file is downloading, the row
+    /// buttons are disabled, so a double click doesn't open the document twice.
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenInDefaultAppAsync(DocumentItemViewModel? item)
+    {
+        if (item is null)
+            return;
+
+        try
+        {
+            string path = await _files.GetPreviewFileAsync(item.Model, CancellationToken.None);
+            OpenFile(path);
+        }
+        catch (Exception ex)
+        {
+            _notifications.ShowError(ex);
+        }
+    }
+
+    private void OpenFile(string path)
+    {
+        if (!_files.TryOpenWithDefaultApp(path))
+            _notifications.ShowLocalized("Preview_OpenFailed");
+    }
 
     private void SetPreviewFile(string? path)
     {

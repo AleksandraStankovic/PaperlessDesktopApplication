@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PaperlessDesktop.ViewModels;
 
 namespace PaperlessDesktop.Views
 {
@@ -51,13 +52,43 @@ namespace PaperlessDesktop.Views
         private const double ListMetaMinWidth = 560;
         private bool? _listShowsMeta;
 
-        // List/preview split; equal by default, remembered after the user drags the splitter.
-        private GridLength _listWidth = new(1, GridUnitType.Star);
-        private GridLength _previewWidth = new(1, GridUnitType.Star);
+        // List/preview split; the preview gets 3/5 of the space by default so the document is
+        // readable (on a full-screen window the list keeps title, correspondent, type and tags).
+        // Remembered after the user drags the splitter.
+        private GridLength _listWidth = new(2, GridUnitType.Star);
+        private GridLength _previewWidth = new(3, GridUnitType.Star);
 
         public DocumentsView()
         {
             InitializeComponent();
+
+            ((System.Collections.Specialized.INotifyCollectionChanged)DocumentsGrid.Items).CollectionChanged +=
+                (_, _) => QueueColumnWidthRefresh();
+        }
+
+        // The table's "Auto" columns (dates, correspondent, type) grow to fit the rows once a page
+        // loads, but the grid doesn't shrink the other columns again until it is resized: the table
+        // overflowed on first open and the open button at the end was cut off. Re-applying the
+        // column widths after the rows are shown makes the grid share the space again.
+        private bool _columnRefreshQueued;
+
+        private void QueueColumnWidthRefresh()
+        {
+            if (_columnRefreshQueued)
+                return;
+
+            _columnRefreshQueued = true;
+            Dispatcher.InvokeAsync(() =>
+            {
+                _columnRefreshQueued = false;
+
+                var widths = DocumentsGrid.Columns.Select(c => c.Width).ToList();
+                foreach (var column in DocumentsGrid.Columns)
+                    column.Width = new DataGridLength(0);
+                DocumentsGrid.UpdateLayout();
+                for (int i = 0; i < widths.Count; i++)
+                    DocumentsGrid.Columns[i].Width = widths[i];
+            }, System.Windows.Threading.DispatcherPriority.ContextIdle);
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -132,7 +163,7 @@ namespace PaperlessDesktop.Views
         private void OnDocumentsGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Column order (see DocumentsView.xaml): 0 title, 1 document date, 2 date added,
-            // 3 correspondent, 4 document type, 5 tags.
+            // 3 correspondent, 4 document type, 5 tags, 6 open button (always visible).
             bool showDates = e.NewSize.Width >= ListDatesMinWidth;
             if (_listShowsDates != showDates)
             {
@@ -150,6 +181,53 @@ namespace PaperlessDesktop.Views
                 DocumentsGrid.Columns[3].Visibility = visibility;
                 DocumentsGrid.Columns[4].Visibility = visibility;
             }
+        }
+
+        // The table's selection drives the preview. The grid selects a row on mouse down even when
+        // the click lands on the row's "open" button, which would open the preview (and shift the
+        // layout so the button's click never arrives). So the grid only shows the selection
+        // (one-way binding) and passes user changes on here, except while that button is pressed.
+        private bool _openButtonPressed;
+
+        private void OnDocumentsGridPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _openButtonPressed = FindOpenButton(e.OriginalSource as DependencyObject) is not null;
+        }
+
+        private void OnDocumentsGridPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _openButtonPressed = false;
+        }
+
+        private void OnDocumentsGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is not DocumentsViewModel vm)
+                return;
+
+            if (_openButtonPressed)
+            {
+                // Put the selection back (after the grid finishes handling the click); the preview stays as it was.
+                Dispatcher.InvokeAsync(() =>
+                    DocumentsGrid.SetCurrentValue(DataGrid.SelectedItemProperty, vm.SelectedDocument));
+                return;
+            }
+
+            if (!ReferenceEquals(vm.SelectedDocument, DocumentsGrid.SelectedItem))
+                vm.SelectedDocument = DocumentsGrid.SelectedItem as DocumentItemViewModel;
+        }
+
+        private static Button? FindOpenButton(DependencyObject? element)
+        {
+            while (element is not null and not DataGridRow)
+            {
+                if (element is Button { Tag: "OpenDocument" } button)
+                    return button;
+
+                element = element is Visual or System.Windows.Media.Media3D.Visual3D
+                    ? VisualTreeHelper.GetParent(element)
+                    : LogicalTreeHelper.GetParent(element);
+            }
+            return null;
         }
 
         private void UpdateContentColumns()
