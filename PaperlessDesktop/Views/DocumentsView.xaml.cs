@@ -51,7 +51,7 @@ namespace PaperlessDesktop.Views
                 {
                     // [ search (wider) ][ tag ][ correspondent ][ type ]
                     SearchColumn.Width = new GridLength(1.6, GridUnitType.Star);
-                    Place(SearchBox, 0, 0, 1, new Thickness(0, 0, 16, 8));
+                    Place(SearchPanel, 0, 0, 1, new Thickness(0, 0, 16, 8));
                     Place(TagFilter, 0, 1, 1, new Thickness(0, 0, 12, 8));
                     Place(CorrespondentFilter, 0, 2, 1, new Thickness(0, 0, 12, 8));
                     Place(DocumentTypeFilter, 0, 3, 1, new Thickness(0, 0, 0, 8));
@@ -61,9 +61,8 @@ namespace PaperlessDesktop.Views
                     // [ search ............................ ]
                     // [ tag ][ correspondent ][ type ]
                     // Column 0 collapses; search spans the 3 filter columns.
-                    // Bigger bottom margin leaves room for the keyboard-tip helper text under the search box.
                     SearchColumn.Width = new GridLength(0);
-                    Place(SearchBox, 0, 1, 3, new Thickness(0, 0, 0, 26));
+                    Place(SearchPanel, 0, 1, 3, new Thickness(0, 0, 0, 12));
                     Place(TagFilter, 1, 1, 1, new Thickness(0, 0, 12, 8));
                     Place(CorrespondentFilter, 1, 2, 1, new Thickness(0, 0, 12, 8));
                     Place(DocumentTypeFilter, 1, 3, 1, new Thickness(0, 0, 0, 8));

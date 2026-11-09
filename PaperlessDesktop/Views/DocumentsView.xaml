@@ -142,10 +142,35 @@
 
             <StackPanel x:Name="HeaderActions" Grid.Row="0" Grid.Column="1" Margin="16,0,0,0"
                         Orientation="Horizontal" VerticalAlignment="Center">
-                <!-- HCI: view toggle shows icon AND text, and the active mode is highlighted (H1, H6) -->
-                <ListBox Margin="0,0,12,0" VerticalAlignment="Center"
+                <Button Margin="0,0,12,0" VerticalAlignment="Center"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Common_Refresh}" Margin="8,0,0,0" />
+                    </StackPanel>
+                </Button>
+
+                <!-- HCI: view toggle shows icon AND text, and the active mode is highlighted
+                     in the user's accent color (H1, H6, consistent with the sidebar - H4) -->
+                <ListBox VerticalAlignment="Center"
                          Style="{StaticResource MaterialDesignToolToggleListBox}"
                          SelectedIndex="{Binding ViewModeIndex}">
+                    <ListBox.Resources>
+                        <!-- Hide MaterialDesign's grey "selected" overlay so the accent background shows -->
+                        <SolidColorBrush x:Key="MaterialDesign.Brush.ListBoxItem.Selected" Color="Transparent" />
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignToolToggleListBoxItem}">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
+                                    <!-- MaterialDesign picks black/white text with enough contrast for the accent -->
+                                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
                     <ListBoxItem>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="TableLarge" VerticalAlignment="Center" />
@@ -159,15 +184,6 @@
                         </StackPanel>
                     </ListBoxItem>
                 </ListBox>
-
-                <Button VerticalAlignment="Center"
-                        Command="{Binding RefreshCommand}"
-                        Style="{StaticResource MaterialDesignOutlinedButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" />
-                        <TextBlock Text="{DynamicResource Common_Refresh}" Margin="8,0,0,0" />
-                    </StackPanel>
-                </Button>
             </StackPanel>
         </Grid>
 
@@ -189,20 +205,24 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- Search -->
-                <TextBox x:Name="SearchBox" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Top"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                         materialDesign:HintAssist.Hint="{DynamicResource Search_Hint}"
-                         materialDesign:HintAssist.HelperText="{DynamicResource Search_KeyboardTip}"
-                         materialDesign:TextFieldAssist.HasLeadingIcon="True"
-                         materialDesign:TextFieldAssist.LeadingIcon="Magnify"
-                         materialDesign:TextFieldAssist.HasClearButton="True">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding SearchNowCommand}" />
-                        <KeyBinding Key="Escape" Command="{Binding ClearSearchCommand}" />
-                    </TextBox.InputBindings>
-                </TextBox>
+                <!-- Search + keyboard tip. The tip is a normal TextBlock (not MaterialDesign HelperText),
+                     so it lines up with the left edge of the box and takes up real space in the layout. -->
+                <StackPanel x:Name="SearchPanel" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Top">
+                    <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             materialDesign:HintAssist.Hint="{DynamicResource Search_Hint}"
+                             materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                             materialDesign:TextFieldAssist.LeadingIcon="Magnify"
+                             materialDesign:TextFieldAssist.HasClearButton="True">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding SearchNowCommand}" />
+                            <KeyBinding Key="Escape" Command="{Binding ClearSearchCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <TextBlock Text="{DynamicResource Search_KeyboardTip}"
+                               FontSize="11" Opacity="0.7" Margin="0,4,0,0"
+                               TextTrimming="CharacterEllipsis" />
+                </StackPanel>
 
                 <!-- Filter pickers: choosing an item adds a chip below -->
                 <ComboBox x:Name="TagFilter" Grid.Row="0" Grid.Column="1" Margin="0,0,12,8" VerticalAlignment="Top"
