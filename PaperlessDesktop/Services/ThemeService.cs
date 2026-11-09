@@ -77,9 +77,14 @@ public class ThemeService
         double shift = Math.Abs(diff) < 30 ? -60
                      : Math.Abs(diff) > 120 ? MaxHueShift
                      : Math.Clamp(diff, -MaxHueShift, MaxHueShift);
-        h = (h + shift + 360) % 360;
-
         bool darken = foreground == Colors.White;
+
+        // Light accents (black text: orange, yellow...) always take the full shift,
+        // otherwise their gradient looks too flat
+        if (!darken)
+            shift = Math.Sign(shift) * MaxHueShift;
+
+        h = (h + shift + 360) % 360;
 
         // Muted/dark colors (brown, blue grey) barely change with a hue shift alone,
         // so give the partner color some saturation and lightness to make the gradient visible.
