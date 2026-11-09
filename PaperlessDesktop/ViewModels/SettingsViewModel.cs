@@ -27,9 +27,6 @@ public partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<string> PresetColors => PresetColorValues;
 
-    /// <summary>Shown on the page, so it's clear the settings really are stored locally.</summary>
-    public string SettingsFilePath => _settingsService.FilePath;
-
     // 0 = Srpski, 1 = English
     [ObservableProperty]
     private int _languageIndex;
