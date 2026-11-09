@@ -15,6 +15,7 @@
             <Button x:Name="CancelButton" IsCancel="True"
                     Content="{DynamicResource Common_Cancel}"
                     Style="{StaticResource MaterialDesignFlatButton}"
+                    Foreground="{DynamicResource Accent.Text}"
                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                 <Button.CommandParameter>
                     <sys:Boolean>False</sys:Boolean>

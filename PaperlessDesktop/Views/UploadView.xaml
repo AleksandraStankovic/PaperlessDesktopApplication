@@ -75,7 +75,8 @@
                         <TextBlock Text="{DynamicResource Upload_Or}" Opacity="0.6"
                                    HorizontalAlignment="Center" Margin="0,4" />
                         <Button Content="{DynamicResource Upload_Browse}" Click="Browse_Click"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" HorizontalAlignment="Center" />
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}" HorizontalAlignment="Center" />
 
                         <!-- HCI problem 3: allowed formats are visible BEFORE choosing a file (H5) -->
                         <TextBlock FontSize="12" Opacity="0.7" Margin="0,14,0,0"
@@ -200,7 +201,8 @@
                         </StackPanel>
                     </Button>
                     <Button Content="{DynamicResource Upload_Reset}" Command="{Binding ResetCommand}"
-                            Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0" />
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                    Foreground="{DynamicResource Accent.Text}" Margin="8,0,0,0" />
                 </StackPanel>
 
                 <!-- ===== HCI problem 2: two simple steps in plain language (H1, H2, H8) ===== -->
@@ -225,7 +227,8 @@
                                                Margin="10,0,0,0" VerticalAlignment="Center" Opacity="0.7" />
                                     <Button Content="{DynamicResource Upload_CancelSending}"
                                             Command="{Binding CancelUploadCommand}"
-                                            Style="{StaticResource MaterialDesignFlatButton}" Margin="12,0,0,0" />
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                    Foreground="{DynamicResource Accent.Text}" Margin="12,0,0,0" />
                                 </StackPanel>
                             </StackPanel>
                         </DockPanel>
@@ -254,6 +257,7 @@
 
                         <Button Content="{DynamicResource Upload_UploadAnother}" Command="{Binding ResetCommand}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}"
                                 HorizontalAlignment="Left" Margin="0,16,0,0"
                                 Visibility="{Binding IsFinished, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>

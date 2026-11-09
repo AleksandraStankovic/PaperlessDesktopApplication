@@ -24,6 +24,10 @@
             </LinearGradientBrush>
             <SolidColorBrush x:Key="Sidebar.SelectedBackground" Color="#40000000" />
 
+            <!-- Accent text + selected-toggle tint. Replaced at runtime by ThemeService (readable in light AND dark mode). -->
+            <SolidColorBrush x:Key="Accent.Text" Color="#6D28D9" />
+            <SolidColorBrush x:Key="Accent.SelectedOverlay" Color="#386D28D9" />
+
             <!-- Converters -->
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True" />

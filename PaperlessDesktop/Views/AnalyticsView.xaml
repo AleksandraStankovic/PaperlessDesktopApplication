@@ -45,7 +45,8 @@
         <!-- ===== Header ===== -->
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
             <Button DockPanel.Dock="Right" VerticalAlignment="Center" Command="{Binding LoadCommand}"
-                    Style="{StaticResource MaterialDesignOutlinedButton}">
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" />
                     <TextBlock Text="{DynamicResource Common_Refresh}" Margin="8,0,0,0" />
