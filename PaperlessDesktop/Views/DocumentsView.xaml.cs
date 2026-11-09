@@ -51,9 +51,11 @@ namespace PaperlessDesktop.Views
         private const double ListMetaMinWidth = 560;
         private bool? _listShowsMeta;
 
-        // List/preview split; equal by default, remembered after the user drags the splitter.
-        private GridLength _listWidth = new(1, GridUnitType.Star);
-        private GridLength _previewWidth = new(1, GridUnitType.Star);
+        // List/preview split; the preview gets 3/5 of the space by default so the document is
+        // readable (on a full-screen window the list keeps title, correspondent, type and tags).
+        // Remembered after the user drags the splitter.
+        private GridLength _listWidth = new(2, GridUnitType.Star);
+        private GridLength _previewWidth = new(3, GridUnitType.Star);
 
         public DocumentsView()
         {

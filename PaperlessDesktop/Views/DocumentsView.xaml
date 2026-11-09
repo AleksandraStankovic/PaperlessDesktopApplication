@@ -300,7 +300,7 @@
 
         <!-- List | splitter | preview. Column widths are managed in code-behind
              (DocumentsView.xaml.cs, UpdateContentColumns): list and preview share the space
-             equally by default, the splitter lets the user resize them, and in a narrow
+             (preview 3/5 by default), the splitter lets the user resize them, and in a narrow
              window the preview covers the list instead of squeezing both. -->
         <Grid x:Name="ContentGrid" Grid.Row="2" Margin="0,8,0,0" SizeChanged="OnContentSizeChanged">
             <Grid.ColumnDefinitions>
