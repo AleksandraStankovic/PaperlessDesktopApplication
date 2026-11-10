@@ -44,6 +44,24 @@
                 </Border>
             </DataTemplate>
 
+            <!-- The ✕ on removable chips (tags, filters). MaterialDesign draws it on a fixed grey circle;
+                 this one uses the chip's own text color, so it fits every tag color.
+                 App.xaml.cs puts it on every Chip when the chip loads. -->
+            <ControlTemplate x:Key="ChipDeleteButtonTemplate" TargetType="Button">
+                <Grid Background="Transparent" Cursor="Hand">
+                    <Ellipse x:Name="Bg" Opacity="0.18"
+                             Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=materialDesign:Chip}}" />
+                    <materialDesign:PackIcon Kind="Close" Width="12" Height="12"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=materialDesign:Chip}}" />
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Bg" Property="Opacity" Value="0.35" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+
             <!-- ViewModel → View mapping: pages -->
             <DataTemplate DataType="{x:Type vm:DocumentsViewModel}">
                 <views:DocumentsView />

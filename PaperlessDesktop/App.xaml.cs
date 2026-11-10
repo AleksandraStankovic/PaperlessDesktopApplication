@@ -14,6 +14,11 @@ public partial class App : Application
 
         // Safety net: from here on, no unexpected error can close the app
         RegisterGlobalErrorHandlers();
+
+        // Chips: replace MaterialDesign's grey ✕ circle with one in the chip's own text color
+        EventManager.RegisterClassHandler(typeof(MaterialDesignThemes.Wpf.Chip), FrameworkElement.LoadedEvent,
+            new RoutedEventHandler(OnChipLoaded));
+
         Log.DeleteOldFiles();
         Log.Info("Application starting");
 
@@ -135,5 +140,16 @@ public partial class App : Application
         else
             MessageBox.Show("An unexpected error occurred. The details were saved to the log.",
                             "Paperless Desktop", MessageBoxButton.OK, MessageBoxImage.Warning);
+    }
+
+    private static void OnChipLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is MaterialDesignThemes.Wpf.Chip chip
+            && chip.Template?.FindName("PART_DeleteButton", chip) is System.Windows.Controls.Button deleteButton
+            && Current.TryFindResource("ChipDeleteButtonTemplate") is System.Windows.Controls.ControlTemplate template
+            && deleteButton.Template != template)
+        {
+            deleteButton.Template = template;
+        }
     }
 }
