@@ -144,8 +144,11 @@ public partial class App : Application
 
     private static void OnChipLoaded(object sender, RoutedEventArgs e)
     {
-        if (sender is MaterialDesignThemes.Wpf.Chip chip
-            && chip.Template?.FindName("PART_DeleteButton", chip) is System.Windows.Controls.Button deleteButton
+        if (sender is not MaterialDesignThemes.Wpf.Chip chip)
+            return;
+
+        chip.ApplyTemplate();
+        if (chip.Template?.FindName("PART_DeleteButton", chip) is System.Windows.Controls.Button deleteButton
             && Current.TryFindResource("ChipDeleteButtonTemplate") is System.Windows.Controls.ControlTemplate template
             && deleteButton.Template != template)
         {
