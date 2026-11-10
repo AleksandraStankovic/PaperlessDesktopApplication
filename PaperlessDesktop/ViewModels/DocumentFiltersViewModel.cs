@@ -60,6 +60,7 @@ public partial class DocumentFiltersViewModel : ObservableObject
                     ? FilterChip.ForTag(tag) : null,
                 FilterKind.Correspondent => lookups.GetCorrespondentName(chip.Id) is { } correspondentName
                     ? new FilterChip(chip.Kind, chip.Id, correspondentName) : null,
+                FilterKind.DocumentType when chip.Id == FilterChip.NoDocumentTypeId => chip,
                 FilterKind.DocumentType => lookups.GetDocumentTypeName(chip.Id) is { } typeName
                     ? new FilterChip(chip.Kind, chip.Id, typeName) : null,
                 FilterKind.Month => chip,

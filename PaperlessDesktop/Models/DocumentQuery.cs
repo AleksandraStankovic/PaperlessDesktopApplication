@@ -39,7 +39,10 @@ namespace PaperlessDesktop.Models
             if (CorrespondentId is int correspondentId)
                 parts.Add($"correspondent__id={correspondentId}");
 
-            if (DocumentTypeId is int documentTypeId)
+            // 0 = "no document type" (see FilterChip.NoDocumentTypeId)
+            if (DocumentTypeId == 0)
+                parts.Add("document_type__isnull=1");
+            else if (DocumentTypeId is int documentTypeId)
                 parts.Add($"document_type__id={documentTypeId}");
 
             if (CreatedYear is int year)
