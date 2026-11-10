@@ -104,7 +104,8 @@
     <!-- Tag editor -->
     <sys:String x:Key="Tags_NewTitle">Novi tag</sys:String>
     <sys:String x:Key="Tags_EditTitle">Uredi tag</sys:String>
-    <sys:String x:Key="Tags_Name">Naziv taga</sys:String>
+    <sys:String x:Key="Tags_Name">Naziv taga *</sys:String>
+    <sys:String x:Key="Tags_NameFocused">Naziv taga * (Obavezno)</sys:String>
     <sys:String x:Key="Tags_Color">Boja</sys:String>
     <sys:String x:Key="Tags_Preview">Pregled:</sys:String>
     <sys:String x:Key="Tags_Error_NameRequired">Naziv je obavezan.</sys:String>
@@ -128,10 +129,11 @@
     <sys:String x:Key="Upload_DuplicateWarning">Ovaj dokument već postoji u sistemu. Izaberite drugi fajl.</sys:String>
     <sys:String x:Key="Upload_MetadataHeader">Podaci o dokumentu</sys:String>
     <sys:String x:Key="Upload_TitleField">Naziv dokumenta *</sys:String>
+    <sys:String x:Key="Upload_TitleFieldFocused">Naziv dokumenta * (Obavezno)</sys:String>
     <sys:String x:Key="Upload_TitleHelper">Predložen je naziv fajla – možete ga promijeniti.</sys:String>
-    <sys:String x:Key="Upload_Correspondent">Korespondent (opciono)</sys:String>
-    <sys:String x:Key="Upload_DocumentType">Tip dokumenta (opciono)</sys:String>
-    <sys:String x:Key="Upload_AddTag">+ Dodaj tag (opciono)</sys:String>
+    <sys:String x:Key="Upload_Correspondent">Korespondent (Opciono)</sys:String>
+    <sys:String x:Key="Upload_DocumentType">Tip dokumenta (Opciono)</sys:String>
+    <sys:String x:Key="Upload_AddTag">+ Dodaj tag (Opciono)</sys:String>
     <sys:String x:Key="Upload_Button">Dodaj dokument</sys:String>
     <sys:String x:Key="Upload_Reset">Poništi</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Dodaj još jedan dokument</sys:String>
