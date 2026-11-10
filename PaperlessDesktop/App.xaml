@@ -46,7 +46,7 @@
 
             <!-- The ✕ on removable chips (tags, filters). MaterialDesign draws it on a fixed grey circle;
                  this one sits on a darker shade of the chip's own color (even darker on hover).
-                 App.xaml.cs puts it on every Chip when the chip loads. -->
+                 The Chip style below puts it on every chip when it loads (App.xaml.cs). -->
             <converters:DarkerBrushConverter x:Key="DarkerShade" Factor="0.75" />
             <converters:DarkerBrushConverter x:Key="DarkerShadeHover" Factor="0.6" />
             <ControlTemplate x:Key="ChipDeleteButtonTemplate" TargetType="Button">
@@ -64,6 +64,11 @@
                     </Trigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
+
+            <!-- Every chip (default look) gets the ✕ above when it loads -->
+            <Style TargetType="{x:Type materialDesign:Chip}" BasedOn="{StaticResource {x:Type materialDesign:Chip}}">
+                <EventSetter Event="Loaded" Handler="Chip_Loaded" />
+            </Style>
 
             <!-- ViewModel → View mapping: pages -->
             <DataTemplate DataType="{x:Type vm:DocumentsViewModel}">
