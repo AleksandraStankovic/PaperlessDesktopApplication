@@ -122,11 +122,11 @@
     <sys:String x:Key="Upload_FileFilterName">Supported documents</sys:String>
     <sys:String x:Key="Upload_OnlyOneFile">You dropped several files – only the first one is added.</sys:String>
     <sys:String x:Key="Upload_CheckingDuplicate">Checking whether this document already exists...</sys:String>
-    <sys:String x:Key="Upload_DuplicateWarning">This document already exists in Paperless as "{0}" (added {1}), so there's no need to add it again. Please choose a different file.</sys:String>
+    <sys:String x:Key="Upload_DuplicateWarning">This document already exists in the system. Please choose a different file.</sys:String>
 
     <sys:String x:Key="Upload_MetadataHeader">Document details</sys:String>
     <sys:String x:Key="Upload_TitleField">Document title *</sys:String>
-    <sys:String x:Key="Upload_TitleHelper">Required. The file name is suggested – you can change it.</sys:String>
+    <sys:String x:Key="Upload_TitleHelper">The file name is suggested – you can change it.</sys:String>
     <sys:String x:Key="Upload_Correspondent">Correspondent (optional)</sys:String>
     <sys:String x:Key="Upload_DocumentType">Document type (optional)</sys:String>
     <sys:String x:Key="Upload_AddTag">+ Add tag (optional)</sys:String>

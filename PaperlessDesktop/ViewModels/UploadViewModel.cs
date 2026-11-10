@@ -87,6 +87,11 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(UploadCommand))]
     private bool _isCheckingDuplicate;
+
+    /// <summary>How far the duplicate check has got (0–100), shown as a progress line under the file.</summary>
+    [ObservableProperty]
+    private double _duplicateCheckProgress;
+
     // ---------- Drag & drop visual state ----------
 
     [ObservableProperty]
@@ -193,6 +198,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         if (error is not null)
         {
             FileError = error;
+            DuplicateWarning = null;
             return;
         }
 
@@ -463,11 +469,19 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         _duplicateCts = cts;
 
         DuplicateWarning = null;
+        DuplicateCheckProgress = 0;
         IsCheckingDuplicate = true;
         try
         {
-            string md5 = await ComputeMd5Async(path, cts.Token);
+            // Reading the file is most of the work (0–80 %), asking the server is the rest
+            var progress = new Progress<double>(p =>
+            {
+                if (_duplicateCts == cts)
+                    DuplicateCheckProgress = p * 80;
+            });
+            string md5 = await ComputeMd5Async(path, progress, cts.Token);
             var candidates = await _api.FindDocumentsByChecksumAsync(md5, cts.Token);
+            DuplicateCheckProgress = 90;
 
             foreach (var doc in candidates.Results)
             {
@@ -478,11 +492,14 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
 
                 if (SelectedFilePath == path)   // the user may have picked another file meanwhile
                 {
-                    DuplicateWarning = string.Format(_localization.Get("Upload_DuplicateWarning"),
-                        doc.Title, doc.Added?.ToString("dd.MM.yyyy") ?? "—");
+                    // The duplicate is removed automatically, so the user only has to pick another file
+                    ClearFile();
+                    DuplicateWarning = _localization.Get("Upload_DuplicateWarning");
                 }
                 return;
             }
+
+            DuplicateCheckProgress = 100;
         }
         catch (OperationCanceledException)
         {
@@ -503,11 +520,23 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         }
     }
 
-    private static async Task<string> ComputeMd5Async(string path, CancellationToken ct)
+    private static async Task<string> ComputeMd5Async(string path, IProgress<double> progress, CancellationToken ct)
     {
         await using var stream = File.OpenRead(path);
-        byte[] hash = await MD5.HashDataAsync(stream, ct);
-        return Convert.ToHexString(hash).ToLowerInvariant();
+        using var md5 = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+
+        long total = Math.Max(stream.Length, 1);
+        long read = 0;
+        byte[] buffer = new byte[1024 * 1024];
+        int n;
+        while ((n = await stream.ReadAsync(buffer, ct)) > 0)
+        {
+            md5.AppendData(buffer, 0, n);
+            read += n;
+            progress.Report((double)read / total);
+        }
+
+        return Convert.ToHexString(md5.GetHashAndReset()).ToLowerInvariant();
     }
 
     private void CancelDuplicateCheck()
