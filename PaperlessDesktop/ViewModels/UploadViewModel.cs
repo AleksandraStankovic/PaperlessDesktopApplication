@@ -244,6 +244,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         var cts = new CancellationTokenSource();
         _uploadCts = cts;
         string title = Title.Trim();
+        bool succeeded = false;
 
         IsBusy = true;
         IsSending = true;
@@ -287,6 +288,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
                 StatusMessage = string.Format(_localization.Get("Upload_Status_Done"), title);
                 _notifications.Show(StatusMessage);   // also visible if the user went to another page
                 DocumentUploaded?.Invoke(this, EventArgs.Empty);
+                succeeded = true;
             }
             else
             {
@@ -324,6 +326,11 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
             _uploadCts = null;
             cts.Dispose();
         }
+
+        // Success is confirmed by the notification, so the page starts over completely,
+        // ready for the next document
+        if (succeeded)
+            Reset();
     }
 
     // HCI problem 3: a duplicate can't be uploaded (the server would reject it anyway),
