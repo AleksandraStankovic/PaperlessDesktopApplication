@@ -13,6 +13,12 @@ public enum FilterKind
 /// <summary>One active filter, shown as a removable chip.</summary>
 public class FilterChip
 {
+    /// <summary>
+    /// Document type filter ID meaning "documents without a type" (the "Bez tipa" pie slice).
+    /// Paperless IDs start at 1, so 0 is never a real type.
+    /// </summary>
+    public const int NoDocumentTypeId = 0;
+
     public FilterKind Kind { get; }
     public int Id { get; }
     public string Name { get; }

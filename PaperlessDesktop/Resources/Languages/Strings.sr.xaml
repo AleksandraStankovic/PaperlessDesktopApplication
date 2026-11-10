@@ -13,6 +13,7 @@
     <!-- Documents page -->
     <sys:String x:Key="Documents_Title">Dokumenti</sys:String>
     <sys:String x:Key="Documents_Subtitle">Svi vaši dokumenti na jednom mjestu.</sys:String>
+    <sys:String x:Key="Documents_BackToAnalytics">Nazad na analitiku</sys:String>
 
     <sys:String x:Key="Documents_Total">Ukupno dokumenata:</sys:String>
 

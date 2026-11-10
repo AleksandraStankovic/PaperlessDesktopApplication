@@ -7,6 +7,7 @@ namespace PaperlessDesktop.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private readonly ObservableObject[] _pages;
+    private readonly DocumentsViewModel _documents;
 
     public SnackbarMessageQueue MessageQueue { get; }
 
@@ -26,6 +27,7 @@ public partial class MainViewModel : ObservableObject
     {
         // Order must match the order of items in the sidebar
         _pages = new ObservableObject[] { documents, analytics, upload, tags, settings };
+        _documents = documents;
         CurrentPage = documents;
         MessageQueue = notifications.MessageQueue;
 
@@ -37,6 +39,9 @@ public partial class MainViewModel : ObservableObject
     /// <summary>Switches to the Documents page (e.g. after clicking a chart).</summary>
     public void ShowDocuments() => SelectedPageIndex = 0;
 
+    /// <summary>Switches to the Analytics page (back button on a list opened from a chart).</summary>
+    public void ShowAnalytics() => SelectedPageIndex = 1;
+
     // Generated hook: runs automatically whenever SelectedPageIndex changes
     partial void OnSelectedPageIndexChanged(int value)
     {
@@ -44,6 +49,11 @@ public partial class MainViewModel : ObservableObject
             return;
 
         CurrentPage = _pages[value];
+
+        // The "back to analytics" button only makes sense right after a chart click.
+        // Leaving the document list (to any page) ends that.
+        if (value != 0)
+            _documents.CameFromAnalytics = false;
 
         // Let the page know it was opened (e.g. Tags loads its list the first time)
         if (CurrentPage is INavigationAware page)

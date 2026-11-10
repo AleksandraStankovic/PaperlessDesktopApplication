@@ -289,7 +289,7 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
 
         int withoutType = TotalDocuments - types.Sum(t => t.DocumentCount);
         if (withoutType > 0)
-            entries.Add((_localization.Get("Analytics_NoType"), withoutType, null, NoTypeSliceColor));
+            entries.Add((_localization.Get("Analytics_NoType"), withoutType, FilterChip.NoDocumentTypeId, NoTypeSliceColor));
 
         int total = entries.Sum(e => e.Count);
         if (total == 0)

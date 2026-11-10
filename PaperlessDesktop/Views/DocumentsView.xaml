@@ -140,6 +140,17 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
+                <!-- HCI: after clicking a chart on Analytics, one click takes the user back (H3 user control and freedom) -->
+                <Button HorizontalAlignment="Left" Margin="-8,0,0,4" Padding="8,0" Height="30"
+                        Command="{Binding BackToAnalyticsCommand}"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="{DynamicResource Accent.Text}"
+                        Visibility="{Binding CameFromAnalytics, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ArrowLeft" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Documents_BackToAnalytics}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
                 <TextBlock Text="{DynamicResource Documents_Title}" FontSize="26" FontWeight="SemiBold"
                            TextTrimming="CharacterEllipsis" />
                 <TextBlock Text="{DynamicResource Documents_Subtitle}" Opacity="0.7" Margin="0,4,0,0"

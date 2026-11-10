@@ -126,9 +126,22 @@ public partial class DocumentsViewModel : ObservableObject
     // ---------- Commands (bound to buttons / keys) ----------
 
 
+    // ---------- Coming from Analytics ----------
+
+    /// <summary>True while the list was opened by clicking a chart on the Analytics page (shows the back button).</summary>
+    [ObservableProperty]
+    private bool _cameFromAnalytics;
+
+    /// <summary>The back button was clicked. App.xaml.cs switches to the Analytics page.</summary>
+    public event EventHandler? BackToAnalyticsRequested;
+
+    [RelayCommand]
+    private void BackToAnalytics() => BackToAnalyticsRequested?.Invoke(this, EventArgs.Empty);
+
     /// <summary>Called from Analytics: show exactly the documents behind a clicked chart element.</summary>
     public void ShowWithFilter(FilterChip chip)
     {
+        CameFromAnalytics = true;
         Filters.SetOnlySilently(chip);
         SearchText = "";
         _searchDelayCts?.Cancel();   // setting SearchText started a timer - stop it

@@ -13,6 +13,7 @@
     
     <sys:String x:Key="Documents_Title">Documents</sys:String>
     <sys:String x:Key="Documents_Subtitle">All your documents in one place.</sys:String>
+    <sys:String x:Key="Documents_BackToAnalytics">Back to analytics</sys:String>
    
     <sys:String x:Key="Documents_Total">Total documents:</sys:String>
 
