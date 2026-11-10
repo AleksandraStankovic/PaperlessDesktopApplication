@@ -136,4 +136,23 @@ public partial class App : Application
             MessageBox.Show("An unexpected error occurred. The details were saved to the log.",
                             "Paperless Desktop", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
+
+    /// <summary>
+    /// Chips: replaces MaterialDesign's fixed grey circle behind the ✕ with
+    /// "ChipDeleteButtonTemplate" (a darker shade of the chip's own color).
+    /// Hooked up by the Chip style in App.xaml.
+    /// </summary>
+    private void Chip_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MaterialDesignThemes.Wpf.Chip chip)
+            return;
+
+        chip.ApplyTemplate();
+        if (chip.Template?.FindName("PART_DeleteButton", chip) is System.Windows.Controls.Button deleteButton
+            && Current.TryFindResource("ChipDeleteButtonTemplate") is System.Windows.Controls.ControlTemplate template
+            && deleteButton.Template != template)
+        {
+            deleteButton.Template = template;
+        }
+    }
 }

@@ -44,6 +44,32 @@
                 </Border>
             </DataTemplate>
 
+            <!-- The ✕ on removable chips (tags, filters). MaterialDesign draws it on a fixed grey circle;
+                 this one sits on a darker shade of the chip's own color (even darker on hover).
+                 The Chip style below puts it on every chip when it loads (App.xaml.cs). -->
+            <converters:DarkerBrushConverter x:Key="DarkerShade" Factor="0.75" />
+            <converters:DarkerBrushConverter x:Key="DarkerShadeHover" Factor="0.6" />
+            <ControlTemplate x:Key="ChipDeleteButtonTemplate" TargetType="Button">
+                <Grid Background="Transparent" Cursor="Hand">
+                    <Ellipse x:Name="Bg"
+                             Fill="{Binding Background, RelativeSource={RelativeSource AncestorType=materialDesign:Chip}, Converter={StaticResource DarkerShade}}" />
+                    <materialDesign:PackIcon Kind="Close" Width="12" Height="12"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=materialDesign:Chip}}" />
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Bg" Property="Fill"
+                                Value="{Binding Background, RelativeSource={RelativeSource AncestorType=materialDesign:Chip}, Converter={StaticResource DarkerShadeHover}}" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+
+            <!-- Every chip (default look) gets the ✕ above when it loads -->
+            <Style TargetType="{x:Type materialDesign:Chip}" BasedOn="{StaticResource {x:Type materialDesign:Chip}}">
+                <EventSetter Event="Loaded" Handler="Chip_Loaded" />
+            </Style>
+
             <!-- ViewModel → View mapping: pages -->
             <DataTemplate DataType="{x:Type vm:DocumentsViewModel}">
                 <views:DocumentsView />

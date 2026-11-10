@@ -270,7 +270,7 @@
                                                  DeleteCommandParameter="{Binding}">
                                 <!-- Tag filters are shown in the tag's own color (consistent with the list, H4) -->
                                 <materialDesign:Chip.Style>
-                                    <Style TargetType="materialDesign:Chip">
+                                    <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource {x:Type materialDesign:Chip}}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Kind}" Value="Tag">
                                                 <Setter Property="Background" Value="{Binding Color, Converter={StaticResource HexToBrush}}" />

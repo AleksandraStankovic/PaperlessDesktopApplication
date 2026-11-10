@@ -38,8 +38,9 @@
             <TextBlock Text="{DynamicResource Upload_Subtitle}" Opacity="0.7" Margin="0,4,0,0" />
         </StackPanel>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel MaxWidth="720" HorizontalAlignment="Left" Margin="0,0,16,16">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <!-- The form is a centered column (same as Settings) -->
+            <StackPanel MaxWidth="720" Margin="16,0,16,16">
 
                 <!-- ===== Drop zone ===== -->
                 <Grid AllowDrop="True" Background="Transparent"
@@ -103,6 +104,15 @@
                     <TextBlock Text="{Binding FileError}" Foreground="#D32F2F" TextWrapping="Wrap" MaxWidth="660" />
                 </StackPanel>
 
+                <!-- HCI problem 3: duplicate found BEFORE uploading (H1, H5).
+                     The duplicate file is removed automatically, so the user only picks another one. -->
+                <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
+                            Visibility="{Binding HasDuplicateWarning, Converter={StaticResource BoolToVis}}">
+                    <materialDesign:PackIcon Kind="ContentDuplicate" Foreground="#E65100"
+                                             Width="20" Height="20" VerticalAlignment="Top" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding DuplicateWarning}" Foreground="#E65100" TextWrapping="Wrap" MaxWidth="660" />
+                </StackPanel>
+
                 <!-- Selected file -->
                 <materialDesign:Card Margin="0,12,0,0" Padding="16,10"
                                      Visibility="{Binding HasFile, Converter={StaticResource BoolToVis}}">
@@ -117,26 +127,19 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="{Binding FileSizeText}" Opacity="0.6" FontSize="12" />
+                            <!-- HCI problem 3: how much of the duplicate check is done, instead of a "checking..." text (H1) -->
+                            <DockPanel Margin="0,6,0,2"
+                                       Visibility="{Binding IsCheckingDuplicate, Converter={StaticResource BoolToVis}}"
+                                       ToolTip="{DynamicResource Upload_CheckingDuplicate}">
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding DuplicateCheckProgress, StringFormat={}{0:0}%}"
+                                           FontSize="12" Opacity="0.7" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                <ProgressBar Value="{Binding DuplicateCheckProgress}" Maximum="100" Height="4"
+                                             VerticalAlignment="Center" />
+                            </DockPanel>
                         </StackPanel>
                     </DockPanel>
                 </materialDesign:Card>
 
-
-                <!-- HCI problem 3: "checking..." and the duplicate warning, BEFORE uploading (H1, H5) -->
-                <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
-                            Visibility="{Binding IsCheckingDuplicate, Converter={StaticResource BoolToVis}}">
-                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True"
-                                 Width="16" Height="16" Margin="0,0,8,0" />
-                    <TextBlock Text="{DynamicResource Upload_CheckingDuplicate}" Opacity="0.7" FontSize="12"
-                               VerticalAlignment="Center" />
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
-                            Visibility="{Binding HasDuplicateWarning, Converter={StaticResource BoolToVis}}">
-                    <materialDesign:PackIcon Kind="ContentDuplicate" Foreground="#E65100"
-                                             Width="20" Height="20" VerticalAlignment="Top" Margin="0,0,8,0" />
-                    <TextBlock Text="{Binding DuplicateWarning}" Foreground="#E65100" TextWrapping="Wrap" MaxWidth="660" />
-                </StackPanel>
 
                 <!-- ===== Metadata ===== -->
                 <TextBlock Text="{DynamicResource Upload_MetadataHeader}" FontSize="16" FontWeight="SemiBold"
@@ -145,9 +148,14 @@
                 <StackPanel IsEnabled="{Binding IsFormEnabled}">
                     <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              materialDesign:HintAssist.Hint="{DynamicResource Upload_TitleField}"
-                             materialDesign:HintAssist.HelperText="{DynamicResource Upload_TitleHelper}"
                              Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Text="{Binding TitleError}" Foreground="#D32F2F" FontSize="12" Margin="4,20,0,0"
+                    <!-- Explanation as a normal TextBlock, so it lines up with the left edge of the text box.
+                         When the title is invalid, the error takes its place. -->
+                    <TextBlock Text="{DynamicResource Upload_TitleHelper}" FontSize="12" Opacity="0.6" Margin="0,4,0,0"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding HasTitleError, Converter={StaticResource InverseBoolToVis}}" />
+                    <TextBlock Text="{Binding TitleError}" Foreground="#D32F2F" FontSize="12" Margin="0,4,0,0"
+                               TextWrapping="Wrap"
                                Visibility="{Binding HasTitleError, Converter={StaticResource BoolToVis}}" />
 
                     <ComboBox Margin="0,24,0,0"
