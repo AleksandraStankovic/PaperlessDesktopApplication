@@ -101,7 +101,8 @@
     <!-- Tag editor -->
     <sys:String x:Key="Tags_NewTitle">New tag</sys:String>
     <sys:String x:Key="Tags_EditTitle">Edit tag</sys:String>
-    <sys:String x:Key="Tags_Name">Tag name</sys:String>
+    <sys:String x:Key="Tags_Name">Tag name *</sys:String>
+    <sys:String x:Key="Tags_NameFocused">Tag name * (Required)</sys:String>
     <sys:String x:Key="Tags_Color">Color</sys:String>
     <sys:String x:Key="Tags_Preview">Preview:</sys:String>
     <sys:String x:Key="Tags_Error_NameRequired">Name is required.</sys:String>
@@ -126,10 +127,11 @@
 
     <sys:String x:Key="Upload_MetadataHeader">Document details</sys:String>
     <sys:String x:Key="Upload_TitleField">Document title *</sys:String>
+    <sys:String x:Key="Upload_TitleFieldFocused">Document title * (Required)</sys:String>
     <sys:String x:Key="Upload_TitleHelper">The file name is suggested – you can change it.</sys:String>
-    <sys:String x:Key="Upload_Correspondent">Correspondent (optional)</sys:String>
-    <sys:String x:Key="Upload_DocumentType">Document type (optional)</sys:String>
-    <sys:String x:Key="Upload_AddTag">+ Add tag (optional)</sys:String>
+    <sys:String x:Key="Upload_Correspondent">Correspondent (Optional)</sys:String>
+    <sys:String x:Key="Upload_DocumentType">Document type (Optional)</sys:String>
+    <sys:String x:Key="Upload_AddTag">+ Add tag (Optional)</sys:String>
     <sys:String x:Key="Upload_Button">Upload document</sys:String>
     <sys:String x:Key="Upload_Reset">Reset</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Upload another document</sys:String>

@@ -20,14 +20,24 @@
         <!-- The box gets keyboard focus when the dialog opens (so the user can type right away),
              but its border and label stay neutral, like an unfocused text box, until the user types
              or leaves the box. After that it highlights normally (TagEditorView.xaml.cs). -->
+        <!-- Required field: the label always has "*", and while the box is focused it also says
+             "(Obavezno)" / "(Required)", so the user knows the tag can't be saved without a name (H5). -->
         <TextBox x:Name="NameBox" Margin="0,20,0,0"
-                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                 materialDesign:HintAssist.Hint="{DynamicResource Tags_Name}"
                  materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource MaterialDesign.Brush.TextBox.OutlineBorder}"
                  materialDesign:TextFieldAssist.OutlinedBorderActiveThickness="1"
                  materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
                  Loaded="OnNameBoxLoaded">
+            <TextBox.Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                    <Setter Property="materialDesign:HintAssist.Hint" Value="{DynamicResource Tags_Name}" />
+                    <Style.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="materialDesign:HintAssist.Hint" Value="{DynamicResource Tags_NameFocused}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SaveCommand}" />
             </TextBox.InputBindings>

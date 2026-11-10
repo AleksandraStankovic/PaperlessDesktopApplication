@@ -146,9 +146,20 @@
                            Margin="0,24,0,8" />
 
                 <StackPanel IsEnabled="{Binding IsFormEnabled}">
-                    <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             materialDesign:HintAssist.Hint="{DynamicResource Upload_TitleField}"
-                             Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+                    <!-- Required field: the label always has "*", and while the box is focused it also says
+                         "(Obavezno)" / "(Required)" (H5). The other fields below are marked "(Opciono)". -->
+                    <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                <Setter Property="materialDesign:HintAssist.Hint" Value="{DynamicResource Upload_TitleField}" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                        <Setter Property="materialDesign:HintAssist.Hint" Value="{DynamicResource Upload_TitleFieldFocused}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
                     <!-- Explanation as a normal TextBlock, so it lines up with the left edge of the text box.
                          When the title is invalid, the error takes its place. -->
                     <TextBlock Text="{DynamicResource Upload_TitleHelper}" FontSize="12" Opacity="0.6" Margin="0,4,0,0"
