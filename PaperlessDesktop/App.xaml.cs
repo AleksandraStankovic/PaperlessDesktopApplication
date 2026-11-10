@@ -70,6 +70,7 @@ public partial class App : Application
                 documentsViewModel.ShowWithFilter(chip);
                 mainViewModel.ShowDocuments();
             };
+            documentsViewModel.BackToAnalyticsRequested += (_, _) => mainViewModel.ShowAnalytics();
 
             // ----- Window -----
             new MainWindow(mainViewModel).Show();
