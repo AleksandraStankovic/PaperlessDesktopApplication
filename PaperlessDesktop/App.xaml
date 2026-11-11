@@ -43,11 +43,13 @@
             <!-- Notification text: a check / alert icon next to success / error messages,
                  so the meaning doesn't depend on color alone (accessibility) -->
             <DataTemplate DataType="{x:Type services:NotificationMessage}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon x:Name="Icon" Width="20" Height="20" Margin="0,0,10,0"
+                <!-- DockPanel (not a horizontal StackPanel): the text gets a fixed width and wraps
+                     onto more lines, so long document names are shown in full -->
+                <DockPanel>
+                    <materialDesign:PackIcon x:Name="Icon" DockPanel.Dock="Left" Width="20" Height="20" Margin="0,0,10,0"
                                              VerticalAlignment="Center" Visibility="Collapsed" />
                     <TextBlock Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center" />
-                </StackPanel>
+                </DockPanel>
                 <DataTemplate.Triggers>
                     <DataTrigger Binding="{Binding IsSuccess}" Value="True">
                         <Setter TargetName="Icon" Property="Kind" Value="CheckCircleOutline" />
