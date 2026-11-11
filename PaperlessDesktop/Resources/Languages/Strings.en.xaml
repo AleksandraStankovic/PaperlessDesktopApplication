@@ -40,6 +40,7 @@
 
     <!-- Document list -->
     <sys:String x:Key="Documents_Empty">No documents to show.</sys:String>
+    <sys:String x:Key="Documents_Add">Upload document</sys:String>
     <sys:String x:Key="Col_Title">Title</sys:String>
     <sys:String x:Key="Col_Created">Document date</sys:String>
     <sys:String x:Key="Col_Added">Added</sys:String>
@@ -136,6 +137,7 @@
     <sys:String x:Key="Upload_Button">Upload document</sys:String>
     <sys:String x:Key="Upload_Reset">Reset</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Upload another document</sys:String>
+    <sys:String x:Key="Upload_ShowDocuments">Show documents</sys:String>
 
     <!-- Upload status -->
     <sys:String x:Key="Upload_StatusHeader">Status</sys:String>

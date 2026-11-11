@@ -41,6 +41,7 @@
 
     <!-- Document list -->
     <sys:String x:Key="Documents_Empty">Nema dokumenata za prikaz.</sys:String>
+    <sys:String x:Key="Documents_Add">Dodaj dokument</sys:String>
     <sys:String x:Key="Col_Title">Naziv</sys:String>
     <sys:String x:Key="Col_Created">Datum dokumenta</sys:String>
     <sys:String x:Key="Col_Added">Dodato</sys:String>
@@ -138,6 +139,7 @@
     <sys:String x:Key="Upload_Button">Dodaj dokument</sys:String>
     <sys:String x:Key="Upload_Reset">Poništi</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Dodaj još jedan dokument</sys:String>
+    <sys:String x:Key="Upload_ShowDocuments">Prikaži dokumente</sys:String>
 
     <!-- Upload status -->
     <sys:String x:Key="Upload_StatusHeader">Status</sys:String>

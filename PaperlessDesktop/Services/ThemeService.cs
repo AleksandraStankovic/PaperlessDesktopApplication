@@ -20,6 +20,21 @@ public class ThemeService
     /// <summary>Light accent tint behind a selected toggle (e.g. Tabela / Kartice).</summary>
     public const string AccentSelectedOverlayKey = "Accent.SelectedOverlay";
 
+    // Status colors (green = success, red = error, orange = warning), one soft set per theme.
+    // *.Text: text/icons on the page, WCAG AA (4.5:1) on white (light) and on #424242 (dark).
+    // *.Background / *.Foreground: the colored notification at the bottom - a pale tint with
+    // dark text in light mode, a deep tint with light text in dark mode (both well above 7:1).
+    private static readonly (string Key, Color Light, Color Dark)[] StatusColors =
+    {
+        ("Status.Success.Text",       Color.FromRgb(0x2E, 0x7D, 0x32), Color.FromRgb(0x81, 0xC7, 0x84)),
+        ("Status.Error.Text",         Color.FromRgb(0xC6, 0x28, 0x28), Color.FromRgb(0xEF, 0x9A, 0x9A)),
+        ("Status.Warning.Text",       Color.FromRgb(0xB4, 0x53, 0x09), Color.FromRgb(0xFF, 0xB7, 0x4D)),
+        ("Status.Success.Background", Color.FromRgb(0xE3, 0xF2, 0xE5), Color.FromRgb(0x1E, 0x3B, 0x24)),
+        ("Status.Success.Foreground", Color.FromRgb(0x1B, 0x4D, 0x20), Color.FromRgb(0xD4, 0xED, 0xD6)),
+        ("Status.Error.Background",   Color.FromRgb(0xFB, 0xE6, 0xE5), Color.FromRgb(0x4A, 0x21, 0x21)),
+        ("Status.Error.Foreground",   Color.FromRgb(0x7F, 0x1D, 0x1D), Color.FromRgb(0xFA, 0xDB, 0xDA)),
+    };
+
     // Worst-case page surfaces the accent text must stay readable on:
     // white in light mode, the lightest dark surface (cards/dialogs) in dark mode.
     private static readonly Color LightSurface = Colors.White;
@@ -44,6 +59,18 @@ public class ThemeService
 
         ApplySidebar(primaryColor);
         ApplyAccentBrushes(isDark, primaryColor);
+        ApplyStatusBrushes(isDark);
+    }
+
+    private static void ApplyStatusBrushes(bool isDark)
+    {
+        var resources = Application.Current.Resources;
+        foreach (var (key, light, dark) in StatusColors)
+        {
+            var brush = new SolidColorBrush(isDark ? dark : light);
+            brush.Freeze();
+            resources[key] = brush;
+        }
     }
 
     /// <summary>

@@ -4,7 +4,8 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:vm="clr-namespace:PaperlessDesktop.ViewModels"
              xmlns:views="clr-namespace:PaperlessDesktop.Views"
-             xmlns:converters="clr-namespace:PaperlessDesktop.Converters">
+             xmlns:converters="clr-namespace:PaperlessDesktop.Converters"
+             xmlns:services="clr-namespace:PaperlessDesktop.Services">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -12,6 +13,8 @@
                                              PrimaryColor="Indigo"
                                              SecondaryColor="Amber" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
+                <!-- Snackbar styles, so MainWindow can base the colored notifications on them -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Snackbar.xaml" />
 
                 <!-- Default language (so the designer shows text). Replaced at runtime by LocalizationService. -->
                 <ResourceDictionary Source="Resources/Languages/Strings.sr.xaml" />
@@ -27,6 +30,37 @@
             <!-- Accent text + selected-toggle tint. Replaced at runtime by ThemeService (readable in light AND dark mode). -->
             <SolidColorBrush x:Key="Accent.Text" Color="#6D28D9" />
             <SolidColorBrush x:Key="Accent.SelectedOverlay" Color="#386D28D9" />
+
+            <!-- Status colors (light theme values). Replaced at runtime by ThemeService for light/dark. -->
+            <SolidColorBrush x:Key="Status.Success.Text" Color="#2E7D32" />
+            <SolidColorBrush x:Key="Status.Error.Text" Color="#C62828" />
+            <SolidColorBrush x:Key="Status.Warning.Text" Color="#B45309" />
+            <SolidColorBrush x:Key="Status.Success.Background" Color="#E3F2E5" />
+            <SolidColorBrush x:Key="Status.Success.Foreground" Color="#1B4D20" />
+            <SolidColorBrush x:Key="Status.Error.Background" Color="#FBE6E5" />
+            <SolidColorBrush x:Key="Status.Error.Foreground" Color="#7F1D1D" />
+
+            <!-- Notification text: a check / alert icon next to success / error messages,
+                 so the meaning doesn't depend on color alone (accessibility) -->
+            <DataTemplate DataType="{x:Type services:NotificationMessage}">
+                <!-- DockPanel (not a horizontal StackPanel): the text gets a fixed width and wraps
+                     onto more lines, so long document names are shown in full -->
+                <DockPanel>
+                    <materialDesign:PackIcon x:Name="Icon" DockPanel.Dock="Left" Width="20" Height="20" Margin="0,0,10,0"
+                                             VerticalAlignment="Center" Visibility="Collapsed" />
+                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                </DockPanel>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsSuccess}" Value="True">
+                        <Setter TargetName="Icon" Property="Kind" Value="CheckCircleOutline" />
+                        <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsError}" Value="True">
+                        <Setter TargetName="Icon" Property="Kind" Value="AlertCircleOutline" />
+                        <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
 
             <!-- Converters -->
             <BooleanToVisibilityConverter x:Key="BoolToVis" />

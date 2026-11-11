@@ -133,8 +133,9 @@
                     <!-- HCI: the user SEES that changes were saved (H1) -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Visibility="{Binding HasSavedText, Converter={StaticResource BoolToVis}}">
-                        <materialDesign:PackIcon Kind="CheckCircle" Foreground="#2E7D32" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding SavedText}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        <materialDesign:PackIcon Kind="CheckCircle" Foreground="{DynamicResource Status.Success.Text}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding SavedText}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Status.Success.Text}" />
                     </StackPanel>
                 </DockPanel>
 

@@ -19,12 +19,12 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Done">
                     <Setter TargetName="Icon" Property="Kind" Value="CheckCircle" />
-                    <Setter TargetName="Icon" Property="Foreground" Value="#2E7D32" />
+                    <Setter TargetName="Icon" Property="Foreground" Value="{DynamicResource Status.Success.Text}" />
                     <Setter TargetName="Icon" Property="Opacity" Value="1" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Failed">
                     <Setter TargetName="Icon" Property="Kind" Value="AlertCircle" />
-                    <Setter TargetName="Icon" Property="Foreground" Value="#D32F2F" />
+                    <Setter TargetName="Icon" Property="Foreground" Value="{DynamicResource Status.Error.Text}" />
                     <Setter TargetName="Icon" Property="Opacity" Value="1" />
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -60,7 +60,7 @@
                                         <Setter Property="Fill" Value="#143F51B5" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsDragRejected}" Value="True">
-                                        <Setter Property="Stroke" Value="#D32F2F" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Status.Error.Text}" />
                                         <Setter Property="Fill" Value="#14D32F2F" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -90,7 +90,7 @@
                         </TextBlock>
 
                         <!-- Shown while dragging an unsupported file -->
-                        <TextBlock Text="{DynamicResource Upload_DropRejected}" Foreground="#D32F2F"
+                        <TextBlock Text="{DynamicResource Upload_DropRejected}" Foreground="{DynamicResource Status.Error.Text}"
                                    FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"
                                    Visibility="{Binding IsDragRejected, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
@@ -99,18 +99,18 @@
                 <!-- File error (wrong type, too big, ...) with a clear explanation (H9) -->
                 <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
                             Visibility="{Binding HasFileError, Converter={StaticResource BoolToVis}}">
-                    <materialDesign:PackIcon Kind="AlertCircleOutline" Foreground="#D32F2F"
+                    <materialDesign:PackIcon Kind="AlertCircleOutline" Foreground="{DynamicResource Status.Error.Text}"
                                              Width="20" Height="20" VerticalAlignment="Top" Margin="0,0,8,0" />
-                    <TextBlock Text="{Binding FileError}" Foreground="#D32F2F" TextWrapping="Wrap" MaxWidth="660" />
+                    <TextBlock Text="{Binding FileError}" Foreground="{DynamicResource Status.Error.Text}" TextWrapping="Wrap" MaxWidth="660" />
                 </StackPanel>
 
                 <!-- HCI problem 3: duplicate found BEFORE uploading (H1, H5).
                      The duplicate file is removed automatically, so the user only picks another one. -->
                 <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
                             Visibility="{Binding HasDuplicateWarning, Converter={StaticResource BoolToVis}}">
-                    <materialDesign:PackIcon Kind="ContentDuplicate" Foreground="#E65100"
+                    <materialDesign:PackIcon Kind="ContentDuplicate" Foreground="{DynamicResource Status.Warning.Text}"
                                              Width="20" Height="20" VerticalAlignment="Top" Margin="0,0,8,0" />
-                    <TextBlock Text="{Binding DuplicateWarning}" Foreground="#E65100" TextWrapping="Wrap" MaxWidth="660" />
+                    <TextBlock Text="{Binding DuplicateWarning}" Foreground="{DynamicResource Status.Warning.Text}" TextWrapping="Wrap" MaxWidth="660" />
                 </StackPanel>
 
                 <!-- Selected file -->
@@ -165,7 +165,7 @@
                     <TextBlock Text="{DynamicResource Upload_TitleHelper}" FontSize="12" Opacity="0.6" Margin="0,4,0,0"
                                TextWrapping="Wrap"
                                Visibility="{Binding HasTitleError, Converter={StaticResource InverseBoolToVis}}" />
-                    <TextBlock Text="{Binding TitleError}" Foreground="#D32F2F" FontSize="12" Margin="0,4,0,0"
+                    <TextBlock Text="{Binding TitleError}" Foreground="{DynamicResource Status.Error.Text}" FontSize="12" Margin="0,4,0,0"
                                TextWrapping="Wrap"
                                Visibility="{Binding HasTitleError, Converter={StaticResource BoolToVis}}" />
 
@@ -266,7 +266,7 @@
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding StatusIsError}" Value="True">
-                                            <Setter Property="Foreground" Value="#D32F2F" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Status.Error.Text}" />
                                             <Setter Property="FontWeight" Value="SemiBold" />
                                         </DataTrigger>
                                     </Style.Triggers>

@@ -44,7 +44,7 @@
         </TextBox>
 
         <!-- HCI: validation message right under the field, while typing (H5, H9) -->
-        <TextBlock Text="{Binding NameError}" Foreground="#D32F2F" FontSize="12" Margin="4,4,0,0"
+        <TextBlock Text="{Binding NameError}" Foreground="{DynamicResource Status.Error.Text}" FontSize="12" Margin="4,4,0,0"
                    TextWrapping="Wrap"
                    Visibility="{Binding HasNameError, Converter={StaticResource BoolToVis}}" />
 
@@ -88,7 +88,7 @@
         </StackPanel>
 
         <!-- Server error (dialog stays open so the user can fix it) -->
-        <TextBlock Text="{Binding ServerError}" Foreground="#D32F2F" Margin="0,16,0,0" TextWrapping="Wrap"
+        <TextBlock Text="{Binding ServerError}" Foreground="{DynamicResource Status.Error.Text}" Margin="0,16,0,0" TextWrapping="Wrap"
                    Visibility="{Binding HasServerError, Converter={StaticResource BoolToVis}}" />
 
         <!-- Buttons -->

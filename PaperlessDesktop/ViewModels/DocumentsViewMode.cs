@@ -138,6 +138,13 @@ public partial class DocumentsViewModel : ObservableObject
     [RelayCommand]
     private void BackToAnalytics() => BackToAnalyticsRequested?.Invoke(this, EventArgs.Empty);
 
+    /// <summary>"Dodaj dokument" was clicked (header or empty state). App.xaml.cs opens the upload page,
+    /// the same page as the sidebar item.</summary>
+    public event EventHandler? AddDocumentRequested;
+
+    [RelayCommand]
+    private void AddDocument() => AddDocumentRequested?.Invoke(this, EventArgs.Empty);
+
     /// <summary>Called from Analytics: show exactly the documents behind a clicked chart element.</summary>
     public void ShowWithFilter(FilterChip chip)
     {

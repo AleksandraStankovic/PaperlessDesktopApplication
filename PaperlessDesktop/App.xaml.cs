@@ -71,6 +71,8 @@ public partial class App : Application
                 mainViewModel.ShowDocuments();
             };
             documentsViewModel.BackToAnalyticsRequested += (_, _) => mainViewModel.ShowAnalytics();
+            documentsViewModel.AddDocumentRequested += (_, _) => mainViewModel.ShowUpload();
+            uploadViewModel.ShowDocumentsRequested += (_, _) => mainViewModel.ShowDocuments();
 
             // ----- Window -----
             new MainWindow(mainViewModel).Show();
@@ -132,7 +134,7 @@ public partial class App : Application
         _lastUnexpectedErrorShown = DateTime.Now;
 
         if (_notifications is not null)
-            _notifications.ShowLocalized("Error_UnexpectedRecovered");
+            _notifications.ShowLocalized("Error_UnexpectedRecovered", NotificationKind.Error);
         else
             MessageBox.Show("An unexpected error occurred. The details were saved to the log.",
                             "Paperless Desktop", MessageBoxButton.OK, MessageBoxImage.Warning);

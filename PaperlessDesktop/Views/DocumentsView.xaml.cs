@@ -25,8 +25,8 @@ namespace PaperlessDesktop.Views
         // (search ~300 + 3 dropdowns ~160 + gaps; below that the dropdown hints start to get cut off)
         private const double FilterSingleRowMinWidth = 860;
 
-        // Below this width the view toggle + refresh button move under the page title.
-        private const double HeaderSingleRowMinWidth = 640;
+        // Below this width the header buttons (add document, refresh, view toggle) move under the page title.
+        private const double HeaderSingleRowMinWidth = 800;
 
         private bool? _filtersWide;
         private bool? _headerWide;

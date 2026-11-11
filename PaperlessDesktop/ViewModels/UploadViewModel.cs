@@ -47,6 +47,9 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     /// <summary>Raised when a document was uploaded AND is ready (the document list then refreshes).</summary>
     public event EventHandler? DocumentUploaded;
 
+    /// <summary>"Prikaži dokumente" was clicked after a successful upload. App.xaml.cs opens the Documents page.</summary>
+    public event EventHandler? ShowDocumentsRequested;
+
     public string SupportedFormatsText => "PDF, JPG, PNG, TIFF, GIF, WebP, TXT";
     public string MaxFileSizeText => FormatSize(MaxFileSizeBytes);
 
@@ -286,7 +289,10 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
                 SendStep = UploadStepState.Done;
                 ReadyStep = UploadStepState.Done;
                 StatusMessage = string.Format(_localization.Get("Upload_Status_Done"), title);
-                _notifications.Show(StatusMessage);   // also visible if the user went to another page
+                // Also visible if the user went to another page. HCI (H3): no automatic redirect
+                // (the user may want to add more documents), but the list is one click away.
+                _notifications.Show(StatusMessage, NotificationKind.Success, _localization.Get("Upload_ShowDocuments"),
+                                    () => ShowDocumentsRequested?.Invoke(this, EventArgs.Empty));
                 DocumentUploaded?.Invoke(this, EventArgs.Empty);
                 succeeded = true;
             }
@@ -295,7 +301,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
                 SendStep = UploadStepState.Failed;
                 StatusIsError = true;
                 StatusMessage = DescribeProcessingFailure(task.Result);
-                _notifications.Show(StatusMessage);
+                _notifications.Show(StatusMessage, NotificationKind.Error);
             }
         }
         catch (OperationCanceledException)
