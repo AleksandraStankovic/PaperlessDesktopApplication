@@ -42,6 +42,9 @@ public partial class MainViewModel : ObservableObject
     /// <summary>Switches to the Analytics page (back button on a list opened from a chart).</summary>
     public void ShowAnalytics() => SelectedPageIndex = 1;
 
+    /// <summary>Switches to the Upload page ("Dodaj dokument" button on the Documents page).</summary>
+    public void ShowUpload() => SelectedPageIndex = 2;
+
     // Generated hook: runs automatically whenever SelectedPageIndex changes
     partial void OnSelectedPageIndexChanged(int value)
     {

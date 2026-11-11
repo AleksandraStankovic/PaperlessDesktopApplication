@@ -71,6 +71,7 @@ public partial class App : Application
                 mainViewModel.ShowDocuments();
             };
             documentsViewModel.BackToAnalyticsRequested += (_, _) => mainViewModel.ShowAnalytics();
+            documentsViewModel.AddDocumentRequested += (_, _) => mainViewModel.ShowUpload();
 
             // ----- Window -----
             new MainWindow(mainViewModel).Show();
