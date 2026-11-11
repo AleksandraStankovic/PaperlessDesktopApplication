@@ -85,7 +85,34 @@
                             HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
 
             <!-- ===== Notifications (errors, success messages) ===== -->
-            <materialDesign:Snackbar Grid.Column="1" MessageQueue="{Binding MessageQueue}" />
+            <!-- Success = soft green, error = soft red, other messages keep the neutral look.
+                 Colors come from ThemeService, so they fit the light and the dark theme. -->
+            <materialDesign:Snackbar Grid.Column="1" MessageQueue="{Binding MessageQueue}">
+                <materialDesign:Snackbar.Style>
+                    <Style TargetType="materialDesign:Snackbar" BasedOn="{StaticResource {x:Type materialDesign:Snackbar}}">
+                        <!-- Action button ("Prikaži dokumente") uses the message's text color, bold -->
+                        <Setter Property="ActionButtonStyle">
+                            <Setter.Value>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignSnackbarActionButton}">
+                                    <Setter Property="Foreground"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=materialDesign:Snackbar}}" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Style>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Message.Content.IsSuccess, RelativeSource={RelativeSource Self}}" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource Status.Success.Background}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Status.Success.Foreground}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Message.Content.IsError, RelativeSource={RelativeSource Self}}" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource Status.Error.Background}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Status.Error.Foreground}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </materialDesign:Snackbar.Style>
+            </materialDesign:Snackbar>
         </Grid>
     </materialDesign:DialogHost>
 </Window>

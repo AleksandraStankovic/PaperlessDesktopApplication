@@ -77,7 +77,7 @@
                                         <materialDesign:PackIcon Kind="PencilOutline" />
                                     </Button>
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
-                                            ToolTip="{DynamicResource Common_Delete}" Foreground="#D32F2F"
+                                            ToolTip="{DynamicResource Common_Delete}" Foreground="{DynamicResource Status.Error.Text}"
                                             Command="{Binding DataContext.DeleteTagCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
                                         <materialDesign:PackIcon Kind="DeleteOutline" />

@@ -160,6 +160,6 @@ public partial class SettingsViewModel : ObservableObject
         if (_settingsService.Save(_settings))
             SavedText = string.Format(_localization.Get("Settings_SavedAt"), DateTime.Now.ToString("HH:mm:ss"));
         else
-            _notifications.ShowLocalized("Settings_SaveFailed");
+            _notifications.ShowLocalized("Settings_SaveFailed", NotificationKind.Error);
     }
 }

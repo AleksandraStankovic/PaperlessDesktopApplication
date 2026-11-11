@@ -74,7 +74,7 @@ namespace PaperlessDesktop.ViewModels
             if (await _dialogs.ShowAsync(editor) is not Tag saved)
                 return;   // cancelled
 
-            _notifications.Show(string.Format(_localization.Get("Tags_Created"), saved.Name));
+            _notifications.ShowSuccess(string.Format(_localization.Get("Tags_Created"), saved.Name));
             await AfterChangeAsync();
         }
 
@@ -88,7 +88,7 @@ namespace PaperlessDesktop.ViewModels
             if (await _dialogs.ShowAsync(editor) is not Tag saved)
                 return;
 
-            _notifications.Show(string.Format(_localization.Get("Tags_Updated"), saved.Name));
+            _notifications.ShowSuccess(string.Format(_localization.Get("Tags_Updated"), saved.Name));
             await AfterChangeAsync();
         }
 
@@ -113,7 +113,7 @@ namespace PaperlessDesktop.ViewModels
             {
                 IsLoading = true;
                 await _api.DeleteTagAsync(tag.Id);
-                _notifications.Show(string.Format(_localization.Get("Tags_Deleted"), tag.Name));
+                _notifications.ShowSuccess(string.Format(_localization.Get("Tags_Deleted"), tag.Name));
                 await AfterChangeAsync();
             }
             catch (Exception ex)

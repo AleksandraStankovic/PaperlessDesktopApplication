@@ -132,7 +132,7 @@ public partial class DocumentPreviewViewModel : ObservableObject
     private void OpenFile(string path)
     {
         if (!_files.TryOpenWithDefaultApp(path))
-            _notifications.ShowLocalized("Preview_OpenFailed");
+            _notifications.ShowLocalized("Preview_OpenFailed", NotificationKind.Error);
     }
 
     private void SetPreviewFile(string? path)
