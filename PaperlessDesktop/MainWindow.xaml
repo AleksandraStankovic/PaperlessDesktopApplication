@@ -90,13 +90,48 @@
             <materialDesign:Snackbar Grid.Column="1" MessageQueue="{Binding MessageQueue}">
                 <materialDesign:Snackbar.Style>
                     <Style TargetType="materialDesign:Snackbar" BasedOn="{StaticResource {x:Type materialDesign:Snackbar}}">
-                        <!-- Action button ("Prikaži dokumente") uses the message's text color, bold -->
+                        <!-- Action button ("Prikaži dokumente") uses the message's text color, bold.
+                             Own template: MaterialDesign's hover is a fixed dark grey that looks wrong on
+                             the green/red background. Here hover is a light tint of the text color,
+                             so it fits every message color in both themes. -->
                         <Setter Property="ActionButtonStyle">
                             <Setter.Value>
                                 <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignSnackbarActionButton}">
                                     <Setter Property="Foreground"
                                             Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=materialDesign:Snackbar}}" />
                                     <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="materialDesign:RippleAssist.Feedback"
+                                            Value="{Binding Foreground, RelativeSource={RelativeSource Self}}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Grid>
+                                                    <Border x:Name="HoverTint" CornerRadius="4" Opacity="0"
+                                                            Background="{TemplateBinding Foreground}" />
+                                                    <materialDesign:Ripple Padding="{TemplateBinding Padding}"
+                                                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                                           Content="{TemplateBinding Content}"
+                                                                           ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                           Focusable="False" ClipToBounds="True" />
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="HoverTint" Property="Opacity" Value="0.12" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="HoverTint" Property="Opacity" Value="0.2" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Opacity" Value="0.38" />
+                                                    </Trigger>
+                                                    <Trigger Property="DockPanel.Dock" Value="Bottom">
+                                                        <Setter Property="Margin" Value="0,18,-8,-8" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
                                 </Style>
                             </Setter.Value>
                         </Setter>
