@@ -11,18 +11,10 @@
         <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" />
         <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,12,0,24" />
 
+        <!-- Confirm first, "Odustani" last (on the right), as in Windows dialogs. Cancel uses the normal
+             text color, not the accent color, so only the action button stands out. -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="CancelButton" IsCancel="True"
-                    Content="{DynamicResource Common_Cancel}"
-                    Style="{StaticResource MaterialDesignFlatButton}"
-                    Foreground="{DynamicResource Accent.Text}"
-                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
-                <Button.CommandParameter>
-                    <sys:Boolean>False</sys:Boolean>
-                </Button.CommandParameter>
-            </Button>
-
-            <Button Content="{Binding ConfirmText}" Margin="8,0,0,0"
+            <Button Content="{Binding ConfirmText}"
                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                 <Button.CommandParameter>
                     <sys:Boolean>True</sys:Boolean>
@@ -40,6 +32,16 @@
                     </Style>
                 </Button.Style>
             </Button>
+            <Button x:Name="CancelButton" IsCancel="True"
+                    Content="{DynamicResource Common_Cancel}"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Foreground="{DynamicResource MaterialDesign.Brush.Foreground}" Margin="8,0,0,0"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                <Button.CommandParameter>
+                    <sys:Boolean>False</sys:Boolean>
+                </Button.CommandParameter>
+            </Button>
+
         </StackPanel>
     </StackPanel>
 </UserControl>

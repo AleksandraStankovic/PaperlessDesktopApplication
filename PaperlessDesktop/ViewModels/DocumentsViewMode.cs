@@ -223,7 +223,7 @@ public partial class DocumentsViewModel : ObservableObject
             SelectedDocument = null;
         _thumbnailCache.Remove(item.Id);
 
-        _notifications.ShowSuccess(string.Format(_localization.Get("Documents_Deleted"), item.Title));
+        _notifications.ShowSuccessLonger(string.Format(_localization.Get("Documents_Deleted"), item.Title));
 
         // If it was the only document on the last page, go back one page instead of showing an empty one
         int page = Documents.Count <= 1 && CurrentPage > 1 ? CurrentPage - 1 : CurrentPage;
