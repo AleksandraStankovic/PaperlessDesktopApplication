@@ -41,6 +41,10 @@
     <!-- Document list -->
     <sys:String x:Key="Documents_Empty">No documents to show.</sys:String>
     <sys:String x:Key="Documents_Add">Upload document</sys:String>
+    <sys:String x:Key="Documents_Delete">Delete document</sys:String>
+    <sys:String x:Key="Documents_DeleteTitle">Delete document?</sys:String>
+    <sys:String x:Key="Documents_DeleteConfirm">Are you sure you want to delete the document "{0}"? This can't be undone.</sys:String>
+    <sys:String x:Key="Documents_Deleted">Document "{0}" was deleted.</sys:String>
     <sys:String x:Key="Col_Title">Title</sys:String>
     <sys:String x:Key="Col_Created">Document date</sys:String>
     <sys:String x:Key="Col_Added">Added</sys:String>

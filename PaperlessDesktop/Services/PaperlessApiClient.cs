@@ -259,6 +259,13 @@ namespace PaperlessDesktop.Services
         /// <summary>What we send when changing a document's tags (becomes {"tags": [1, 2, 3]}).</summary>
         private record DocumentTagsRequest(IReadOnlyList<int> Tags);
 
+        /// <summary>Deletes a document on the server (DELETE api/documents/{id}/).</summary>
+        public async Task DeleteDocumentAsync(int id, CancellationToken ct = default)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Delete, $"api/documents/{id}/");
+            using var response = await SendAsync(request, ct);
+        }
+
 
         /// <summary>Sends an object as JSON (POST/PATCH) and reads the JSON answer.</summary>
         private async Task<T> SendJsonAsync<T>(HttpMethod method, string relativeUrl, object body, CancellationToken ct)

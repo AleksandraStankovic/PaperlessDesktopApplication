@@ -207,14 +207,14 @@ namespace PaperlessDesktop.Views
         }
 
         // The table's selection drives the preview. The grid selects a row on mouse down even when
-        // the click lands on the row's "open" button, which would open the preview (and shift the
-        // layout so the button's click never arrives). So the grid only shows the selection
-        // (one-way binding) and passes user changes on here, except while that button is pressed.
+        // the click lands on one of the row's buttons ("open", "delete"), which would open the preview
+        // (and shift the layout so the button's click never arrives). So the grid only shows the selection
+        // (one-way binding) and passes user changes on here, except while such a button is pressed.
         private bool _openButtonPressed;
 
         private void OnDocumentsGridPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            _openButtonPressed = FindOpenButton(e.OriginalSource as DependencyObject) is not null;
+            _openButtonPressed = FindRowActionButton(e.OriginalSource as DependencyObject) is not null;
         }
 
         private void OnDocumentsGridPreviewMouseUp(object sender, MouseButtonEventArgs e)
@@ -239,11 +239,11 @@ namespace PaperlessDesktop.Views
                 vm.SelectedDocument = DocumentsGrid.SelectedItem as DocumentItemViewModel;
         }
 
-        private static Button? FindOpenButton(DependencyObject? element)
+        private static Button? FindRowActionButton(DependencyObject? element)
         {
             while (element is not null and not DataGridRow)
             {
-                if (element is Button { Tag: "OpenDocument" } button)
+                if (element is Button { Tag: "RowAction" } button)
                     return button;
 
                 element = element is Visual or System.Windows.Media.Media3D.Visual3D

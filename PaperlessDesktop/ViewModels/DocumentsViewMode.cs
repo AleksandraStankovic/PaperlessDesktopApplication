@@ -15,6 +15,8 @@ public partial class DocumentsViewModel : ObservableObject
     private readonly PaperlessApiClient _api;
     private readonly LookupCache _lookups;
     private readonly NotificationService _notifications;
+    private readonly DialogService _dialogs;
+    private readonly LocalizationService _localization;
 
     // The current request: page, search text and filters
     private readonly DocumentQuery _query = new();
@@ -103,12 +105,17 @@ public partial class DocumentsViewModel : ObservableObject
     /// </summary>
     public event EventHandler<bool>? DocumentTagsEdited;
 
+    /// <summary>Raised after a document was deleted. App.xaml.cs lets Analytics and the Tags page know (counts changed).</summary>
+    public event EventHandler? DocumentDeleted;
+
     public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups, DocumentFileService files,
-                              NotificationService notifications, LocalizationService localization)
+                              NotificationService notifications, DialogService dialogs, LocalizationService localization)
     {
         _api = api;
         _lookups = lookups;
         _notifications = notifications;
+        _dialogs = dialogs;
+        _localization = localization;
 
         Preview = new DocumentPreviewViewModel(files, api, lookups, notifications, localization);
         Preview.CloseRequested += (_, _) => SelectedDocument = null;
@@ -180,6 +187,50 @@ public partial class DocumentsViewModel : ObservableObject
     {
         _thumbnailCache.Clear();
         return LoadPageAsync(CurrentPage, reloadLookups: true);
+    }
+
+    /// <summary>
+    /// Trash button on a table row or a card. Asks first (HCI H5: error prevention - deleting can't be
+    /// undone, so the safe "Odustani" button has focus), then deletes on the server and reloads the page.
+    /// </summary>
+    [RelayCommand]
+    private async Task DeleteDocumentAsync(DocumentItemViewModel? item)
+    {
+        if (item is null)
+            return;
+
+        bool confirmed = await _dialogs.ConfirmAsync(
+            _localization.Get("Documents_DeleteTitle"),
+            string.Format(_localization.Get("Documents_DeleteConfirm"), item.Title),
+            _localization.Get("Common_Delete"), isDestructive: true);
+        if (!confirmed)
+            return;
+
+        try
+        {
+            IsLoading = true;
+            await _api.DeleteDocumentAsync(item.Id);
+        }
+        catch (Exception ex)
+        {
+            IsLoading = false;
+            _notifications.ShowError(ex);
+            return;
+        }
+
+        // The deleted document must not stay open in the preview
+        if (ReferenceEquals(SelectedDocument, item) || SelectedDocument?.Id == item.Id)
+            SelectedDocument = null;
+        _thumbnailCache.Remove(item.Id);
+
+        _notifications.ShowSuccess(string.Format(_localization.Get("Documents_Deleted"), item.Title));
+
+        // If it was the only document on the last page, go back one page instead of showing an empty one
+        int page = Documents.Count <= 1 && CurrentPage > 1 ? CurrentPage - 1 : CurrentPage;
+
+        // Reload lookups too: tag / correspondent / type counts in the filters changed
+        await LoadPageAsync(page, reloadLookups: true);
+        DocumentDeleted?.Invoke(this, EventArgs.Empty);
     }
 
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
