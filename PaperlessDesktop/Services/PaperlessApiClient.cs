@@ -252,6 +252,13 @@ namespace PaperlessDesktop.Services
         /// <summary>What we send when saving a tag (becomes {"name": "...", "color": "#..."}).</summary>
         private record TagSaveRequest(string Name, string Color);
 
+        /// <summary>Replaces a document's tags. The server answers with the updated document.</summary>
+        public Task<Document> UpdateDocumentTagsAsync(int id, IReadOnlyList<int> tagIds, CancellationToken ct = default)
+            => SendJsonAsync<Document>(HttpMethod.Patch, $"api/documents/{id}/", new DocumentTagsRequest(tagIds), ct);
+
+        /// <summary>What we send when changing a document's tags (becomes {"tags": [1, 2, 3]}).</summary>
+        private record DocumentTagsRequest(IReadOnlyList<int> Tags);
+
 
         /// <summary>Sends an object as JSON (POST/PATCH) and reads the JSON answer.</summary>
         private async Task<T> SendJsonAsync<T>(HttpMethod method, string relativeUrl, object body, CancellationToken ct)

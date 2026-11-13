@@ -540,6 +540,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Col_Created}" Style="{StaticResource MetaLabel}" />
@@ -553,11 +554,125 @@
 
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Col_DocumentType}" Style="{StaticResource MetaLabel}" />
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Document.DocumentTypeName}" Style="{StaticResource MetaValue}" />
-                        </Grid>
 
-                        <ItemsControl ItemsSource="{Binding Document.Tags}" Margin="0,8,0,0"
-                                      ItemTemplate="{StaticResource TagChipTemplate}"
-                                      ItemsPanel="{StaticResource WrapPanelTemplate}" />
+                            <!-- Tags: ✕ removes a tag, "+ Dodaj tag" adds an existing one or creates a new one.
+                                 Same chip + ✕ pattern as the upload form and the filters (H4); every change is
+                                 saved right away and a removal can be undone from the notification (H3). -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Col_Tags}" Style="{StaticResource MetaLabel}"
+                                       VerticalAlignment="Top" Margin="0,9,16,3" />
+                            <StackPanel Grid.Row="4" Grid.Column="1" Margin="0,0,0,0">
+                                <ItemsControl ItemsSource="{Binding Document.Tags}"
+                                              ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                              IsEnabled="{Binding CanEditTags}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <materialDesign:Chip Margin="0,4,8,0" IsDeletable="True" Content="{Binding Name}"
+                                                                 Background="{Binding Color, Converter={StaticResource HexToBrush}}"
+                                                                 Foreground="{Binding TextColor, Converter={StaticResource HexToBrush}, ConverterParameter=#000000}"
+                                                                 DeleteToolTip="{DynamicResource Preview_RemoveTag}"
+                                                                 DeleteCommand="{Binding DataContext.RemoveTagCommand, RelativeSource={RelativeSource AncestorType=materialDesign:Card}}"
+                                                                 DeleteCommandParameter="{Binding}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <Button x:Name="AddTagButton" Command="{Binding OpenTagPickerCommand}"
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            Foreground="{DynamicResource Accent.Text}"
+                                            Height="30" Padding="6,0" Margin="-6,0,0,0"
+                                            ToolTip="{DynamicResource Preview_AddTagTooltip}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="TagPlusOutline" Width="18" Height="18" VerticalAlignment="Center" />
+                                            <TextBlock Text="{DynamicResource Preview_AddTag}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                 IsIndeterminate="True" Width="16" Height="16" Margin="8,0,0,0"
+                                                 VerticalAlignment="Center"
+                                                 Visibility="{Binding IsSavingTags, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+
+                                <!-- The picker is a Popup (its own window), so it shows on top of the file preview
+                                     (WebView2 would cover a normal overlay or dialog). -->
+                                <Popup x:Name="TagPickerPopup" PlacementTarget="{Binding ElementName=AddTagButton}"
+                                       Placement="Bottom" StaysOpen="False" AllowsTransparency="True"
+                                       PopupAnimation="Fade" Focusable="False"
+                                       IsOpen="{Binding IsTagPickerOpen, Mode=TwoWay}"
+                                       Opened="OnTagPickerOpened">
+                                    <materialDesign:Card Width="300" Margin="4,2,8,8"
+                                                         materialDesign:ElevationAssist.Elevation="Dp4"
+                                                         TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}">
+                                        <materialDesign:Card.InputBindings>
+                                            <KeyBinding Key="Escape" Command="{Binding CloseTagPickerCommand}" />
+                                        </materialDesign:Card.InputBindings>
+                                        <StackPanel Margin="0,8,0,8">
+                                            <TextBox x:Name="TagSearchBox" Margin="12,0,12,4"
+                                                     Text="{Binding TagSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                                     materialDesign:HintAssist.Hint="{DynamicResource Preview_TagSearchHint}"
+                                                     materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                                                     materialDesign:TextFieldAssist.LeadingIcon="Magnify"
+                                                     MaxLength="128"
+                                                     PreviewKeyDown="OnTagSearchBoxPreviewKeyDown">
+                                                <TextBox.InputBindings>
+                                                    <KeyBinding Key="Enter" Command="{Binding ConfirmTagSearchCommand}" />
+                                                </TextBox.InputBindings>
+                                            </TextBox>
+
+                                            <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto"
+                                                          HorizontalScrollBarVisibility="Disabled">
+                                                <ItemsControl ItemsSource="{Binding TagSuggestions}" Focusable="False">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button Command="{Binding DataContext.AddTagCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                                    Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
+                                                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                                    Height="36" Padding="12,0"
+                                                                    materialDesign:ButtonAssist.CornerRadius="0">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Border Width="12" Height="12" CornerRadius="6" Margin="0,0,10,0" VerticalAlignment="Center"
+                                                                            Background="{Binding Color, Converter={StaticResource HexToBrush}}" />
+                                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="Normal"
+                                                                               TextTrimming="CharacterEllipsis" MaxWidth="200" />
+                                                                    <TextBlock VerticalAlignment="Center" FontWeight="Normal" Opacity="0.6" Margin="6,0,0,0">
+                                                                        <Run Text="(" /><Run Text="{Binding DocumentCount, Mode=OneWay}" /><Run Text=")" />
+                                                                    </TextBlock>
+                                                                </StackPanel>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
+
+                                            <!-- Typed a name no tag has yet: offer to create it (H7 - no detour to the Tags page) -->
+                                            <Button Command="{Binding CreateTagCommand}"
+                                                    Visibility="{Binding CanCreateTag, Converter={StaticResource BoolToVis}}"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Foreground="{DynamicResource Accent.Text}"
+                                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                    Height="36" Padding="12,0"
+                                                    materialDesign:ButtonAssist.CornerRadius="0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="Plus" Width="16" Height="16" Margin="-2,0,8,0" VerticalAlignment="Center" />
+                                                    <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="230">
+                                                        <Run Text="{DynamicResource Preview_CreateTag}" /><Run Text=" „" /><Run Text="{Binding NewTagName, Mode=OneWay}" FontWeight="SemiBold" /><Run Text="“" />
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Button>
+
+                                            <TextBlock Text="{DynamicResource Preview_NoMoreTags}" Margin="12,8,12,4" Opacity="0.7"
+                                                       TextWrapping="Wrap"
+                                                       Visibility="{Binding ShowNoSuggestions, Converter={StaticResource BoolToVis}}" />
+
+                                            <TextBlock Text="{DynamicResource Preview_TagPickerTip}" Margin="12,6,12,0"
+                                                       FontSize="11" Opacity="0.6" />
+                                        </StackPanel>
+                                    </materialDesign:Card>
+                                </Popup>
+                            </StackPanel>
+                        </Grid>
 
                         <!-- Technical details: available, but out of the way -->
                         <Expander Header="{DynamicResource Preview_MoreDetails}" Margin="-8,8,-8,0">

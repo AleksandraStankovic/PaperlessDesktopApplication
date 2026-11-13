@@ -45,7 +45,7 @@ public partial class App : Application
             var dialogs = new DialogService();
 
             // ----- ViewModels -----
-            var documentsViewModel = new DocumentsViewModel(api, lookups, files, notifications);
+            var documentsViewModel = new DocumentsViewModel(api, lookups, files, notifications, localization);
             var uploadViewModel = new UploadViewModel(api, lookups, notifications, localization);
             var tagsViewModel = new TagsViewModel(api, dialogs, notifications, localization);
             var analyticsViewModel = new AnalyticsViewModel(api, lookups, notifications, localization);
@@ -55,6 +55,10 @@ public partial class App : Application
             tagsViewModel.TagsChanged += (_, _) => analyticsViewModel.Invalidate();
             uploadViewModel.DocumentUploaded += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
             uploadViewModel.DocumentUploaded += (_, _) => analyticsViewModel.Invalidate();
+
+            // Tags added/removed in the document preview: tag counts (and maybe a new tag) changed
+            documentsViewModel.DocumentTagsEdited += (_, _) => analyticsViewModel.Invalidate();
+            documentsViewModel.DocumentTagsEdited += (_, _) => tagsViewModel.Invalidate();
            
 
             var mainViewModel = new MainViewModel(

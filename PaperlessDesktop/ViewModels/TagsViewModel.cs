@@ -41,6 +41,9 @@ namespace PaperlessDesktop.ViewModels
                 _ = LoadAsync();
         }
 
+        /// <summary>Tags or their document counts changed elsewhere (document preview): reload on the next visit.</summary>
+        public void Invalidate() => _loadedOnce = false;
+
         // ---------- Commands ----------
 
         [RelayCommand]
