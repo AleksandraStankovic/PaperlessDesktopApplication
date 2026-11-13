@@ -55,6 +55,14 @@ public class NotificationService
 
     public void ShowSuccess(string message) => Show(message, NotificationKind.Success);
 
+    /// <summary>
+    /// Success message for a finished action the user should notice (e.g. a deleted document).
+    /// Stays as long as the upload message, so both look and behave the same.
+    /// </summary>
+    public void ShowSuccessLonger(string message)
+        => MessageQueue.Enqueue<object?>(new NotificationMessage(message, NotificationKind.Success), null, null, null,
+                                         false, false, MessageWithActionDuration);
+
     /// <summary>Message with a button (e.g. "Prikaži dokumente"). Stays a bit longer, so there is time to click it.</summary>
     public void Show(string message, NotificationKind kind, string actionText, Action action)
         => MessageQueue.Enqueue<object?>(new NotificationMessage(message, kind), actionText, _ => action(), null,

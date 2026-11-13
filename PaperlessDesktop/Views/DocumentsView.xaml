@@ -78,6 +78,23 @@
                         <Image Source="{Binding Thumbnail}" Stretch="Uniform" Margin="8"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                Visibility="{Binding HasThumbnail, Converter={StaticResource BoolToVis}}" />
+
+                        <!-- Delete, in the corner of the thumbnail. A round paper-colored background keeps the red
+                             icon readable on top of any page. Clicking it does not select the card (the button
+                             handles the click); a confirmation dialog opens first. -->
+                        <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6"
+                                Width="32" Height="32" CornerRadius="16"
+                                Background="{DynamicResource MaterialDesign.Brush.Card.Background}">
+                            <Button Width="32" Height="32" Padding="0"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Foreground="{DynamicResource Status.Error.Text}"
+                                    Command="{Binding DataContext.DeleteDocumentCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip="{DynamicResource Documents_Delete}"
+                                    AutomationProperties.Name="{DynamicResource Documents_Delete}">
+                                <materialDesign:PackIcon Kind="DeleteOutline" Width="18" Height="18" />
+                            </Button>
+                        </Border>
                     </Grid>
 
                     <StackPanel Margin="12,10,12,12">
@@ -346,6 +363,11 @@
                           CanUserAddRows="False" CanUserDeleteRows="False"
                           CanUserSortColumns="False"
                           SelectionMode="Single" SelectionUnit="FullRow" HeadersVisibility="Column">
+                    <!-- Delete key = trash button for the selected row (still asks first) -->
+                    <DataGrid.InputBindings>
+                        <KeyBinding Key="Delete" Command="{Binding DeleteDocumentCommand}"
+                                    CommandParameter="{Binding SelectedDocument}" />
+                    </DataGrid.InputBindings>
                     <!-- Clicking selects the whole row; no focus border around the individual cell -->
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
@@ -431,15 +453,29 @@
                             </DataGridTemplateColumn.CellStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Tag="OpenDocument"
-                                            Command="{Binding DataContext.Preview.OpenInDefaultAppCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}"
-                                            Style="{StaticResource MaterialDesignIconButton}"
-                                            Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
-                                            Width="32" Height="32" VerticalAlignment="Center"
-                                            ToolTip="{DynamicResource Preview_OpenExternal}">
-                                        <materialDesign:PackIcon Kind="OpenInNew" Width="18" Height="18" />
-                                    </Button>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Tag="RowAction"
+                                                Command="{Binding DataContext.Preview.OpenInDefaultAppCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource MaterialDesignIconButton}"
+                                                Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
+                                                Width="32" Height="32" VerticalAlignment="Center"
+                                                ToolTip="{DynamicResource Preview_OpenExternal}"
+                                                AutomationProperties.Name="{DynamicResource Preview_OpenExternal}">
+                                            <materialDesign:PackIcon Kind="OpenInNew" Width="18" Height="18" />
+                                        </Button>
+                                        <!-- Delete: red like the trash button on the Tags page; asks for confirmation first -->
+                                        <Button Tag="RowAction"
+                                                Command="{Binding DataContext.DeleteDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource MaterialDesignIconButton}"
+                                                Foreground="{DynamicResource Status.Error.Text}"
+                                                Width="32" Height="32" VerticalAlignment="Center"
+                                                ToolTip="{DynamicResource Documents_Delete}"
+                                                AutomationProperties.Name="{DynamicResource Documents_Delete}">
+                                            <materialDesign:PackIcon Kind="DeleteOutline" Width="18" Height="18" />
+                                        </Button>
+                                    </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -452,6 +488,10 @@
                          ItemTemplate="{StaticResource DocumentCardTemplate}"
                          Visibility="{Binding IsCardView, Converter={StaticResource BoolToVis}}"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.InputBindings>
+                        <KeyBinding Key="Delete" Command="{Binding DeleteDocumentCommand}"
+                                    CommandParameter="{Binding SelectedDocument}" />
+                    </ListBox.InputBindings>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
