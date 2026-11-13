@@ -41,13 +41,26 @@
             <SolidColorBrush x:Key="Status.Error.Foreground" Color="#7F1D1D" />
 
             <!-- Notification text: a check / alert icon next to success / error messages,
-                 so the meaning doesn't depend on color alone (accessibility) -->
+                 so the meaning doesn't depend on color alone (accessibility), and a ✕ to close it
+                 right away instead of waiting (H3: user control and freedom) -->
             <DataTemplate DataType="{x:Type services:NotificationMessage}">
                 <!-- DockPanel (not a horizontal StackPanel): the text gets a fixed width and wraps
                      onto more lines, so long document names are shown in full -->
                 <DockPanel>
                     <materialDesign:PackIcon x:Name="Icon" DockPanel.Dock="Left" Width="20" Height="20" Margin="0,0,10,0"
                                              VerticalAlignment="Center" Visibility="Collapsed" />
+                    <!-- Uses the message's own text color, so it fits the green / red / neutral look in both themes.
+                         The command is on MainViewModel (the window's DataContext). -->
+                    <Button DockPanel.Dock="Right" Margin="12,-4,-8,-4" VerticalAlignment="Center"
+                            Width="28" Height="28" Padding="0"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=materialDesign:Snackbar}}"
+                            materialDesign:RippleAssist.Feedback="{Binding Foreground, RelativeSource={RelativeSource Self}}"
+                            Command="{Binding DataContext.DismissNotificationCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            ToolTip="{DynamicResource Notification_Dismiss}"
+                            AutomationProperties.Name="{DynamicResource Notification_Dismiss}">
+                        <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
+                    </Button>
                     <TextBlock Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center" />
                 </DockPanel>
                 <DataTemplate.Triggers>

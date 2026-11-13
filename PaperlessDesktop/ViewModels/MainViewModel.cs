@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using PaperlessDesktop.Services;
 
@@ -8,6 +9,7 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly ObservableObject[] _pages;
     private readonly DocumentsViewModel _documents;
+    private readonly NotificationService _notifications;
 
     public SnackbarMessageQueue MessageQueue { get; }
 
@@ -29,12 +31,17 @@ public partial class MainViewModel : ObservableObject
         _pages = new ObservableObject[] { documents, analytics, upload, tags, settings };
         _documents = documents;
         CurrentPage = documents;
+        _notifications = notifications;
         MessageQueue = notifications.MessageQueue;
 
         // Start loading documents right away, so the list is ready when the app opens
         _ = documents.InitializeAsync();
     }
 
+
+    /// <summary>The ✕ on a notification (the button is in the NotificationMessage template in App.xaml).</summary>
+    [RelayCommand]
+    private void DismissNotification() => _notifications.DismissCurrent();
 
     /// <summary>Switches to the Documents page (e.g. after clicking a chart).</summary>
     public void ShowDocuments() => SelectedPageIndex = 0;
