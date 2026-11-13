@@ -137,6 +137,10 @@
     <sys:String x:Key="Upload_MaxSizePrefix">up to</sys:String>
     <sys:String x:Key="Upload_DropRejected">This file type is not supported.</sys:String>
     <sys:String x:Key="Upload_RemoveFile">Remove file</sys:String>
+    <sys:String x:Key="Upload_DropHintReplace">Drag another file here</sys:String>
+    <sys:String x:Key="Upload_BrowseReplace">Choose another file...</sys:String>
+    <sys:String x:Key="Upload_ReplaceNote">A new file will replace the one currently selected.</sys:String>
+    <sys:String x:Key="Upload_FileReplaced">“{0}” was replaced with “{1}”.</sys:String>
     <sys:String x:Key="Upload_FileFilterName">Supported documents</sys:String>
     <sys:String x:Key="Upload_OnlyOneFile">You dropped several files – only the first one is added.</sys:String>
     <sys:String x:Key="Upload_CheckingDuplicate">Checking whether this document already exists...</sys:String>

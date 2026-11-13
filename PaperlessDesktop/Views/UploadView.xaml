@@ -71,13 +71,42 @@
                     <StackPanel Margin="24,28" HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="CloudUploadOutline" Width="48" Height="48"
                                                  HorizontalAlignment="Center" Opacity="0.6" />
-                        <TextBlock Text="{DynamicResource Upload_DropHint}" FontSize="16"
-                                   HorizontalAlignment="Center" Margin="0,8,0,0" />
+                        <!-- Once a file is selected, the texts say that a new one REPLACES it (H1, H5) -->
+                        <TextBlock FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="{DynamicResource Upload_DropHint}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasFile}" Value="True">
+                                            <Setter Property="Text" Value="{DynamicResource Upload_DropHintReplace}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                         <TextBlock Text="{DynamicResource Upload_Or}" Opacity="0.6"
                                    HorizontalAlignment="Center" Margin="0,4" />
-                        <Button Content="{DynamicResource Upload_Browse}" Click="Browse_Click"
-                                Style="{StaticResource MaterialDesignOutlinedButton}"
-                    Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}" HorizontalAlignment="Center" />
+                        <Button Click="Browse_Click"
+                                Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}" HorizontalAlignment="Center">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                    <Setter Property="Content" Value="{DynamicResource Upload_Browse}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasFile}" Value="True">
+                                            <Setter Property="Content" Value="{DynamicResource Upload_BrowseReplace}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0"
+                                    Visibility="{Binding HasFile, Converter={StaticResource BoolToVis}}">
+                            <materialDesign:PackIcon Kind="SwapHorizontal" Width="16" Height="16" Opacity="0.7"
+                                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="{DynamicResource Upload_ReplaceNote}" FontSize="12" Opacity="0.7"
+                                       VerticalAlignment="Center" TextWrapping="Wrap" />
+                        </StackPanel>
 
                         <!-- HCI problem 3: allowed formats are visible BEFORE choosing a file (H5) -->
                         <TextBlock FontSize="12" Opacity="0.7" Margin="0,14,0,0"

@@ -205,9 +205,18 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
             return;
         }
 
+        // A file was already chosen: say that it was replaced, so it never happens silently (H1)
+        string? replacedName = HasFile
+            && !string.Equals(SelectedFilePath, path, StringComparison.OrdinalIgnoreCase)
+            ? FileName : null;
+
         FileError = null;
         SelectedFilePath = path;
         FileSizeText = FormatSize(size);
+
+        if (replacedName is not null)
+            _notifications.Show(string.Format(_localization.Get("Upload_FileReplaced"), replacedName, FileName));
+
         _ = CheckForDuplicateAsync(path);
 
         // Suggest the file name as title (unless the user already typed their own)
