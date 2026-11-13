@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using PaperlessDesktop.ViewModels;
 
 namespace PaperlessDesktop.Views
@@ -147,6 +148,28 @@ namespace PaperlessDesktop.Views
         private void OnPreviewVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             UpdateContentColumns();
+        }
+
+        // ---------- Tag picker in the preview ----------
+
+        // The popup opens with the cursor already in the search box, so the user can just type
+        private void OnTagPickerOpened(object? sender, EventArgs e)
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                TagSearchBox.Focus();
+                Keyboard.Focus(TagSearchBox);
+            }, DispatcherPriority.Input);
+        }
+
+        // Arrow down from the search box moves into the list of tags (Tab works as well)
+        private void OnTagSearchBoxPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                TagSearchBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                e.Handled = true;
+            }
         }
 
         private void OnSplitterDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)

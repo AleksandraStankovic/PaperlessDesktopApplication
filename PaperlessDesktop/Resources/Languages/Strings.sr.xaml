@@ -89,12 +89,22 @@
     <sys:String x:Key="Preview_Asn">Arhivski broj (ASN)</sys:String>
     <sys:String x:Key="Preview_Failed">Pregled nije dostupan za ovaj dokument.</sys:String>
     <sys:String x:Key="Preview_OpenFailed">Fajl nije moguće otvoriti. Nijedna aplikacija nije podešena za ovaj tip fajla.</sys:String>
+    <sys:String x:Key="Preview_AddTag">Dodaj tag</sys:String>
+    <sys:String x:Key="Preview_AddTagTooltip">Dodaj postojeći tag ili napravi novi</sys:String>
+    <sys:String x:Key="Preview_RemoveTag">Ukloni tag sa dokumenta</sys:String>
+    <sys:String x:Key="Preview_TagSearchHint">Pretraži ili upiši novi tag</sys:String>
+    <sys:String x:Key="Preview_CreateTag">Kreiraj tag</sys:String>
+    <sys:String x:Key="Preview_NoMoreTags">Nema tagova za dodavanje.</sys:String>
+    <sys:String x:Key="Preview_TagPickerTip">Enter dodaje tag · Esc zatvara</sys:String>
+    <sys:String x:Key="Preview_TagRemoved">Tag „{0}“ je uklonjen sa dokumenta.</sys:String>
+    <sys:String x:Key="Preview_TagCreated">Tag „{0}“ je kreiran i dodat dokumentu.</sys:String>
 
     <!-- Common actions -->
     <sys:String x:Key="Common_Cancel">Odustani</sys:String>
     <sys:String x:Key="Common_Save">Sačuvaj</sys:String>
     <sys:String x:Key="Common_Edit">Uredi</sys:String>
     <sys:String x:Key="Common_Delete">Obriši</sys:String>
+    <sys:String x:Key="Common_Undo">Poništi</sys:String>
 
     <!-- Tags page -->
     <sys:String x:Key="Tags_Subtitle">Kreirajte, uredite i obrišite tagove.</sys:String>

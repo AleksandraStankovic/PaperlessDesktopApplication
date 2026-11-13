@@ -37,6 +37,19 @@ public class LookupCache
 
     public Tag? GetTag(int id) => _tags.GetValueOrDefault(id);
 
+    /// <summary>Adds a tag that was just created (or replaces a changed one) without reloading everything.</summary>
+    public void AddOrUpdateTag(Tag tag) => _tags[tag.Id] = tag;
+
+    /// <summary>
+    /// Keeps a tag's document count right after it was added to (+1) or removed from (-1) a document,
+    /// so the counts in the tag filter stay correct without asking the server again.
+    /// </summary>
+    public void AdjustTagCount(int id, int delta)
+    {
+        if (_tags.TryGetValue(id, out var tag))
+            tag.DocumentCount = Math.Max(0, tag.DocumentCount + delta);
+    }
+
     public string? GetCorrespondentName(int? id)
         => id is int key && _correspondents.TryGetValue(key, out var c) ? c.Name : null;
 

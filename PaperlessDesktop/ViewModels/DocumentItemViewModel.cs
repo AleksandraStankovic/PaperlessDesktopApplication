@@ -21,7 +21,10 @@ public partial class DocumentItemViewModel : ObservableObject
 
     public string CorrespondentName { get; }
     public string DocumentTypeName { get; }
-    public IReadOnlyList<Tag> Tags { get; }
+
+    /// <summary>The document's tags. Replaced (not changed in place) after they are edited in the preview.</summary>
+    [ObservableProperty]
+    private IReadOnlyList<Tag> _tags = Array.Empty<Tag>();
 
     // Thumbnail arrives later (downloaded in the background)
     [ObservableProperty]
@@ -38,7 +41,24 @@ public partial class DocumentItemViewModel : ObservableObject
         Model = model;
         CorrespondentName = lookups.GetCorrespondentName(model.CorrespondentId) ?? "—";
         DocumentTypeName = lookups.GetDocumentTypeName(model.DocumentTypeId) ?? "—";
-        Tags = model.TagIds
+        RefreshTags(lookups);
+    }
+
+    /// <summary>Takes over the server's answer after the tags were changed in the preview panel.</summary>
+    public void ApplyTagUpdate(Document updated, LookupCache lookups)
+    {
+        Model.TagIds = updated.TagIds;
+        if (updated.Modified is not null)
+        {
+            Model.Modified = updated.Modified;
+            OnPropertyChanged(nameof(Modified));
+        }
+        RefreshTags(lookups);
+    }
+
+    private void RefreshTags(LookupCache lookups)
+    {
+        Tags = Model.TagIds
             .Select(lookups.GetTag)
             .Where(t => t is not null)
             .Select(t => t!)

@@ -86,12 +86,22 @@
     <sys:String x:Key="Preview_Asn">Archive number (ASN)</sys:String>
     <sys:String x:Key="Preview_Failed">Preview is not available for this document.</sys:String>
     <sys:String x:Key="Preview_OpenFailed">The file can't be opened. No app is set up for this file type.</sys:String>
+    <sys:String x:Key="Preview_AddTag">Add tag</sys:String>
+    <sys:String x:Key="Preview_AddTagTooltip">Add an existing tag or create a new one</sys:String>
+    <sys:String x:Key="Preview_RemoveTag">Remove tag from document</sys:String>
+    <sys:String x:Key="Preview_TagSearchHint">Search or type a new tag</sys:String>
+    <sys:String x:Key="Preview_CreateTag">Create tag</sys:String>
+    <sys:String x:Key="Preview_NoMoreTags">No tags left to add.</sys:String>
+    <sys:String x:Key="Preview_TagPickerTip">Enter adds the tag · Esc closes</sys:String>
+    <sys:String x:Key="Preview_TagRemoved">Tag "{0}" was removed from the document.</sys:String>
+    <sys:String x:Key="Preview_TagCreated">Tag "{0}" was created and added to the document.</sys:String>
 
     <!-- Common actions -->
     <sys:String x:Key="Common_Cancel">Cancel</sys:String>
     <sys:String x:Key="Common_Save">Save</sys:String>
     <sys:String x:Key="Common_Edit">Edit</sys:String>
     <sys:String x:Key="Common_Delete">Delete</sys:String>
+    <sys:String x:Key="Common_Undo">Undo</sys:String>
 
     <!-- Tags page -->
     <sys:String x:Key="Tags_Subtitle">Create, edit and delete tags.</sys:String>

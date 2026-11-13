@@ -9,12 +9,12 @@ namespace PaperlessDesktop.ViewModels;
 /// <summary>The "new tag" / "edit tag" dialog. Validates input and saves to the server.</summary>
 public partial class TagEditorViewModel : ObservableObject
 {
-    private const int MaxNameLength = 128;   // Paperless limit
+    internal const int MaxNameLength = 128;   // Paperless limit
 
     // Paperless' own default palette (so tags made here look at home in the web UI too), plus
     // extra colors. 24 swatches = exactly 2 full rows of 12 in the 440 px wide dialog
     // (28 px swatch + 6 px gap = 34 px each, 12 x 34 = 408 px; a 13th would not fit).
-    private static readonly string[] PresetColorValues =
+    internal static readonly string[] PresetColorValues =
     {
         "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c",
         "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928", "#000000",

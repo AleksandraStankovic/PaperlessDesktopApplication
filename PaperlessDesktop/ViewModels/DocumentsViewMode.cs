@@ -97,15 +97,28 @@ public partial class DocumentsViewModel : ObservableObject
     /// <summary>Search/filters are active but nothing matches.</summary>
     public bool ShowNoResults => HasNoDocuments && IsQueryActive;
 
-    public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups,
-                            DocumentFileService files, NotificationService notifications)
+    /// <summary>
+    /// Raised after tags were added to or removed from a document in the preview
+    /// (true if a new tag was created too). App.xaml.cs lets Analytics and the Tags page know.
+    /// </summary>
+    public event EventHandler<bool>? DocumentTagsEdited;
+
+    public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups, DocumentFileService files,
+                              NotificationService notifications, LocalizationService localization)
     {
         _api = api;
         _lookups = lookups;
         _notifications = notifications;
 
-        Preview = new DocumentPreviewViewModel(files, notifications);
+        Preview = new DocumentPreviewViewModel(files, api, lookups, notifications, localization);
         Preview.CloseRequested += (_, _) => SelectedDocument = null;
+        Preview.TagsEdited += (_, createdTag) =>
+        {
+            // New tag in the filter dropdown, updated counts ("računi (13)"). The list itself is not
+            // reloaded, so the document stays where it is and the preview stays open.
+            Filters.UpdateOptions(_lookups);
+            DocumentTagsEdited?.Invoke(this, createdTag);
+        };
 
         Filters.FiltersChanged += (_, _) => OnFiltersChanged();
     }
