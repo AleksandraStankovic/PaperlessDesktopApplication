@@ -140,6 +140,10 @@
     <sys:String x:Key="Upload_MaxSizePrefix">najviše</sys:String>
     <sys:String x:Key="Upload_DropRejected">Ovaj tip fajla nije podržan.</sys:String>
     <sys:String x:Key="Upload_RemoveFile">Ukloni fajl</sys:String>
+    <sys:String x:Key="Upload_DropHintReplace">Prevucite drugi fajl ovdje</sys:String>
+    <sys:String x:Key="Upload_BrowseReplace">Izaberite drugi fajl...</sys:String>
+    <sys:String x:Key="Upload_ReplaceNote">Novi fajl će zamijeniti trenutno izabrani.</sys:String>
+    <sys:String x:Key="Upload_FileReplaced">Fajl „{0}“ je zamijenjen fajlom „{1}“.</sys:String>
     <sys:String x:Key="Upload_FileFilterName">Podržani dokumenti</sys:String>
     <sys:String x:Key="Upload_OnlyOneFile">Prevukli ste više fajlova – dodaje se samo prvi.</sys:String>
     <sys:String x:Key="Upload_CheckingDuplicate">Provjeravam da li ovaj dokument već postoji...</sys:String>
