@@ -154,7 +154,7 @@
     <sys:String x:Key="Upload_DocumentType">Document type (Optional)</sys:String>
     <sys:String x:Key="Upload_AddTag">+ Add tag (Optional)</sys:String>
     <sys:String x:Key="Upload_Button">Upload document</sys:String>
-    <sys:String x:Key="Upload_Reset">Reset</sys:String>
+    <sys:String x:Key="Upload_Reset">Clear form</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Upload another document</sys:String>
     <sys:String x:Key="Upload_ShowDocuments">Show documents</sys:String>
 

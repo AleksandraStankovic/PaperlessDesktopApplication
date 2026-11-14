@@ -156,7 +156,7 @@
     <sys:String x:Key="Upload_DocumentType">Tip dokumenta (Opciono)</sys:String>
     <sys:String x:Key="Upload_AddTag">+ Dodaj tag (Opciono)</sys:String>
     <sys:String x:Key="Upload_Button">Dodaj dokument</sys:String>
-    <sys:String x:Key="Upload_Reset">Poništi</sys:String>
+    <sys:String x:Key="Upload_Reset">Poništi unos</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Dodaj još jedan dokument</sys:String>
     <sys:String x:Key="Upload_ShowDocuments">Prikaži dokumente</sys:String>
 
