@@ -221,10 +221,20 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                    <Button Command="{Binding UploadCommand}">
+                    <Button Command="{Binding UploadCommand}"
+                            Visibility="{Binding IsBusy, Converter={StaticResource InverseBoolToVis}}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Upload" VerticalAlignment="Center" />
                             <TextBlock Text="{DynamicResource Upload_Button}" Margin="8,0,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding CancelUploadCommand}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Foreground="{DynamicResource Accent.Text}" BorderBrush="{DynamicResource Accent.Text}"
+                            Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Close" VerticalAlignment="Center" />
+                            <TextBlock Text="{DynamicResource Upload_CancelSending}" Margin="8,0,0,0" />
                         </StackPanel>
                     </Button>
                     <Button Content="{DynamicResource Upload_Reset}" Command="{Binding ResetCommand}"
@@ -249,10 +259,6 @@
                                                  VerticalAlignment="Center" />
                                     <TextBlock Text="{Binding UploadProgress, StringFormat={}{0:0}%}"
                                                Margin="10,0,0,0" VerticalAlignment="Center" Opacity="0.7" />
-                                    <Button Content="{DynamicResource Upload_CancelSending}"
-                                            Command="{Binding CancelUploadCommand}"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
-                    Foreground="{DynamicResource Accent.Text}" Margin="12,0,0,0" />
                                 </StackPanel>
                             </StackPanel>
                         </DockPanel>

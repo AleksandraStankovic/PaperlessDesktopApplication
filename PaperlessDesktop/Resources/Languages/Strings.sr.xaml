@@ -138,7 +138,7 @@
     <sys:String x:Key="Upload_DocumentType">Tip dokumenta (Opciono)</sys:String>
     <sys:String x:Key="Upload_AddTag">+ Dodaj tag (Opciono)</sys:String>
     <sys:String x:Key="Upload_Button">Dodaj dokument</sys:String>
-    <sys:String x:Key="Upload_Reset">Poništi</sys:String>
+    <sys:String x:Key="Upload_Reset">Poništi unos</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Dodaj još jedan dokument</sys:String>
     <sys:String x:Key="Upload_ShowDocuments">Prikaži dokumente</sys:String>
 
@@ -150,6 +150,8 @@
     <sys:String x:Key="Upload_Status_Processing">Dokument se priprema. Ovo može potrajati do minut.</sys:String>
     <sys:String x:Key="Upload_Status_Done">Dokument „{0}“ je dodat i spreman je za pregled.</sys:String>
     <sys:String x:Key="Upload_Status_Cancelled">Slanje je prekinuto. Dokument nije dodat.</sys:String>
+    <sys:String x:Key="Upload_Status_Cancelling">Prekidam slanje... Server je već primio fajl, pa ga uklanjam. Ovo može potrajati do minut.</sys:String>
+    <sys:String x:Key="Upload_Status_CancelUncertain">Slanje je prekinuto, ali nije sigurno da je dokument uklonjen sa servera. Ako se pojavi u listi dokumenata, možete ga obrisati tamo.</sys:String>
     <sys:String x:Key="Upload_Status_StillProcessing">Priprema traje duže nego obično. Dokument će se pojaviti u listi kada bude spreman.</sys:String>
 
     <sys:String x:Key="Upload_Error_Type">Fajlovi tipa „{0}“ nisu podržani. Možete dodati: {1}. Savjet: Word ili Excel dokument sačuvajte kao PDF (Datoteka → Sačuvaj kao → PDF).</sys:String>

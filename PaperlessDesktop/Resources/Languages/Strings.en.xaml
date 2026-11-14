@@ -139,7 +139,7 @@
     <sys:String x:Key="Upload_DocumentType">Document type (Optional)</sys:String>
     <sys:String x:Key="Upload_AddTag">+ Add tag (Optional)</sys:String>
     <sys:String x:Key="Upload_Button">Upload document</sys:String>
-    <sys:String x:Key="Upload_Reset">Reset</sys:String>
+    <sys:String x:Key="Upload_Reset">Clear form</sys:String>
     <sys:String x:Key="Upload_UploadAnother">Upload another document</sys:String>
     <sys:String x:Key="Upload_ShowDocuments">Show documents</sys:String>
 
@@ -151,6 +151,8 @@
     <sys:String x:Key="Upload_Status_Processing">The document is being prepared. This can take up to a minute.</sys:String>
     <sys:String x:Key="Upload_Status_Done">Document "{0}" was added and is ready to view.</sys:String>
     <sys:String x:Key="Upload_Status_Cancelled">Sending was cancelled. The document was not added.</sys:String>
+    <sys:String x:Key="Upload_Status_Cancelling">Cancelling... The server already received the file, so it is being removed. This can take up to a minute.</sys:String>
+    <sys:String x:Key="Upload_Status_CancelUncertain">Sending was cancelled, but it is not certain that the document was removed from the server. If it appears in the document list, you can delete it there.</sys:String>
     <sys:String x:Key="Upload_Status_StillProcessing">Preparation is taking longer than usual. The document will appear in the list when it's ready.</sys:String>
 
     <sys:String x:Key="Upload_Error_Type">"{0}" files are not supported. You can add: {1}. Tip: save Word or Excel documents as PDF (File → Save as → PDF).</sys:String>

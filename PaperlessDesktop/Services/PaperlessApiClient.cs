@@ -239,6 +239,18 @@ namespace PaperlessDesktop.Services
             using var response = await SendAsync(request, ct);
         }
 
+        public async Task EmptyTrashForDocumentAsync(int id, CancellationToken ct = default)
+        {
+            string json = JsonSerializer.Serialize(new TrashRequest(new[] { id }, "empty"), JsonOptions);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/trash/")
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+            using var response = await SendAsync(request, ct);
+        }
+
+        private record TrashRequest(IReadOnlyList<int> Documents, string Action);
+
         private async Task<T> SendJsonAsync<T>(HttpMethod method, string relativeUrl, object body, CancellationToken ct)
         {
             string json = JsonSerializer.Serialize(body, JsonOptions);
