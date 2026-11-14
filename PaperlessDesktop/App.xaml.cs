@@ -12,7 +12,6 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
 
-        // Safety net: from here on, no unexpected error can close the app
         RegisterGlobalErrorHandlers();
         Log.DeleteOldFiles();
         Log.Info("Application starting");
@@ -21,15 +20,13 @@ public partial class App : Application
 
         try
         {
-            // ----- Services (created once, shared by everyone) -----
             var config = AppConfig.Load();
             var api = new PaperlessApiClient(config);
             var lookups = new LookupCache(api);
 
             var files = new DocumentFileService(api);
-            files.CleanUp();   // remove preview files left from the previous session
+            files.CleanUp();
 
-            // Saved user preferences (language, theme, color) - applied before the window opens
             var settingsService = new SettingsService();
             var userSettings = settingsService.Load();
 
@@ -41,30 +38,25 @@ public partial class App : Application
                 ThemeService.ParseColor(userSettings.PrimaryColor, ThemeService.DefaultPrimary));
 
             var notifications = new NotificationService(localization);
-            _notifications = notifications;   // the global error handler uses it for friendly messages
+            _notifications = notifications;
             var dialogs = new DialogService();
 
-            // ----- ViewModels -----
             var documentsViewModel = new DocumentsViewModel(api, lookups, files, notifications, dialogs, localization);
             var uploadViewModel = new UploadViewModel(api, lookups, notifications, localization);
             var tagsViewModel = new TagsViewModel(api, dialogs, notifications, localization);
             var analyticsViewModel = new AnalyticsViewModel(api, lookups, notifications, localization);
 
-            // When tags change, the document list refreshes tag names, colors and filter options
             tagsViewModel.TagsChanged += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
             tagsViewModel.TagsChanged += (_, _) => analyticsViewModel.Invalidate();
             uploadViewModel.DocumentUploaded += (_, _) => _ = documentsViewModel.ReloadLookupsAsync();
             uploadViewModel.DocumentUploaded += (_, _) => analyticsViewModel.Invalidate();
 
-            // Tags added/removed in the document preview: tag counts (and maybe a new tag) changed
             documentsViewModel.DocumentTagsEdited += (_, _) => analyticsViewModel.Invalidate();
             documentsViewModel.DocumentTagsEdited += (_, _) => tagsViewModel.Invalidate();
 
-            // A document was deleted: chart totals and tag counts changed
             documentsViewModel.DocumentDeleted += (_, _) => analyticsViewModel.Invalidate();
             documentsViewModel.DocumentDeleted += (_, _) => tagsViewModel.Invalidate();
            
-
             var mainViewModel = new MainViewModel(
                 documentsViewModel,
                 analyticsViewModel,
@@ -82,7 +74,6 @@ public partial class App : Application
             documentsViewModel.AddDocumentRequested += (_, _) => mainViewModel.ShowUpload();
             uploadViewModel.ShowDocumentsRequested += (_, _) => mainViewModel.ShowDocuments();
 
-            // ----- Window -----
             new MainWindow(mainViewModel).Show();
         }
         catch (Exception ex)
@@ -94,39 +85,32 @@ public partial class App : Application
         }
     }
 
-
-
     protected override void OnExit(ExitEventArgs e)
     {
         Log.Info("Application exiting");
         base.OnExit(e);
     }
 
-    // ---------- Global error handling ----------
-
     private void RegisterGlobalErrorHandlers()
     {
-        // 1. Errors on the UI thread (buttons, bindings, commands, most of our code)
         DispatcherUnhandledException += OnDispatcherUnhandledException;
 
-        // 2. Errors in background tasks that nobody awaited
         TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
-        // 3. Errors on other threads - can't be stopped, but at least they're recorded
         AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         Log.Error("Unhandled exception on the UI thread", e.Exception);
-        e.Handled = true;   // ← this is what keeps the app running instead of closing
+        e.Handled = true;
         ShowUnexpectedErrorMessage();
     }
 
     private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
     {
         Log.Error("Unobserved exception in a background task", e.Exception);
-        e.SetObserved();    // mark as handled
+        e.SetObserved();
     }
 
     private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -136,7 +120,6 @@ public partial class App : Application
 
     private void ShowUnexpectedErrorMessage()
     {
-        // If something fails repeatedly (e.g. while redrawing), show the message at most every 5 seconds
         if (DateTime.Now - _lastUnexpectedErrorShown < TimeSpan.FromSeconds(5))
             return;
         _lastUnexpectedErrorShown = DateTime.Now;
@@ -148,11 +131,6 @@ public partial class App : Application
                             "Paperless Desktop", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
-    /// <summary>
-    /// Chips: replaces MaterialDesign's fixed grey circle behind the ✕ with
-    /// "ChipDeleteButtonTemplate" (a darker shade of the chip's own color).
-    /// Hooked up by the Chip style in App.xaml.
-    /// </summary>
     private void Chip_Loaded(object sender, RoutedEventArgs e)
     {
         if (sender is not MaterialDesignThemes.Wpf.Chip chip)

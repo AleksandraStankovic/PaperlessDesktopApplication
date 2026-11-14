@@ -18,10 +18,8 @@ public partial class DocumentsViewModel : ObservableObject
     private readonly DialogService _dialogs;
     private readonly LocalizationService _localization;
 
-    // The current request: page, search text and filters
     private readonly DocumentQuery _query = new();
 
-    // Thumbnails already downloaded (by document ID), so going back a page is instant
     private readonly Dictionary<int, ImageSource> _thumbnailCache = new();
 
     private CancellationTokenSource? _loadCts;
@@ -33,17 +31,12 @@ public partial class DocumentsViewModel : ObservableObject
 
     public int[] PageSizeOptions { get; } = { 10, 25, 50, 100 };
 
-    /// <summary>Filter dropdowns and active filter chips.</summary>
     public DocumentFiltersViewModel Filters { get; } = new();
 
-    /// <summary>Side panel with the selected document's preview and metadata.</summary>
     public DocumentPreviewViewModel Preview { get; }
 
-    /// <summary>Selected row/card (shared by table and card view).</summary>
     [ObservableProperty]
     private DocumentItemViewModel? _selectedDocument;
-
-    // ---------- State ----------
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasNoDocuments))]
@@ -66,7 +59,6 @@ public partial class DocumentsViewModel : ObservableObject
     [ObservableProperty]
     private int _pageSize = 25;
 
-    // 0 = table, 1 = cards (bound to the toggle in the header)
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsTableView))]
     [NotifyPropertyChangedFor(nameof(IsCardView))]
@@ -75,37 +67,23 @@ public partial class DocumentsViewModel : ObservableObject
     public bool IsTableView => ViewModeIndex != 1;
     public bool IsCardView => ViewModeIndex == 1;
 
-    // ---------- Search ----------
-
-    /// <summary>What the user is typing right now (bound to the search box).</summary>
     [ObservableProperty]
     private string _searchText = "";
 
-    /// <summary>The search that the currently shown results belong to.</summary>
     public string ActiveSearchText => _query.SearchText ?? "";
 
     public bool IsSearchActive => !string.IsNullOrEmpty(_query.SearchText);
 
-    /// <summary>True if a search or any filter is narrowing the results.</summary>
     public bool IsQueryActive => IsSearchActive || Filters.HasActiveFilters;
-
-    // ---------- Empty states ----------
 
     public bool HasNoDocuments => !IsLoading && Documents.Count == 0;
 
-    /// <summary>No documents at all (no search or filter active).</summary>
     public bool ShowEmptyState => HasNoDocuments && !IsQueryActive;
 
-    /// <summary>Search/filters are active but nothing matches.</summary>
     public bool ShowNoResults => HasNoDocuments && IsQueryActive;
 
-    /// <summary>
-    /// Raised after tags were added to or removed from a document in the preview
-    /// (true if a new tag was created too). App.xaml.cs lets Analytics and the Tags page know.
-    /// </summary>
     public event EventHandler<bool>? DocumentTagsEdited;
 
-    /// <summary>Raised after a document was deleted. App.xaml.cs lets Analytics and the Tags page know (counts changed).</summary>
     public event EventHandler? DocumentDeleted;
 
     public DocumentsViewModel(PaperlessApiClient api, LookupCache lookups, DocumentFileService files,
@@ -121,8 +99,6 @@ public partial class DocumentsViewModel : ObservableObject
         Preview.CloseRequested += (_, _) => SelectedDocument = null;
         Preview.TagsEdited += (_, createdTag) =>
         {
-            // New tag in the filter dropdown, updated counts ("računi (13)"). The list itself is not
-            // reloaded, so the document stays where it is and the preview stays open.
             Filters.UpdateOptions(_lookups);
             DocumentTagsEdited?.Invoke(this, createdTag);
         };
@@ -130,7 +106,6 @@ public partial class DocumentsViewModel : ObservableObject
         Filters.FiltersChanged += (_, _) => OnFiltersChanged();
     }
 
-    /// <summary>Called once when the app starts.</summary>
     public async Task InitializeAsync()
     {
         if (_initialized)
@@ -139,48 +114,34 @@ public partial class DocumentsViewModel : ObservableObject
         await LoadPageAsync(1);
     }
 
-    /// <summary>Called after tags were created/edited/deleted on the Tags page.</summary>
     public Task ReloadLookupsAsync()
         => _initialized ? LoadPageAsync(CurrentPage, reloadLookups: true) : Task.CompletedTask;
 
-    // ---------- Commands (bound to buttons / keys) ----------
-
-
-    // ---------- Coming from Analytics ----------
-
-    /// <summary>True while the list was opened by clicking a chart on the Analytics page (shows the back button).</summary>
     [ObservableProperty]
     private bool _cameFromAnalytics;
 
-    /// <summary>The back button was clicked. App.xaml.cs switches to the Analytics page.</summary>
     public event EventHandler? BackToAnalyticsRequested;
 
     [RelayCommand]
     private void BackToAnalytics() => BackToAnalyticsRequested?.Invoke(this, EventArgs.Empty);
 
-    /// <summary>"Dodaj dokument" was clicked (header or empty state). App.xaml.cs opens the upload page,
-    /// the same page as the sidebar item.</summary>
     public event EventHandler? AddDocumentRequested;
 
     [RelayCommand]
     private void AddDocument() => AddDocumentRequested?.Invoke(this, EventArgs.Empty);
 
-    /// <summary>Called from Analytics: show exactly the documents behind a clicked chart element.</summary>
     public void ShowWithFilter(FilterChip chip)
     {
         CameFromAnalytics = true;
         Filters.SetOnlySilently(chip);
         SearchText = "";
-        _searchDelayCts?.Cancel();   // setting SearchText started a timer - stop it
+        _searchDelayCts?.Cancel();
 
         _query.SearchText = null;
         Filters.ApplyTo(_query);
         NotifyQueryStateChanged();
         _ = LoadPageAsync(1);
     }
-
-
-
 
     [RelayCommand]
     private Task RefreshAsync()
@@ -189,10 +150,6 @@ public partial class DocumentsViewModel : ObservableObject
         return LoadPageAsync(CurrentPage, reloadLookups: true);
     }
 
-    /// <summary>
-    /// Trash button on a table row or a card. Asks first (HCI H5: error prevention - deleting can't be
-    /// undone, so the safe "Odustani" button has focus), then deletes on the server and reloads the page.
-    /// </summary>
     [RelayCommand]
     private async Task DeleteDocumentAsync(DocumentItemViewModel? item)
     {
@@ -218,17 +175,14 @@ public partial class DocumentsViewModel : ObservableObject
             return;
         }
 
-        // The deleted document must not stay open in the preview
         if (ReferenceEquals(SelectedDocument, item) || SelectedDocument?.Id == item.Id)
             SelectedDocument = null;
         _thumbnailCache.Remove(item.Id);
 
         _notifications.ShowSuccessLonger(string.Format(_localization.Get("Documents_Deleted"), item.Title));
 
-        // If it was the only document on the last page, go back one page instead of showing an empty one
         int page = Documents.Count <= 1 && CurrentPage > 1 ? CurrentPage - 1 : CurrentPage;
 
-        // Reload lookups too: tag / correspondent / type counts in the filters changed
         await LoadPageAsync(page, reloadLookups: true);
         DocumentDeleted?.Invoke(this, EventArgs.Empty);
     }
@@ -243,7 +197,6 @@ public partial class DocumentsViewModel : ObservableObject
 
     private bool CanGoToPreviousPage() => CurrentPage > 1;
 
-    /// <summary>Enter key: search immediately, without waiting for the delay.</summary>
     [RelayCommand]
     private Task SearchNowAsync()
     {
@@ -251,7 +204,6 @@ public partial class DocumentsViewModel : ObservableObject
         return ApplySearchAsync();
     }
 
-    /// <summary>Esc key in the search box.</summary>
     [RelayCommand]
     private Task ClearSearchAsync()
     {
@@ -260,21 +212,18 @@ public partial class DocumentsViewModel : ObservableObject
         return ApplySearchAsync();
     }
 
-    /// <summary>"Reset search and filters" button in the no-results panel.</summary>
     [RelayCommand]
     private Task ResetAllAsync()
     {
         Filters.ClearSilently();
         SearchText = "";
-        _searchDelayCts?.Cancel();   // setting SearchText started a timer - stop it
+        _searchDelayCts?.Cancel();
 
         _query.SearchText = null;
         Filters.ApplyTo(_query);
         NotifyQueryStateChanged();
-        return LoadPageAsync(1);     // one reload for both changes
+        return LoadPageAsync(1);
     }
-
-    // ---------- Reactions to property changes ----------
 
     partial void OnPageSizeChanged(int value)
     {
@@ -282,14 +231,11 @@ public partial class DocumentsViewModel : ObservableObject
             _ = LoadPageAsync(1);
     }
 
-    // Clicking a row/card (or moving with arrow keys) opens it in the preview panel
     partial void OnSelectedDocumentChanged(DocumentItemViewModel? value)
         => _ = Preview.ShowAsync(value);
 
-
     partial void OnViewModeIndexChanged(int oldValue, int newValue)
     {
-        // Clicking the already-selected toggle button would deselect it (-1). Keep the old mode instead.
         if (newValue < 0)
         {
             ViewModeIndex = oldValue;
@@ -300,17 +246,13 @@ public partial class DocumentsViewModel : ObservableObject
             StartThumbnailLoading();
     }
 
-    // Runs on every keystroke in the search box
     partial void OnSearchTextChanged(string value)
     {
-        // Restart the timer: only search when the user stops typing
         _searchDelayCts?.Cancel();
         var cts = new CancellationTokenSource();
         _searchDelayCts = cts;
         _ = SearchAfterDelayAsync(cts.Token);
     }
-
-    // ---------- Search & filters ----------
 
     private async Task SearchAfterDelayAsync(CancellationToken ct)
     {
@@ -320,7 +262,7 @@ public partial class DocumentsViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            return;   // user typed another character - a newer timer is running
+            return;
         }
 
         await ApplySearchAsync();
@@ -328,17 +270,14 @@ public partial class DocumentsViewModel : ObservableObject
 
     private Task ApplySearchAsync()
     {
-        // The ✕ button in the search box sets the text to null, not "" - treat both as empty
         string text = SearchText?.Trim() ?? "";
 
-        // Nothing changed (e.g. user typed "ab" and deleted it again) - no request needed
         if (text == ActiveSearchText)
             return Task.CompletedTask;
 
         _query.SearchText = text.Length == 0 ? null : text;
         NotifyQueryStateChanged();
 
-        // New search always starts at page 1
         return LoadPageAsync(1);
     }
 
@@ -346,7 +285,7 @@ public partial class DocumentsViewModel : ObservableObject
     {
         Filters.ApplyTo(_query);
         NotifyQueryStateChanged();
-        _ = LoadPageAsync(1);   // new filters always start at page 1
+        _ = LoadPageAsync(1);
     }
 
     private void NotifyQueryStateChanged()
@@ -358,11 +297,8 @@ public partial class DocumentsViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowNoResults));
     }
 
-    // ---------- Loading the list ----------
-
     private async Task LoadPageAsync(int page, bool reloadLookups = false)
     {
-        // Cancel a previous load that is still running (e.g. user clicked "next" twice quickly)
         _loadCts?.Cancel();
         _thumbnailCts?.Cancel();
         var cts = new CancellationTokenSource();
@@ -395,13 +331,11 @@ public partial class DocumentsViewModel : ObservableObject
             TotalPages = Math.Max(1, (int)Math.Ceiling(result.Count / (double)PageSize));
             CurrentPage = page;
 
-            // Thumbnails are only needed in card view
             if (IsCardView)
                 StartThumbnailLoading();
         }
         catch (OperationCanceledException)
         {
-            // A newer load replaced this one - nothing to report
         }
         catch (Exception ex)
         {
@@ -409,7 +343,6 @@ public partial class DocumentsViewModel : ObservableObject
         }
         finally
         {
-            // Only the most recent load is allowed to turn the spinner off
             if (_loadCts == cts)
             {
                 _loadCts = null;
@@ -418,8 +351,6 @@ public partial class DocumentsViewModel : ObservableObject
             cts.Dispose();
         }
     }
-
-    // ---------- Loading thumbnails ----------
 
     private void StartThumbnailLoading()
     {
@@ -438,7 +369,6 @@ public partial class DocumentsViewModel : ObservableObject
     {
         try
         {
-            // Download 4 at a time: fast, but kind to the shared server
             foreach (var batch in items.Chunk(ParallelThumbnailDownloads))
             {
                 ct.ThrowIfCancellationRequested();
@@ -447,7 +377,6 @@ public partial class DocumentsViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            // User changed page - stop quietly
         }
     }
 
@@ -457,7 +386,6 @@ public partial class DocumentsViewModel : ObservableObject
         {
             byte[] data = await _api.GetThumbnailAsync(item.Id, ct);
 
-            // Decode on a background thread so the UI doesn't stutter
             var image = await Task.Run(() => ThumbnailDecoder.Decode(data), ct);
             if (image is null)
                 return;
@@ -471,7 +399,6 @@ public partial class DocumentsViewModel : ObservableObject
         }
         catch (Exception)
         {
-            // One broken thumbnail is not worth an error message - the card keeps its placeholder icon
         }
     }
 }

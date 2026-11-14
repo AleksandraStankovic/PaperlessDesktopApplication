@@ -15,7 +15,7 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
     private const double BarMaxHeight = 180;
     private const double MinTagFontSize = 12;
     private const double MaxTagFontSize = 30;
-    private const int MaxPieSlices = 7;      // the rest is grouped as "Other"
+    private const int MaxPieSlices = 7;
     private const int MaxCloudTags = 30;
 
     private static readonly string[] SliceColors =
@@ -44,10 +44,7 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
     public ObservableCollection<int> AvailableYears { get; } = new();
     public ObservableCollection<string> MonthNames { get; } = new();
 
-    /// <summary>Raised when the user clicks a chart element. App.xaml.cs opens the filtered document list.</summary>
     public event EventHandler<FilterChip>? FilterRequested;
-
-    // ---------- State ----------
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowEmptyState))]
@@ -70,15 +67,14 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private int _documentTypeCount;
 
-    // Month chart: year + month range are selectable ("mjesec i godina promjenljivi")
     [ObservableProperty]
     private int? _selectedYear;
 
     [ObservableProperty]
-    private int _fromMonthIndex;          // 0 = January
+    private int _fromMonthIndex;
 
     [ObservableProperty]
-    private int _toMonthIndex = 11;       // 11 = December
+    private int _toMonthIndex = 11;
 
     [ObservableProperty]
     private int _periodTotal;
@@ -96,7 +92,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
         UpdateMonthNames();
     }
 
-    /// <summary>First visit: load everything. Later visits: only refresh texts (language may have changed).</summary>
     public void OnNavigatedTo()
     {
         if (!_loaded)
@@ -110,10 +105,7 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
         RebuildMonthBars();
     }
 
-    /// <summary>Data changed elsewhere (upload, tag edit) - reload on the next visit.</summary>
     public void Invalidate() => _loaded = false;
-
-    // ---------- Loading ----------
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -121,9 +113,8 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
         IsLoading = true;
         try
         {
-            await _lookups.LoadAsync();   // fresh document counts per tag and type
+            await _lookups.LoadAsync();
 
-            // Newest and oldest document → total count and the range of years to offer
             var newestTask = _api.GetDocumentsAsync(new DocumentQuery { PageSize = 1, Ordering = "-created" });
             var oldestTask = _api.GetDocumentsAsync(new DocumentQuery { PageSize = 1, Ordering = "created" });
             await Task.WhenAll(newestTask, oldestTask);
@@ -150,7 +141,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
             for (int y = topYear; y >= bottomYear; y--)
                 AvailableYears.Add(y);
 
-            // Keep the user's year if possible, otherwise show the year of the newest document
             int year = SelectedYear is int chosen && AvailableYears.Contains(chosen) ? chosen : newestYear;
             SelectedYear = year;
             _updatingYear = false;
@@ -168,7 +158,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
         }
     }
 
-    /// <summary>Counts documents per month: 12 small requests (page size 1, we only need the count).</summary>
     private async Task LoadMonthsAsync(int year)
     {
         _monthsCts?.Cancel();
@@ -191,7 +180,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
         }
         catch (OperationCanceledException)
         {
-            // the user picked another year meanwhile
         }
         catch (Exception ex)
         {
@@ -207,8 +195,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
             cts.Dispose();
         }
     }
-
-    // ---------- Clicking a chart element → filtered document list ----------
 
     [RelayCommand]
     private void SelectType(PieSliceViewModel? slice)
@@ -231,8 +217,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
             FilterRequested?.Invoke(this, FilterChip.ForTag(item.Tag));
     }
 
-    // ---------- Reactions to the selectors ----------
-
     partial void OnSelectedYearChanged(int? value)
     {
         if (_updatingYear || value is not int year)
@@ -250,7 +234,7 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
             return;
         }
         if (value > ToMonthIndex)
-            ToMonthIndex = value;   // "from" can't be after "to"
+            ToMonthIndex = value;
         RebuildMonthBars();
     }
 
@@ -267,8 +251,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
             FromMonthIndex = value;
         RebuildMonthBars();
     }
-
-    // ---------- Building the charts ----------
 
     private void BuildTypeSlices()
     {
@@ -318,7 +300,6 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
         if (to < from)
             (from, to) = (to, from);
 
-        // The tallest bar in the selected range fills the full height
         int max = Math.Max(1, Enumerable.Range(from, to - from + 1).Max(m => _monthCounts[m - 1]));
         int total = 0;
 
@@ -352,15 +333,12 @@ public partial class AnalyticsViewModel : ObservableObject, INavigationAware
         int max = tags.Max(t => t.DocumentCount);
         int min = tags.Min(t => t.DocumentCount);
 
-        // Alphabetical order, font size by usage
         foreach (var tag in tags.OrderBy(t => t.Name, StringComparer.CurrentCultureIgnoreCase))
         {
             double ratio = max == min ? 1 : (tag.DocumentCount - min) / (double)(max - min);
             TagCloud.Add(new TagCloudItemViewModel(tag, MinTagFontSize + ratio * (MaxTagFontSize - MinTagFontSize)));
         }
     }
-
-    // ---------- Month names in the current language ----------
 
     private CultureInfo Culture
     {

@@ -20,7 +20,6 @@ public class LocalizationService
 
         var merged = Application.Current.Resources.MergedDictionaries;
 
-        // Remove the currently loaded language file (whichever it is)
         var old = merged.FirstOrDefault(d =>
             d.Source?.OriginalString.Contains("Languages/Strings.") == true);
         if (old is not null)

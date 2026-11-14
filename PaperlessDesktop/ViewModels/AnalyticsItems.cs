@@ -3,7 +3,6 @@ using PaperlessDesktop.Models;
 
 namespace PaperlessDesktop.ViewModels;
 
-/// <summary>One slice of the "by document type" donut chart.</summary>
 public class PieSliceViewModel
 {
     public string Name { get; }
@@ -12,7 +11,6 @@ public class PieSliceViewModel
     public string Color { get; }
     public Geometry Geometry { get; }
 
-    /// <summary>null for "Other" / "No type" - those slices can't be clicked.</summary>
     public int? DocumentTypeId { get; }
 
     public bool IsClickable => DocumentTypeId is not null;
@@ -30,13 +28,12 @@ public class PieSliceViewModel
     }
 }
 
-/// <summary>One bar of the "by month" chart.</summary>
 public class MonthBarViewModel
 {
     public int Year { get; }
     public int Month { get; }
-    public string Label { get; }      // short name, e.g. "mar"
-    public string FullName { get; }   // e.g. "Mart"
+    public string Label { get; }
+    public string FullName { get; }
     public int Count { get; }
     public double BarHeight { get; }
 
@@ -54,7 +51,6 @@ public class MonthBarViewModel
     }
 }
 
-/// <summary>One word in the tag cloud (bigger font = used by more documents).</summary>
 public class TagCloudItemViewModel
 {
     public Tag Tag { get; }

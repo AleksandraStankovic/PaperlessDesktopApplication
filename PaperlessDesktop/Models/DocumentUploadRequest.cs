@@ -1,6 +1,5 @@
 ﻿namespace PaperlessDesktop.Models;
 
-/// <summary>Everything needed to upload one document.</summary>
 public record DocumentUploadRequest(
     string FilePath,
     string Title,

@@ -17,45 +17,29 @@ using PaperlessDesktop.ViewModels;
 
 namespace PaperlessDesktop.Views
 {
-    /// <summary>
-    /// Interaction logic for DocumentsView.xaml
-    /// </summary>
     public partial class DocumentsView : UserControl
     {
-        // Below this width the search box gets its own line and the 3 filter dropdowns share the next one.
-        // (search ~300 + 3 dropdowns ~160 + gaps; below that the dropdown hints start to get cut off)
         private const double FilterSingleRowMinWidth = 860;
 
-        // Below this width the header buttons (add document, refresh, view toggle) move under the page title.
         private const double HeaderSingleRowMinWidth = 800;
 
         private bool? _filtersWide;
         private bool? _headerWide;
 
-        // Below this width of the list+preview area the preview covers the list (full width)
-        // instead of sitting next to it; side by side, both would be too narrow to be useful.
         private const double PreviewOverlayMaxWidth = 760;
 
-        // Side-by-side minimums so the splitter can't squeeze either pane into a strip.
         private const double ListMinWidth = 280;
         private const double PreviewMinWidth = 320;
 
-        // The file preview keeps at least this share of the card height; metadata above it scrolls.
         private const double PreviewMetaMaxShare = 0.35;
         private const double PreviewMetaMinHeight = 90;
 
-        // Below this list width the "Datum dokumenta" and "Dodato" columns are hidden so the title fits.
         private const double ListDatesMinWidth = 720;
         private bool? _listShowsDates;
 
-        // Below this list width "Korespondent" and "Tip dokumenta" are hidden too, instead of
-        // being squeezed into empty slivers; title and tags remain.
         private const double ListMetaMinWidth = 560;
         private bool? _listShowsMeta;
 
-        // List/preview split; the preview gets 3/5 of the space by default so the document is
-        // readable (on a full-screen window the list keeps title, correspondent, type and tags).
-        // Remembered after the user drags the splitter.
         private GridLength _listWidth = new(2, GridUnitType.Star);
         private GridLength _previewWidth = new(3, GridUnitType.Star);
 
@@ -67,10 +51,6 @@ namespace PaperlessDesktop.Views
                 (_, _) => QueueColumnWidthRefresh();
         }
 
-        // The table's "Auto" columns (dates, correspondent, type) grow to fit the rows once a page
-        // loads, but the grid doesn't shrink the other columns again until it is resized: the table
-        // overflowed on first open and the open button at the end was cut off. Re-applying the
-        // column widths after the rows are shown makes the grid share the space again.
         private bool _columnRefreshQueued;
 
         private void QueueColumnWidthRefresh()
@@ -106,7 +86,6 @@ namespace PaperlessDesktop.Views
 
                 if (filtersWide)
                 {
-                    // [ search (wider) ][ tag ][ correspondent ][ type ]
                     SearchColumn.Width = new GridLength(1.6, GridUnitType.Star);
                     Place(SearchPanel, 0, 0, 1, new Thickness(0, 0, 16, 8));
                     Place(TagFilter, 0, 1, 1, new Thickness(0, 0, 12, 8));
@@ -115,9 +94,6 @@ namespace PaperlessDesktop.Views
                 }
                 else
                 {
-                    // [ search ............................ ]
-                    // [ tag ][ correspondent ][ type ]
-                    // Column 0 collapses; search spans the 3 filter columns.
                     SearchColumn.Width = new GridLength(0);
                     Place(SearchPanel, 0, 1, 3, new Thickness(0, 0, 0, 12));
                     Place(TagFilter, 1, 1, 1, new Thickness(0, 0, 12, 8));
@@ -150,9 +126,6 @@ namespace PaperlessDesktop.Views
             UpdateContentColumns();
         }
 
-        // ---------- Tag picker in the preview ----------
-
-        // The popup opens with the cursor already in the search box, so the user can just type
         private void OnTagPickerOpened(object? sender, EventArgs e)
         {
             Dispatcher.InvokeAsync(() =>
@@ -162,7 +135,6 @@ namespace PaperlessDesktop.Views
             }, DispatcherPriority.Input);
         }
 
-        // Arrow down from the search box moves into the list of tags (Tab works as well)
         private void OnTagSearchBoxPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Down)
@@ -185,8 +157,6 @@ namespace PaperlessDesktop.Views
 
         private void OnDocumentsGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Column order (see DocumentsView.xaml): 0 title, 1 document date, 2 date added,
-            // 3 correspondent, 4 document type, 5 tags, 6 open button (always visible).
             bool showDates = e.NewSize.Width >= ListDatesMinWidth;
             if (_listShowsDates != showDates)
             {
@@ -206,10 +176,6 @@ namespace PaperlessDesktop.Views
             }
         }
 
-        // The table's selection drives the preview. The grid selects a row on mouse down even when
-        // the click lands on one of the row's buttons ("open", "delete"), which would open the preview
-        // (and shift the layout so the button's click never arrives). So the grid only shows the selection
-        // (one-way binding) and passes user changes on here, except while such a button is pressed.
         private bool _openButtonPressed;
 
         private void OnDocumentsGridPreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -229,7 +195,6 @@ namespace PaperlessDesktop.Views
 
             if (_openButtonPressed)
             {
-                // Put the selection back (after the grid finishes handling the click); the preview stays as it was.
                 Dispatcher.InvokeAsync(() =>
                     DocumentsGrid.SetCurrentValue(DataGrid.SelectedItemProperty, vm.SelectedDocument));
                 return;
@@ -255,7 +220,6 @@ namespace PaperlessDesktop.Views
 
         private void UpdateContentColumns()
         {
-            // Visibility (not IsVisible) so this doesn't react to the whole page being hidden.
             bool open = PreviewCard.Visibility == Visibility.Visible;
             bool overlay = ContentGrid.ActualWidth > 0 && ContentGrid.ActualWidth < PreviewOverlayMaxWidth;
 
@@ -265,7 +229,6 @@ namespace PaperlessDesktop.Views
             }
             else if (overlay)
             {
-                // Preview spans the whole area on top of the list; its close button brings the list back.
                 SetColumns(new GridLength(1, GridUnitType.Star), 0, new GridLength(0), 0, splitter: false);
                 Place(PreviewCard, 0, 0, 3, new Thickness(0));
                 return;

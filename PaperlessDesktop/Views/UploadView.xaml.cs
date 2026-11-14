@@ -17,16 +17,12 @@ using PaperlessDesktop.ViewModels;
 
 namespace PaperlessDesktop.Views
 {
-    /// <summary>
-    /// Interaction logic for UploadView.xaml
-    /// </summary>
     public partial class UploadView : UserControl
     {
         public UploadView()
         {
             InitializeComponent();
         }
-
 
         private UploadViewModel? ViewModel => DataContext as UploadViewModel;
 
@@ -37,7 +33,7 @@ namespace PaperlessDesktop.Views
 
             var dialog = new OpenFileDialog
             {
-                Filter = ViewModel.FileDialogFilter,   // only supported types are offered
+                Filter = ViewModel.FileDialogFilter,
                 CheckFileExists = true,
                 Multiselect = false
             };
@@ -58,7 +54,6 @@ namespace PaperlessDesktop.Views
                 ViewModel.SetDragState(isOver: true, isRejected: !accepted);
             }
 
-            // The mouse cursor itself shows "can drop" / "can't drop"
             e.Effects = accepted ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
         }
@@ -75,7 +70,6 @@ namespace PaperlessDesktop.Views
 
             ViewModel.SelectFile(files[0], multipleDropped: files.Length > 1);
         }
-
 
     }
 }

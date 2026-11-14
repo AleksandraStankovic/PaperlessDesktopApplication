@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <DockPanel>
-        <!-- ===== Header ===== -->
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
             <TextBlock Text="{DynamicResource Settings_Title}" FontSize="26" FontWeight="SemiBold" />
             <TextBlock Text="{DynamicResource Settings_Subtitle}" Opacity="0.7" Margin="0,4,0,0" />
@@ -12,14 +11,11 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel MaxWidth="720" HorizontalAlignment="Center" Margin="0,0,16,16">
 
-                <!-- ===== Language ===== -->
                 <materialDesign:Card Padding="20,16" Margin="0,0,0,16">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Settings_Language}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
-                        <!-- Language names are not translated: everyone can find their own language -->
                         <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}"
                                  SelectedIndex="{Binding LanguageIndex}" HorizontalAlignment="Left">
-                            <!-- Selected option uses the same soft accent tint as the Tabela/Kartice toggle on Dokumenti -->
                             <ListBox.Resources>
                                 <SolidColorBrush x:Key="MaterialDesign.Brush.ListBoxItem.Selected" Color="Transparent" />
                             </ListBox.Resources>
@@ -38,13 +34,11 @@
                     </StackPanel>
                 </materialDesign:Card>
 
-                <!-- ===== Theme ===== -->
                 <materialDesign:Card Padding="20,16" Margin="0,0,0,16">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Settings_Theme}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
                         <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}"
                                  SelectedIndex="{Binding ThemeIndex}" HorizontalAlignment="Left">
-                            <!-- Selected option uses the same soft accent tint as the Tabela/Kartice toggle on Dokumenti -->
                             <ListBox.Resources>
                                 <SolidColorBrush x:Key="MaterialDesign.Brush.ListBoxItem.Selected" Color="Transparent" />
                             </ListBox.Resources>
@@ -73,13 +67,11 @@
                     </StackPanel>
                 </materialDesign:Card>
 
-                <!-- ===== Accent color ===== -->
                 <materialDesign:Card Padding="20,16" Margin="0,0,0,16">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Settings_Color}" FontSize="16" FontWeight="SemiBold" />
                         <TextBlock Text="{DynamicResource Settings_ColorHint}" Opacity="0.65" FontSize="12" Margin="0,2,0,12" />
 
-                        <!-- Quick presets (one click, H7) -->
                         <ItemsControl ItemsSource="{Binding PresetColors}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -103,10 +95,8 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <!-- Any color -->
                         <materialDesign:ColorPicker Color="{Binding PrimaryColor, Mode=TwoWay}" Height="160" Margin="0,8,0,0" />
 
-                        <!-- HCI: live preview with real controls (H1) -->
                         <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                             <TextBlock Text="{DynamicResource Settings_Preview}" VerticalAlignment="Center"
                                        Opacity="0.7" Margin="0,0,12,0" />
@@ -119,7 +109,6 @@
                     </StackPanel>
                 </materialDesign:Card>
 
-                <!-- ===== Footer: reset + saved confirmation ===== -->
                 <DockPanel Margin="0,4,0,0">
                     <Button DockPanel.Dock="Left" Command="{Binding ResetToDefaultsCommand}"
                             Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -130,7 +119,6 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- HCI: the user SEES that changes were saved (H1) -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
                                 Visibility="{Binding HasSavedText, Converter={StaticResource BoolToVis}}">
                         <materialDesign:PackIcon Kind="CheckCircle" Foreground="{DynamicResource Status.Success.Text}" VerticalAlignment="Center" />

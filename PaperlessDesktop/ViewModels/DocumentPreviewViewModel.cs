@@ -7,10 +7,8 @@ using PaperlessDesktop.Services;
 
 namespace PaperlessDesktop.ViewModels;
 
-/// <summary>The side panel: selected document's metadata and file preview.</summary>
 public partial class DocumentPreviewViewModel : ObservableObject
 {
-    // WebView2 must never get a null address, so "no preview" is an empty page
     private static readonly Uri BlankPage = new("about:blank");
 
     private readonly DocumentFileService _files;
@@ -42,25 +40,15 @@ public partial class DocumentPreviewViewModel : ObservableObject
 
     public bool ShowPreview => !IsLoadingPreview && PreviewUri != BlankPage;
 
-    /// <summary>Raised when the user closes the panel (the list then clears its selection).</summary>
     public event EventHandler? CloseRequested;
 
-    /// <summary>
-    /// Raised after a document's tags were saved. True if a new tag was created as well
-    /// (the filter dropdown and the Tags page then need the new tag too).
-    /// </summary>
     public event EventHandler<bool>? TagsEdited;
 
-    // ---------- Tag editing ----------
-
-    /// <summary>Tags that can still be added (not on the document yet), filtered by the search text.</summary>
     public ObservableCollection<Tag> TagSuggestions { get; } = new();
 
-    /// <summary>The "+ Dodaj tag" popup.</summary>
     [ObservableProperty]
     private bool _isTagPickerOpen;
 
-    /// <summary>What the user typed in the popup: filters the list, or becomes the name of a new tag.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NewTagName))]
     [NotifyPropertyChangedFor(nameof(CanCreateTag))]
@@ -68,8 +56,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(CreateTagCommand))]
     private string _tagSearchText = "";
 
-    /// <summary>True while a change is being saved. The tag controls are disabled meanwhile,
-    /// so two quick clicks can't overwrite each other.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanEditTags))]
     [NotifyCanExecuteChangedFor(nameof(RemoveTagCommand))]
@@ -82,15 +68,10 @@ public partial class DocumentPreviewViewModel : ObservableObject
 
     public string NewTagName => TagSearchText?.Trim() ?? "";
 
-    /// <summary>
-    /// "Kreiraj tag „…“" is offered when the typed name is valid and no tag has that name yet
-    /// (an existing tag with the same name is simply shown in the list instead).
-    /// </summary>
     public bool CanCreateTag =>
         NewTagName.Length is > 0 and <= TagEditorViewModel.MaxNameLength
         && !_lookups.Tags.Any(t => string.Equals(t.Name, NewTagName, StringComparison.CurrentCultureIgnoreCase));
 
-    /// <summary>Nothing to pick and nothing to create (e.g. the document already has every tag).</summary>
     public bool ShowNoSuggestions => TagSuggestions.Count == 0 && !CanCreateTag;
 
     public DocumentPreviewViewModel(DocumentFileService files, PaperlessApiClient api, LookupCache lookups,
@@ -103,10 +84,8 @@ public partial class DocumentPreviewViewModel : ObservableObject
         _localization = localization;
     }
 
-    /// <summary>Shows a document in the panel, or closes the panel if item is null.</summary>
     public async Task ShowAsync(DocumentItemViewModel? item)
     {
-        // Stop loading the previously selected document
         _loadCts?.Cancel();
 
         Document = item;
@@ -127,14 +106,13 @@ public partial class DocumentPreviewViewModel : ObservableObject
         try
         {
             string path = await _files.GetPreviewFileAsync(item.Model, cts.Token);
-            cts.Token.ThrowIfCancellationRequested();   // user selected another document meanwhile
+            cts.Token.ThrowIfCancellationRequested();
 
             SetPreviewFile(path);
             PreviewUri = new Uri(path);
         }
         catch (OperationCanceledException)
         {
-            // Another document was selected - nothing to report
         }
         catch (Exception ex)
         {
@@ -152,8 +130,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
         }
     }
 
-    // ---------- Commands ----------
-
     [RelayCommand]
     private void Close() => CloseRequested?.Invoke(this, EventArgs.Empty);
 
@@ -166,12 +142,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
 
     private bool CanOpenExternally() => _previewFilePath is not null;
 
-    /// <summary>
-    /// The ↗ button on a list row: opens that document in the default app without opening
-    /// the preview panel. Uses the same downloaded file as the preview (cached, so a document
-    /// that was already previewed opens immediately). While a file is downloading, the row
-    /// buttons are disabled, so a double click doesn't open the document twice.
-    /// </summary>
     [RelayCommand]
     private async Task OpenInDefaultAppAsync(DocumentItemViewModel? item)
     {
@@ -189,8 +159,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
         }
     }
 
-    // ---------- Tag commands ----------
-
     [RelayCommand(CanExecute = nameof(CanOpenTagPicker))]
     private void OpenTagPicker()
     {
@@ -204,7 +172,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
     [RelayCommand]
     private void CloseTagPicker() => IsTagPickerOpen = false;
 
-    /// <summary>Clicking a tag in the popup adds it to the document.</summary>
     [RelayCommand(CanExecute = nameof(CanEditTags))]
     private async Task AddTagAsync(Tag? tag)
     {
@@ -215,10 +182,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
         await SaveTagsAsync(item, item.Model.TagIds.Append(tag.Id).ToList(), createdTag: false);
     }
 
-    /// <summary>
-    /// Enter in the popup's search box: adds the top matching tag (an exact name match wins),
-    /// or creates a new tag if nothing matches, so the keyboard alone is enough.
-    /// </summary>
     [RelayCommand]
     private async Task ConfirmTagSearchAsync()
     {
@@ -235,7 +198,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
             await CreateTagAsync();
     }
 
-    /// <summary>"Kreiraj tag „…“": creates the tag on the server and adds it to the document.</summary>
     [RelayCommand(CanExecute = nameof(CanCreateNewTag))]
     private async Task CreateTagAsync()
     {
@@ -267,7 +229,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
 
     private bool CanCreateNewTag() => !IsSavingTags && CanCreateTag;
 
-    /// <summary>The ✕ on a tag: removes it from the document right away, with "Poništi" to undo (H3).</summary>
     [RelayCommand(CanExecute = nameof(CanEditTags))]
     private async Task RemoveTagAsync(Tag? tag)
     {
@@ -288,15 +249,11 @@ public partial class DocumentPreviewViewModel : ObservableObject
     private async Task UndoRemoveAsync(DocumentItemViewModel item, Tag tag)
     {
         if (IsSavingTags || item.Model.TagIds.Contains(tag.Id) || _lookups.GetTag(tag.Id) is null)
-            return;   // already back, or the tag was deleted meanwhile
+            return;
 
         await SaveTagsAsync(item, item.Model.TagIds.Append(tag.Id).ToList(), createdTag: false);
     }
 
-    /// <summary>
-    /// Sends the document's new tag list to the server. The chips change only after the server
-    /// accepted it, so what the user sees is always what is saved.
-    /// </summary>
     private async Task<bool> SaveTagsAsync(DocumentItemViewModel item, List<int> newTagIds, bool createdTag)
     {
         IsSavingTags = true;
@@ -318,7 +275,7 @@ public partial class DocumentPreviewViewModel : ObservableObject
         {
             _notifications.ShowError(ex);
             if (createdTag)
-                TagsEdited?.Invoke(this, true);   // the new tag exists even though adding it failed
+                TagsEdited?.Invoke(this, true);
             return false;
         }
         finally
@@ -336,12 +293,12 @@ public partial class DocumentPreviewViewModel : ObservableObject
         {
             string search = NewTagName;
             var compare = CultureInfo.CurrentCulture.CompareInfo;
-            const CompareOptions options = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace;   // "cas" finds "čas"
+            const CompareOptions options = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace;
 
             var matches = _lookups.Tags
                 .Where(t => !item.Model.TagIds.Contains(t.Id))
                 .Where(t => search.Length == 0 || compare.IndexOf(t.Name, search, options) >= 0)
-                .OrderBy(t => compare.IsPrefix(t.Name, search, options) ? 0 : 1)   // "rač" → "računi" before "obračun"
+                .OrderBy(t => compare.IsPrefix(t.Name, search, options) ? 0 : 1)
                 .ThenBy(t => t.Name, StringComparer.CurrentCultureIgnoreCase);
 
             foreach (var tag in matches)
@@ -352,10 +309,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
         CreateTagCommand.NotifyCanExecuteChanged();
     }
 
-    /// <summary>
-    /// A new tag from the preview gets the palette color used least so far, so tags stay easy to
-    /// tell apart. The color can be changed later on the Tags page.
-    /// </summary>
     private string PickColorForNewTag()
     {
         var palette = TagEditorViewModel.PresetColorValues;
@@ -363,7 +316,7 @@ public partial class DocumentPreviewViewModel : ObservableObject
             .GroupBy(t => (t.Color ?? "").ToLowerInvariant())
             .ToDictionary(g => g.Key, g => g.Count());
         return palette
-            .Where(c => c != "#000000" && c != "#666666" && c != "#cccccc")   // greys look "disabled"
+            .Where(c => c != "#000000" && c != "#666666" && c != "#cccccc")
             .OrderBy(c => used.GetValueOrDefault(c, 0))
             .First();
     }
@@ -377,6 +330,6 @@ public partial class DocumentPreviewViewModel : ObservableObject
     private void SetPreviewFile(string? path)
     {
         _previewFilePath = path;
-        OpenExternallyCommand.NotifyCanExecuteChanged();   // enable/disable the ↗ button
+        OpenExternallyCommand.NotifyCanExecuteChanged();
     }
 }

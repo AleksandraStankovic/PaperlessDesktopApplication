@@ -13,25 +13,20 @@
                                              PrimaryColor="Indigo"
                                              SecondaryColor="Amber" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
-                <!-- Snackbar styles, so MainWindow can base the colored notifications on them -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Snackbar.xaml" />
 
-                <!-- Default language (so the designer shows text). Replaced at runtime by LocalizationService. -->
                 <ResourceDictionary Source="Resources/Languages/Strings.sr.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Sidebar look ("Sunset" gradient). Replaced at runtime by ThemeService from the accent color. -->
             <LinearGradientBrush x:Key="Sidebar.Background" StartPoint="0,0" EndPoint="0,1">
                 <GradientStop Color="#6D28D9" Offset="0" />
                 <GradientStop Color="#D92872" Offset="1" />
             </LinearGradientBrush>
             <SolidColorBrush x:Key="Sidebar.SelectedBackground" Color="#40000000" />
 
-            <!-- Accent text + selected-toggle tint. Replaced at runtime by ThemeService (readable in light AND dark mode). -->
             <SolidColorBrush x:Key="Accent.Text" Color="#6D28D9" />
             <SolidColorBrush x:Key="Accent.SelectedOverlay" Color="#386D28D9" />
 
-            <!-- Status colors (light theme values). Replaced at runtime by ThemeService for light/dark. -->
             <SolidColorBrush x:Key="Status.Success.Text" Color="#2E7D32" />
             <SolidColorBrush x:Key="Status.Error.Text" Color="#C62828" />
             <SolidColorBrush x:Key="Status.Warning.Text" Color="#B45309" />
@@ -40,17 +35,10 @@
             <SolidColorBrush x:Key="Status.Error.Background" Color="#FBE6E5" />
             <SolidColorBrush x:Key="Status.Error.Foreground" Color="#7F1D1D" />
 
-            <!-- Notification text: a check / alert icon next to success / error messages,
-                 so the meaning doesn't depend on color alone (accessibility), and a ✕ to close it
-                 right away instead of waiting (H3: user control and freedom) -->
             <DataTemplate DataType="{x:Type services:NotificationMessage}">
-                <!-- DockPanel (not a horizontal StackPanel): the text gets a fixed width and wraps
-                     onto more lines, so long document names are shown in full -->
                 <DockPanel>
                     <materialDesign:PackIcon x:Name="Icon" DockPanel.Dock="Left" Width="20" Height="20" Margin="0,0,10,0"
                                              VerticalAlignment="Center" Visibility="Collapsed" />
-                    <!-- Uses the message's own text color, so it fits the green / red / neutral look in both themes.
-                         The command is on MainViewModel (the window's DataContext). -->
                     <Button DockPanel.Dock="Right" Margin="12,-4,-8,-4" VerticalAlignment="Center"
                             Width="28" Height="28" Padding="0"
                             Style="{StaticResource MaterialDesignIconButton}"
@@ -75,14 +63,12 @@
                 </DataTemplate.Triggers>
             </DataTemplate>
 
-            <!-- Converters -->
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True" />
             <converters:HexToBrushConverter x:Key="HexToBrush" />
             <converters:HexToGradientConverter x:Key="HexToGradient" />
             <converters:BoolToGridLengthConverter x:Key="PreviewColumnWidth" TrueLength="2*" />
 
-            <!-- Shared templates (used on several pages, so tags look the same everywhere) -->
             <DataTemplate x:Key="TagChipTemplate">
                 <Border Background="{Binding Color, Converter={StaticResource HexToBrush}}"
                         CornerRadius="10" Padding="8,2" Margin="0,2,4,2">
@@ -91,9 +77,6 @@
                 </Border>
             </DataTemplate>
 
-            <!-- The ✕ on removable chips (tags, filters). MaterialDesign draws it on a fixed grey circle;
-                 this one sits on a darker shade of the chip's own color (even darker on hover).
-                 The Chip style below puts it on every chip when it loads (App.xaml.cs). -->
             <converters:DarkerBrushConverter x:Key="DarkerShade" Factor="0.75" />
             <converters:DarkerBrushConverter x:Key="DarkerShadeHover" Factor="0.6" />
             <ControlTemplate x:Key="ChipDeleteButtonTemplate" TargetType="Button">
@@ -112,12 +95,10 @@
                 </ControlTemplate.Triggers>
             </ControlTemplate>
 
-            <!-- Every chip (default look) gets the ✕ above when it loads -->
             <Style TargetType="{x:Type materialDesign:Chip}" BasedOn="{StaticResource {x:Type materialDesign:Chip}}">
                 <EventSetter Event="Loaded" Handler="Chip_Loaded" />
             </Style>
 
-            <!-- ViewModel → View mapping: pages -->
             <DataTemplate DataType="{x:Type vm:DocumentsViewModel}">
                 <views:DocumentsView />
             </DataTemplate>
@@ -131,8 +112,6 @@
                 <views:SettingsView />
             </DataTemplate>
             
-
-            <!-- ViewModel → View mapping: dialogs -->
             <DataTemplate DataType="{x:Type vm:ConfirmDialogViewModel}">
                 <views:ConfirmDialogView />
             </DataTemplate>
@@ -143,7 +122,6 @@
             <DataTemplate DataType="{x:Type vm:AnalyticsViewModel}">
                 <views:AnalyticsView />
             </DataTemplate>
-            
             
         </ResourceDictionary>
     </Application.Resources>

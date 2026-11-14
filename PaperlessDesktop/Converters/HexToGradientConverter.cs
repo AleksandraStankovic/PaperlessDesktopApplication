@@ -5,7 +5,6 @@ using PaperlessDesktop.Services;
 
 namespace PaperlessDesktop.Converters;
 
-/// <summary>Hex accent color -> the sidebar gradient it produces (for the color swatches in Settings).</summary>
 public class HexToGradientConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

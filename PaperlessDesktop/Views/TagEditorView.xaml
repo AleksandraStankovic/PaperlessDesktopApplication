@@ -10,18 +10,11 @@
     <StackPanel Margin="24" Width="440"
                 FocusManager.FocusedElement="{Binding ElementName=NameBox}">
 
-        <!-- Title: "Novi tag" or "Uredi tag" -->
         <TextBlock Text="{DynamicResource Tags_NewTitle}" FontSize="20" FontWeight="SemiBold"
                    Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}}" />
         <TextBlock Text="{DynamicResource Tags_EditTitle}" FontSize="20" FontWeight="SemiBold"
                    Visibility="{Binding IsNew, Converter={StaticResource InverseBoolToVis}}" />
 
-        <!-- Name -->
-        <!-- The box gets keyboard focus when the dialog opens (so the user can type right away),
-             but its border and label stay neutral, like an unfocused text box, until the user types
-             or leaves the box. After that it highlights normally (TagEditorView.xaml.cs). -->
-        <!-- Required field: the label always has "*", and while the box is focused it also says
-             "(Obavezno)" / "(Required)", so the user knows the tag can't be saved without a name (H5). -->
         <TextBox x:Name="NameBox" Margin="0,20,0,0"
                  materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource MaterialDesign.Brush.TextBox.OutlineBorder}"
                  materialDesign:TextFieldAssist.OutlinedBorderActiveThickness="1"
@@ -43,12 +36,10 @@
             </TextBox.InputBindings>
         </TextBox>
 
-        <!-- HCI: validation message right under the field, while typing (H5, H9) -->
         <TextBlock Text="{Binding NameError}" Foreground="{DynamicResource Status.Error.Text}" FontSize="12" Margin="4,4,0,0"
                    TextWrapping="Wrap"
                    Visibility="{Binding HasNameError, Converter={StaticResource BoolToVis}}" />
 
-        <!-- Color: quick presets + full picker -->
         <TextBlock Text="{DynamicResource Tags_Color}" Margin="0,20,0,8" Opacity="0.7" />
 
         <ItemsControl ItemsSource="{Binding PresetColors}">
@@ -76,7 +67,6 @@
 
         <materialDesign:ColorPicker Color="{Binding SelectedColor, Mode=TwoWay}" Height="140" Margin="0,8,0,0" />
 
-        <!-- HCI: live preview - the user sees the result before saving (H1) -->
         <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
             <TextBlock Text="{DynamicResource Tags_Preview}" VerticalAlignment="Center" Opacity="0.7" Margin="0,0,12,0" />
             <Border Background="{Binding ColorHex, Converter={StaticResource HexToBrush}}"
@@ -87,11 +77,9 @@
             <TextBlock Text="{Binding ColorHex}" VerticalAlignment="Center" Margin="12,0,0,0" Opacity="0.5" FontSize="12" />
         </StackPanel>
 
-        <!-- Server error (dialog stays open so the user can fix it) -->
         <TextBlock Text="{Binding ServerError}" Foreground="{DynamicResource Status.Error.Text}" Margin="0,16,0,0" TextWrapping="Wrap"
                    Visibility="{Binding HasServerError, Converter={StaticResource BoolToVis}}" />
 
-        <!-- Buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
             <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True"
                          Width="20" Height="20" Margin="0,0,12,0"

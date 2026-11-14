@@ -3,12 +3,8 @@ using System.Windows.Controls;
 
 namespace PaperlessDesktop.Views
 {
-    /// <summary>
-    /// Interaction logic for AnalyticsView.xaml
-    /// </summary>
     public partial class AnalyticsView : UserControl
     {
-        // Below this width the pie chart and the tag cloud don't fit next to each other
         private const double SideBySideMinWidth = 980;
 
         private bool? _sideBySide;

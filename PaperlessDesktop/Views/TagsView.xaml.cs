@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace PaperlessDesktop.Views
 {
-    /// <summary>
-    /// Interaction logic for TagsView.xaml
-    /// </summary>
     public partial class TagsView : UserControl
     {
         public TagsView()

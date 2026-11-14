@@ -4,7 +4,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
     <UserControl.Resources>
-        <!-- Icon for one status step: pending circle, spinner, green check, red alert -->
         <DataTemplate x:Key="StepIconTemplate">
             <Grid Width="28" Height="28">
                 <materialDesign:PackIcon x:Name="Icon" Kind="CircleOutline" Width="26" Height="26"
@@ -32,23 +31,19 @@
     </UserControl.Resources>
 
     <DockPanel>
-        <!-- ===== Header ===== -->
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
             <TextBlock Text="{DynamicResource Upload_Title}" FontSize="26" FontWeight="SemiBold" />
             <TextBlock Text="{DynamicResource Upload_Subtitle}" Opacity="0.7" Margin="0,4,0,0" />
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <!-- The form is a centered column (same as Settings) -->
             <StackPanel MaxWidth="720" Margin="16,0,16,16">
 
-                <!-- ===== Drop zone ===== -->
                 <Grid AllowDrop="True" Background="Transparent"
                       DragEnter="DropZone_DragOver" DragOver="DropZone_DragOver"
                       DragLeave="DropZone_DragLeave" Drop="DropZone_Drop"
                       IsEnabled="{Binding IsFormEnabled}">
 
-                    <!-- Dashed border: color shows whether a dragged file is accepted -->
                     <Rectangle RadiusX="10" RadiusY="10" StrokeThickness="2" StrokeDashArray="5 3">
                         <Rectangle.Style>
                             <Style TargetType="Rectangle">
@@ -71,7 +66,6 @@
                     <StackPanel Margin="24,28" HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="CloudUploadOutline" Width="48" Height="48"
                                                  HorizontalAlignment="Center" Opacity="0.6" />
-                        <!-- Once a file is selected, the texts say that a new one REPLACES it (H1, H5) -->
                         <TextBlock FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -108,7 +102,6 @@
                                        VerticalAlignment="Center" TextWrapping="Wrap" />
                         </StackPanel>
 
-                        <!-- HCI problem 3: allowed formats are visible BEFORE choosing a file (H5) -->
                         <TextBlock FontSize="12" Opacity="0.7" Margin="0,14,0,0"
                                    HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap">
                             <Run Text="{DynamicResource Upload_SupportedFormats}" />
@@ -118,14 +111,12 @@
                             <Run Text="{Binding MaxFileSizeText, Mode=OneWay}" />
                         </TextBlock>
 
-                        <!-- Shown while dragging an unsupported file -->
                         <TextBlock Text="{DynamicResource Upload_DropRejected}" Foreground="{DynamicResource Status.Error.Text}"
                                    FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"
                                    Visibility="{Binding IsDragRejected, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
                 </Grid>
 
-                <!-- File error (wrong type, too big, ...) with a clear explanation (H9) -->
                 <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
                             Visibility="{Binding HasFileError, Converter={StaticResource BoolToVis}}">
                     <materialDesign:PackIcon Kind="AlertCircleOutline" Foreground="{DynamicResource Status.Error.Text}"
@@ -133,8 +124,6 @@
                     <TextBlock Text="{Binding FileError}" Foreground="{DynamicResource Status.Error.Text}" TextWrapping="Wrap" MaxWidth="660" />
                 </StackPanel>
 
-                <!-- HCI problem 3: duplicate found BEFORE uploading (H1, H5).
-                     The duplicate file is removed automatically, so the user only picks another one. -->
                 <StackPanel Orientation="Horizontal" Margin="4,10,0,0"
                             Visibility="{Binding HasDuplicateWarning, Converter={StaticResource BoolToVis}}">
                     <materialDesign:PackIcon Kind="ContentDuplicate" Foreground="{DynamicResource Status.Warning.Text}"
@@ -142,7 +131,6 @@
                     <TextBlock Text="{Binding DuplicateWarning}" Foreground="{DynamicResource Status.Warning.Text}" TextWrapping="Wrap" MaxWidth="660" />
                 </StackPanel>
 
-                <!-- Selected file -->
                 <materialDesign:Card Margin="0,12,0,0" Padding="16,10"
                                      Visibility="{Binding HasFile, Converter={StaticResource BoolToVis}}">
                     <DockPanel>
@@ -156,7 +144,6 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="{Binding FileSizeText}" Opacity="0.6" FontSize="12" />
-                            <!-- HCI problem 3: how much of the duplicate check is done, instead of a "checking..." text (H1) -->
                             <DockPanel Margin="0,6,0,2"
                                        Visibility="{Binding IsCheckingDuplicate, Converter={StaticResource BoolToVis}}"
                                        ToolTip="{DynamicResource Upload_CheckingDuplicate}">
@@ -169,14 +156,10 @@
                     </DockPanel>
                 </materialDesign:Card>
 
-
-                <!-- ===== Metadata ===== -->
                 <TextBlock Text="{DynamicResource Upload_MetadataHeader}" FontSize="16" FontWeight="SemiBold"
                            Margin="0,24,0,8" />
 
                 <StackPanel IsEnabled="{Binding IsFormEnabled}">
-                    <!-- Required field: the label always has "*", and while the box is focused it also says
-                         "(Obavezno)" / "(Required)" (H5). The other fields below are marked "(Opciono)". -->
                     <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
@@ -189,8 +172,6 @@
                             </Style>
                         </TextBox.Style>
                     </TextBox>
-                    <!-- Explanation as a normal TextBlock, so it lines up with the left edge of the text box.
-                         When the title is invalid, the error takes its place. -->
                     <TextBlock Text="{DynamicResource Upload_TitleHelper}" FontSize="12" Opacity="0.6" Margin="0,4,0,0"
                                TextWrapping="Wrap"
                                Visibility="{Binding HasTitleError, Converter={StaticResource InverseBoolToVis}}" />
@@ -214,7 +195,6 @@
                               SelectedItem="{Binding SelectedDocumentType}"
                               DisplayMemberPath="Name" />
 
-                    <!-- Tags: pick to add a chip, ✕ to remove (same pattern as the filters, H4) -->
                     <ComboBox Margin="0,16,0,0"
                               Style="{StaticResource MaterialDesignOutlinedComboBox}"
                               materialDesign:HintAssist.Hint="{DynamicResource Upload_AddTag}"
@@ -240,7 +220,6 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <!-- ===== Actions ===== -->
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                     <Button Command="{Binding UploadCommand}">
                         <StackPanel Orientation="Horizontal">
@@ -253,20 +232,17 @@
                     Foreground="{DynamicResource Accent.Text}" Margin="8,0,0,0" />
                 </StackPanel>
 
-                <!-- ===== HCI problem 2: two simple steps in plain language (H1, H2, H8) ===== -->
                 <materialDesign:Card Margin="0,24,0,0" Padding="20,16"
                                      Visibility="{Binding ShowStatus, Converter={StaticResource BoolToVis}}">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Upload_StatusHeader}" FontSize="16" FontWeight="SemiBold"
                                    Margin="0,0,0,12" />
 
-                        <!-- Step 1: adding the document -->
                         <DockPanel Margin="0,4">
                             <ContentControl DockPanel.Dock="Left" Content="{Binding SendStep}"
                                             ContentTemplate="{StaticResource StepIconTemplate}" Margin="0,0,12,0" />
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{DynamicResource Upload_Step_Send}" FontWeight="SemiBold" />
-                                <!-- Progress bar + cancel: only while the file is being sent -->
                                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
                                             Visibility="{Binding IsSending, Converter={StaticResource BoolToVis}}">
                                     <ProgressBar Value="{Binding UploadProgress}" Maximum="100" Width="260" Height="6"
@@ -281,7 +257,6 @@
                             </StackPanel>
                         </DockPanel>
 
-                        <!-- Step 2: ready -->
                         <DockPanel Margin="0,10,0,4">
                             <ContentControl DockPanel.Dock="Left" Content="{Binding ReadyStep}"
                                             ContentTemplate="{StaticResource StepIconTemplate}" Margin="0,0,12,0" />
@@ -289,7 +264,6 @@
                                        VerticalAlignment="Center" />
                         </DockPanel>
 
-                        <!-- Current status / result message -->
                         <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" Margin="0,14,0,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">

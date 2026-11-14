@@ -21,7 +21,6 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-        <!-- A clickable chart element: no button look, just a soft highlight on hover -->
         <Style x:Key="ChartItemButton" TargetType="Button">
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
@@ -44,8 +43,6 @@
             </Setter>
         </Style>
 
-        <!-- One donut slice. A named style on purpose: MaterialDesign's implicit Button style
-             gives every button Height=32, which pushed the slices down under the total in the middle. -->
         <Style x:Key="PieSliceButton" TargetType="Button">
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Focusable" Value="False" />
@@ -70,9 +67,7 @@
         </Style>
     </UserControl.Resources>
 
-    <!-- The page is a centered column (MaxWidth); inside it every section stretches to the full width -->
     <DockPanel>
-        <!-- ===== Header ===== -->
         <DockPanel DockPanel.Dock="Top" MaxWidth="{StaticResource AnalyticsMaxWidth}" Margin="16,0,16,16">
             <Button DockPanel.Dock="Right" VerticalAlignment="Center" Command="{Binding LoadCommand}"
                     Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -84,7 +79,6 @@
             </Button>
             <StackPanel>
                 <TextBlock Text="{DynamicResource Analytics_Title}" FontSize="26" FontWeight="SemiBold" />
-                <!-- HCI: tell the user that charts are clickable (H10) -->
                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Opacity="0.7">
                     <materialDesign:PackIcon Kind="GestureTap" VerticalAlignment="Center" Margin="0,0,6,0" />
                     <TextBlock Text="{DynamicResource Analytics_ClickHint}" VerticalAlignment="Center" />
@@ -97,8 +91,6 @@
                           Visibility="{Binding HasData, Converter={StaticResource BoolToVis}}">
                 <StackPanel MaxWidth="{StaticResource AnalyticsMaxWidth}" Margin="16,0,16,16">
 
-                    <!-- ===== Summary tiles ===== -->
-                    <!-- Each tile has 6px on both sides; the -6 margin lines the outer edges up with the cards below -->
                     <UniformGrid Columns="4" Margin="-6,0,-6,16">
                         <materialDesign:Card Margin="6,0" Padding="16,12">
                             <StackPanel>
@@ -126,8 +118,6 @@
                         </materialDesign:Card>
                     </UniformGrid>
 
-                    <!-- Pie chart + tag cloud: side by side, each half of the width and the same height.
-                         In a narrow window they go one under the other (AnalyticsView.xaml.cs). -->
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -138,7 +128,6 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!-- ===== Pie chart: documents by type ===== -->
                         <materialDesign:Card x:Name="TypeCard" Grid.Row="0" Grid.Column="0"
                                              Margin="0,0,8,16" Padding="20,16">
                             <DockPanel>
@@ -146,7 +135,6 @@
 
                                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0"
                                             HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <!-- Donut: all slices drawn on top of each other in one Grid -->
                                     <Grid Width="{Binding PieSize}" Height="{Binding PieSize}">
                                         <ItemsControl ItemsSource="{Binding TypeSlices}">
                                             <ItemsControl.ItemsPanel>
@@ -164,7 +152,6 @@
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
 
-                                        <!-- Total in the middle of the donut -->
                                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
                                             <TextBlock Text="{Binding TotalDocuments}" FontSize="26" FontWeight="SemiBold"
                                                        HorizontalAlignment="Center" />
@@ -173,7 +160,6 @@
                                         </StackPanel>
                                     </Grid>
 
-                                    <!-- Legend (also clickable - bigger targets than thin slices) -->
                                     <ItemsControl ItemsSource="{Binding TypeSlices}" Margin="16,0,0,0" VerticalAlignment="Center">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -196,7 +182,6 @@
                             </DockPanel>
                         </materialDesign:Card>
 
-                        <!-- ===== Tag cloud ===== -->
                         <materialDesign:Card x:Name="TagCloudCard" Grid.Row="0" Grid.Column="1"
                                              Margin="8,0,0,16" Padding="20,16">
                             <StackPanel>
@@ -215,8 +200,6 @@
                                                     ToolTip="{Binding Tooltip}"
                                                     Command="{Binding DataContext.SelectTagCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}">
-                                                <!-- The pill stretches to the height of the tallest tag in its row,
-                                                     so the name is centered inside it instead of sitting at the top -->
                                                 <Border CornerRadius="12" Padding="10,2"
                                                         Background="{Binding Tag.Color, Converter={StaticResource HexToBrush}}">
                                                     <TextBlock Text="{Binding Tag.Name}" FontSize="{Binding FontSize}"
@@ -231,12 +214,10 @@
                         </materialDesign:Card>
                     </Grid>
 
-                    <!-- ===== Bar chart: documents by month ===== -->
                     <materialDesign:Card Padding="20,16">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Analytics_ByMonth}" Style="{StaticResource SectionTitle}" />
 
-                            <!-- Year and month range are selectable -->
                             <WrapPanel Margin="0,12,0,0">
                                 <ComboBox Width="110" Margin="0,0,12,8"
                                           Style="{StaticResource MaterialDesignOutlinedComboBox}"
@@ -264,7 +245,6 @@
                                 </TextBlock>
                             </WrapPanel>
 
-                            <!-- Bars: one column per month in the range -->
                             <ItemsControl ItemsSource="{Binding MonthBars}" Height="230" Margin="0,12,0,0">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -296,12 +276,10 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- Empty state -->
             <TextBlock Text="{DynamicResource Analytics_Empty}" FontSize="16" Opacity="0.6"
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVis}}" />
 
-            <!-- Loading -->
             <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True"
                          Width="48" Height="48" HorizontalAlignment="Center" VerticalAlignment="Center"
                          Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />

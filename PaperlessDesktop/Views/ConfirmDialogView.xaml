@@ -4,15 +4,12 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <!-- HCI: the SAFE option (Cancel) has focus, so pressing Enter by accident doesn't delete (H5) -->
     <StackPanel Margin="24" MaxWidth="440"
                 FocusManager.FocusedElement="{Binding ElementName=CancelButton}">
 
         <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" />
         <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,12,0,24" />
 
-        <!-- Confirm first, "Odustani" last (on the right), as in Windows dialogs. Cancel uses the normal
-             text color, not the accent color, so only the action button stands out. -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="{Binding ConfirmText}"
                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
@@ -22,7 +19,6 @@
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
                         <Style.Triggers>
-                            <!-- Dangerous action → red button -->
                             <DataTrigger Binding="{Binding IsDestructive}" Value="True">
                                 <Setter Property="Background" Value="#D32F2F" />
                                 <Setter Property="BorderBrush" Value="#D32F2F" />

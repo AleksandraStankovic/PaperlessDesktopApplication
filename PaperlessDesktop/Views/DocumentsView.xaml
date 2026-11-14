@@ -5,20 +5,17 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf">
 
-    <!-- Esc anywhere on this page closes the preview panel -->
     <UserControl.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding Preview.CloseCommand}" />
     </UserControl.InputBindings>
 
     <UserControl.Resources>
-        <!-- Dropdown item: name + number of documents, e.g. "računi (12)" -->
         <DataTemplate x:Key="NameWithCountTemplate">
             <TextBlock>
                 <Run Text="{Binding Name, Mode=OneWay}" /><Run Text=" (" /><Run Text="{Binding DocumentCount, Mode=OneWay}" /><Run Text=")" />
             </TextBlock>
         </DataTemplate>
 
-        <!-- Tag dropdown item: color dot + name + count -->
         <DataTemplate x:Key="TagOptionTemplate">
             <StackPanel Orientation="Horizontal">
                 <Border Width="12" Height="12" CornerRadius="6" Margin="0,0,8,0" VerticalAlignment="Center"
@@ -29,7 +26,6 @@
             </StackPanel>
         </DataTemplate>
 
-        <!-- Chip label prefix ("Tag", "Korespondent", "Tip") - translated, changes with language -->
         <Style x:Key="FilterKindLabelStyle" TargetType="TextBlock">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Kind}" Value="Tag">
@@ -48,13 +44,10 @@
             
         </Style>
 
-        <!-- Reused by table, cards AND preview, so tags look the same everywhere (consistency, H4) -->
         <ItemsPanelTemplate x:Key="WrapPanelTemplate">
             <WrapPanel />
         </ItemsPanelTemplate>
 
-
-        <!-- Label/value text styles for the preview panel -->
         <Style x:Key="MetaLabel" TargetType="TextBlock">
             <Setter Property="Opacity" Value="0.7" />
             <Setter Property="Margin" Value="0,3,16,3" />
@@ -64,24 +57,17 @@
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
-        <!-- One card in card view -->
         <DataTemplate x:Key="DocumentCardTemplate">
             <materialDesign:Card Width="210" Margin="4">
                 <StackPanel>
-                    <!-- Thumbnail area -->
                     <Grid Height="230" Background="#18808080">
-                        <!-- Placeholder, shown until the thumbnail arrives -->
                         <materialDesign:PackIcon Kind="FileDocumentOutline" Width="64" Height="64" Opacity="0.3"
                                                  HorizontalAlignment="Center" VerticalAlignment="Center"
                                                  Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBoolToVis}}" />
-                        <!-- HCI: thumbnail centered (web version is not) -->
                         <Image Source="{Binding Thumbnail}" Stretch="Uniform" Margin="8"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                Visibility="{Binding HasThumbnail, Converter={StaticResource BoolToVis}}" />
 
-                        <!-- Delete, in the corner of the thumbnail. A round paper-colored background keeps the red
-                             icon readable on top of any page. Clicking it does not select the card (the button
-                             handles the click); a confirmation dialog opens first. -->
                         <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6"
                                 Width="32" Height="32" CornerRadius="16"
                                 Background="{DynamicResource MaterialDesign.Brush.Card.Background}">
@@ -102,7 +88,6 @@
                                    FontWeight="SemiBold" FontSize="14"
                                    TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="40" />
 
-                        <!-- HCI: dates have text labels, not just identical icons (problem 4 candidate) -->
                         <TextBlock FontSize="12" Opacity="0.75" Margin="0,6,0,0" TextTrimming="CharacterEllipsis">
                             <Run Text="{DynamicResource Col_Created}" /><Run Text=": " /><Run Text="{Binding Created, StringFormat=dd.MM.yyyy, Mode=OneWay}" />
                         </TextBlock>
@@ -124,7 +109,6 @@
             </materialDesign:Card>
         </DataTemplate>
 
-        <!-- Table cells that don't fit end with "…" (instead of looking empty) and show the full text on hover -->
         <Style x:Key="TrimmedCellText" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
@@ -134,18 +118,11 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <!-- 0: header -->
             <RowDefinition Height="Auto" />
-            <!-- 1: search & filters -->
             <RowDefinition Height="*" />
-            <!-- 2: list + preview -->
             <RowDefinition Height="Auto" />
-            <!-- 3: pagination -->
         </Grid.RowDefinitions>
 
-        <!-- ===== Header ===== -->
-        <!-- Responsive: in a narrow window the view toggle + refresh move under the title
-             (see DocumentsView.xaml.cs, ApplyResponsiveLayout) -->
         <Grid x:Name="HeaderGrid" Grid.Row="0" Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -157,7 +134,6 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
-                <!-- HCI: after clicking a chart on Analytics, one click takes the user back (H3 user control and freedom) -->
                 <Button HorizontalAlignment="Left" Margin="-8,0,0,4" Padding="8,0" Height="30"
                         Command="{Binding BackToAnalyticsCommand}"
                         Style="{StaticResource MaterialDesignFlatButton}"
@@ -176,8 +152,6 @@
 
             <StackPanel x:Name="HeaderActions" Grid.Row="0" Grid.Column="1" Margin="16,0,0,0"
                         Orientation="Horizontal" VerticalAlignment="Center">
-                <!-- Primary action, same look as "Novi tag" on the Tags page (H4 consistency).
-                     Opens the same page as the sidebar item. -->
                 <Button Margin="0,0,12,0" VerticalAlignment="Center"
                         Command="{Binding AddDocumentCommand}">
                     <StackPanel Orientation="Horizontal">
@@ -196,20 +170,15 @@
                     </StackPanel>
                 </Button>
 
-                <!-- HCI: view toggle shows icon AND text, and the active mode is highlighted
-                     with a tint of the user's accent color (H1, H6, consistent with the sidebar - H4) -->
                 <ListBox VerticalAlignment="Center"
                          Style="{StaticResource MaterialDesignToolToggleListBox}"
                          SelectedIndex="{Binding ViewModeIndex}">
                     <ListBox.Resources>
-                        <!-- Hide MaterialDesign's grey "selected" overlay; the accent tint below replaces it -->
                         <SolidColorBrush x:Key="MaterialDesign.Brush.ListBoxItem.Selected" Color="Transparent" />
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignToolToggleListBoxItem}">
                             <Style.Triggers>
-                                <!-- Soft accent tint (ThemeService); text keeps the normal page color.
-                                     DynamicResource, so it follows a new accent from Settings right away. -->
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Background" Value="{DynamicResource Accent.SelectedOverlay}" />
                                 </Trigger>
@@ -232,12 +201,8 @@
             </StackPanel>
         </Grid>
 
-        <!-- ===== Search & filters ===== -->
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
 
-            <!-- Responsive filter row. Wide window: search + 3 dropdowns on one line, sharing the
-                 width proportionally. Narrow window: search on its own line, the 3 dropdowns
-                 share the line below. Positions are switched in DocumentsView.xaml.cs. -->
             <Grid x:Name="FilterGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition x:Name="SearchColumn" Width="1.6*" />
@@ -250,8 +215,6 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- Search + keyboard tip. The tip is a normal TextBlock (not MaterialDesign HelperText),
-                     so it lines up with the left edge of the box and takes up real space in the layout. -->
                 <StackPanel x:Name="SearchPanel" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Top">
                     <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
@@ -269,7 +232,6 @@
                                TextTrimming="CharacterEllipsis" />
                 </StackPanel>
 
-                <!-- Filter pickers: choosing an item adds a chip below -->
                 <ComboBox x:Name="TagFilter" Grid.Row="0" Grid.Column="1" Margin="0,0,12,8" VerticalAlignment="Top"
                           Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           materialDesign:HintAssist.Hint="{DynamicResource Filter_AddTag}"
@@ -293,7 +255,6 @@
                           ItemTemplate="{StaticResource NameWithCountTemplate}" />
             </Grid>
 
-            <!-- HCI problem 1: active filters always visible, each removable with ONE click (H1, H3) -->
             <WrapPanel Margin="0,4,0,0"
                        Visibility="{Binding Filters.HasActiveFilters, Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{DynamicResource Filter_Active}" VerticalAlignment="Center"
@@ -306,7 +267,6 @@
                             <materialDesign:Chip Margin="0,4,8,4" IsDeletable="True"
                                                  DeleteCommand="{Binding DataContext.Filters.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                  DeleteCommandParameter="{Binding}">
-                                <!-- Tag filters are shown in the tag's own color (consistent with the list, H4) -->
                                 <materialDesign:Chip.Style>
                                     <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource {x:Type materialDesign:Chip}}">
                                         <Style.Triggers>
@@ -327,7 +287,6 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- "Clear all" sits right next to the chips, so it's clear what it will remove -->
                 <Button Content="{DynamicResource Filter_ClearAll}"
                         Command="{Binding Filters.ClearAllCommand}"
                         Style="{StaticResource MaterialDesignFlatButton}"
@@ -336,10 +295,6 @@
             </WrapPanel>
         </StackPanel>
 
-        <!-- List | splitter | preview. Column widths are managed in code-behind
-             (DocumentsView.xaml.cs, UpdateContentColumns): list and preview share the space
-             (preview 3/5 by default), the splitter lets the user resize them, and in a narrow
-             window the preview covers the list instead of squeezing both. -->
         <Grid x:Name="ContentGrid" Grid.Row="2" Margin="0,8,0,0" SizeChanged="OnContentSizeChanged">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="ListColumn" Width="*" />
@@ -349,9 +304,6 @@
 
             <Grid Grid.Column="0">
 
-               
-                <!-- Responsive: when the list is narrow the two date columns are hidden so the
-                     title gets the room (DocumentsView.xaml.cs, UpdateListColumns) -->
                 <DataGrid x:Name="DocumentsGrid" SizeChanged="OnDocumentsGridSizeChanged"
                           ItemsSource="{Binding Documents}"
                           SelectedItem="{Binding SelectedDocument, Mode=OneWay}"
@@ -363,12 +315,10 @@
                           CanUserAddRows="False" CanUserDeleteRows="False"
                           CanUserSortColumns="False"
                           SelectionMode="Single" SelectionUnit="FullRow" HeadersVisibility="Column">
-                    <!-- Delete key = trash button for the selected row (still asks first) -->
                     <DataGrid.InputBindings>
                         <KeyBinding Key="Delete" Command="{Binding DeleteDocumentCommand}"
                                     CommandParameter="{Binding SelectedDocument}" />
                     </DataGrid.InputBindings>
-                    <!-- Clicking selects the whole row; no focus border around the individual cell -->
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
                             <Setter Property="BorderThickness" Value="0" />
@@ -376,7 +326,6 @@
                         </Style>
                     </DataGrid.CellStyle>
                     <DataGrid.Columns>
-                        <!-- Title wraps instead of being cut off -->
                         <DataGridTextColumn Binding="{Binding Title}" Width="2*" MinWidth="96">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
@@ -388,7 +337,6 @@
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
 
-                        <!-- HCI: one date format everywhere + clearly labeled dates (problem 4 candidate) -->
                         <DataGridTextColumn Binding="{Binding Created, StringFormat=dd.MM.yyyy}" Width="Auto" MinWidth="90">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TrimmedCellText}" />
@@ -438,10 +386,6 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <!-- Open the document in the default app (same as ↗ in the preview).
-                             Clicking the row still only opens the preview; pressing this button does not
-                             select the row (DocumentsView.xaml.cs, OnDocumentsGridSelectionChanged). Kept narrow and last so it
-                             stays visible at every list width (title MinWidth is small enough for title + tags + button). -->
                         <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.CellStyle>
                                 <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
@@ -464,7 +408,6 @@
                                                 AutomationProperties.Name="{DynamicResource Preview_OpenExternal}">
                                             <materialDesign:PackIcon Kind="OpenInNew" Width="18" Height="18" />
                                         </Button>
-                                        <!-- Delete: red like the trash button on the Tags page; asks for confirmation first -->
                                         <Button Tag="RowAction"
                                                 Command="{Binding DataContext.DeleteDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                 CommandParameter="{Binding}"
@@ -482,7 +425,6 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <!-- Card view -->
                 <ListBox ItemsSource="{Binding Documents}"
                          SelectedItem="{Binding SelectedDocument}"
                          ItemTemplate="{StaticResource DocumentCardTemplate}"
@@ -499,7 +441,6 @@
                     </ListBox.ItemsPanel>
                 </ListBox>
 
-                <!-- Empty state: no documents at all - say so and offer the next step (H9, H3) -->
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                             Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{DynamicResource Documents_Empty}"
@@ -513,7 +454,6 @@
                     </Button>
                 </StackPanel>
 
-                <!-- HCI: search/filters found nothing - say so clearly and offer a way out (H9, H3) -->
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                             Visibility="{Binding ShowNoResults, Converter={StaticResource BoolToVis}}">
                     <materialDesign:PackIcon Kind="FileSearchOutline" Width="56" Height="56"
@@ -526,15 +466,12 @@
                             HorizontalAlignment="Center" Margin="0,16,0,0" />
                 </StackPanel>
 
-                <!-- Loading indicator -->
                 <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                              IsIndeterminate="True" Width="48" Height="48"
                              HorizontalAlignment="Center" VerticalAlignment="Center"
                              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
             </Grid>
 
-       
-            <!-- Drag to resize list vs. preview (transparent; the 16px gap between them is the grab area) -->
             <GridSplitter x:Name="PreviewSplitter" Grid.Column="1" Width="16"
                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                           ResizeBehavior="PreviousAndNext" ResizeDirection="Columns"
@@ -565,8 +502,6 @@
                                    TextWrapping="Wrap" VerticalAlignment="Center" />
                     </DockPanel>
 
-                    <!-- Key metadata. Capped to part of the card height (code-behind) and scrolls,
-                         so the file preview below always keeps most of the space. -->
                     <ScrollViewer x:Name="PreviewMetaScroll" DockPanel.Dock="Top"
                                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="16,0,16,8">
@@ -595,9 +530,6 @@
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Col_DocumentType}" Style="{StaticResource MetaLabel}" />
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Document.DocumentTypeName}" Style="{StaticResource MetaValue}" />
 
-                            <!-- Tags: ✕ removes a tag, "+ Dodaj tag" adds an existing one or creates a new one.
-                                 Same chip + ✕ pattern as the upload form and the filters (H4); every change is
-                                 saved right away and a removal can be undone from the notification (H3). -->
                             <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Col_Tags}" Style="{StaticResource MetaLabel}"
                                        VerticalAlignment="Top" Margin="0,9,16,3" />
                             <StackPanel Grid.Row="4" Grid.Column="1" Margin="0,0,0,0">
@@ -633,8 +565,6 @@
                                                  Visibility="{Binding IsSavingTags, Converter={StaticResource BoolToVis}}" />
                                 </StackPanel>
 
-                                <!-- The picker is a Popup (its own window), so it shows on top of the file preview
-                                     (WebView2 would cover a normal overlay or dialog). -->
                                 <Popup x:Name="TagPickerPopup" PlacementTarget="{Binding ElementName=AddTagButton}"
                                        Placement="Bottom" StaysOpen="False" AllowsTransparency="True"
                                        PopupAnimation="Fade" Focusable="False"
@@ -686,7 +616,6 @@
                                                 </ItemsControl>
                                             </ScrollViewer>
 
-                                            <!-- Typed a name no tag has yet: offer to create it (H7 - no detour to the Tags page) -->
                                             <Button Command="{Binding CreateTagCommand}"
                                                     Visibility="{Binding CanCreateTag, Converter={StaticResource BoolToVis}}"
                                                     Style="{StaticResource MaterialDesignFlatButton}"
@@ -714,7 +643,6 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- Technical details: available, but out of the way -->
                         <Expander Header="{DynamicResource Preview_MoreDetails}" Margin="-8,8,-8,0">
                             <Grid Margin="8,0,8,8">
                                 <Grid.ColumnDefinitions>
@@ -737,7 +665,6 @@
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Preview_Pages}" Style="{StaticResource MetaLabel}" />
                                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Document.PageCount, TargetNullValue=—}" Style="{StaticResource MetaValue}" />
 
-                                <!-- HCI: "ASN" explained in plain words (H2) -->
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Preview_Asn}" Style="{StaticResource MetaLabel}" />
                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Document.ArchiveSerialNumber, TargetNullValue=—}" Style="{StaticResource MetaValue}" />
                             </Grid>
@@ -745,7 +672,6 @@
                     </StackPanel>
                     </ScrollViewer>
 
-                    <!-- File preview fills the remaining space -->
                     <Grid Margin="8,0,8,8">
                         <wv2:WebView2 Source="{Binding PreviewUri, FallbackValue=about:blank, TargetNullValue=about:blank}"
                                       Visibility="{Binding ShowPreview, Converter={StaticResource BoolToVis}}" />
@@ -767,7 +693,6 @@
             </materialDesign:Card>
         </Grid>
 
-        <!-- ===== Pagination ===== -->
         <DockPanel Grid.Row="3" Margin="0,12,0,0" LastChildFill="False">
             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Opacity="0.7">
                 <Run Text="{DynamicResource Documents_Total}" />
@@ -779,7 +704,6 @@
                 <ComboBox ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding PageSize}"
                           Width="70" Margin="0,0,24,0" VerticalAlignment="Center" />
 
-                <!-- HCI: icon buttons always have tooltips -->
                 <Button Command="{Binding PreviousPageCommand}"
                         Style="{StaticResource MaterialDesignIconButton}"
                         Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"

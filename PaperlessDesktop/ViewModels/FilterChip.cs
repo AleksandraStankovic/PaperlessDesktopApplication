@@ -10,20 +10,14 @@ public enum FilterKind
     Month
 }
 
-/// <summary>One active filter, shown as a removable chip.</summary>
 public class FilterChip
 {
-    /// <summary>
-    /// Document type filter ID meaning "documents without a type" (the "Bez tipa" pie slice).
-    /// Paperless IDs start at 1, so 0 is never a real type.
-    /// </summary>
     public const int NoDocumentTypeId = 0;
 
     public FilterKind Kind { get; }
     public int Id { get; }
     public string Name { get; }
 
-    // Only set for tag filters: the chip is shown in the tag's own color
     public string? Color { get; }
     public string? TextColor { get; }
 
@@ -38,8 +32,6 @@ public class FilterChip
 
     public static FilterChip ForTag(Tag tag) => new(FilterKind.Tag, tag.Id, tag.Name, tag.Color, tag.TextColor);
 
-
-    /// <summary>A "documents from this month" filter. The ID stores both values: 2025 * 100 + 3 = 202503.</summary>
     public static FilterChip ForMonth(int year, int month, string displayName)
         => new(FilterKind.Month, year * 100 + month, displayName);
 }

@@ -4,7 +4,6 @@ using System.Windows.Data;
 
 namespace PaperlessDesktop.Converters;
 
-/// <summary>Like WPF's BooleanToVisibilityConverter, but can be inverted (true → Collapsed).</summary>
 public class BoolToVisibilityConverter : IValueConverter
 {
     public bool Invert { get; set; }

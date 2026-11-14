@@ -5,25 +5,16 @@ using MaterialDesignThemes.Wpf;
 
 namespace PaperlessDesktop.Services;
 
-/// <summary>Switches light/dark theme and the accent (primary) color at runtime.</summary>
 public class ThemeService
 {
-    // "Sunset": violet at the top of the sidebar, fading to raspberry at the bottom
-    public static readonly Color DefaultPrimary = Color.FromRgb(0x6D, 0x28, 0xD9);   // Violet, white text 7.1:1 (WCAG AA)
+    public static readonly Color DefaultPrimary = Color.FromRgb(0x6D, 0x28, 0xD9);
 
-    /// <summary>Resource keys used by the sidebar in MainWindow.xaml.</summary>
     public const string SidebarBackgroundKey = "Sidebar.Background";
     public const string SidebarSelectedBackgroundKey = "Sidebar.SelectedBackground";
 
-    /// <summary>Accent color for TEXT/outlines on the page background (outlined and flat buttons).</summary>
     public const string AccentTextKey = "Accent.Text";
-    /// <summary>Light accent tint behind a selected toggle (e.g. Tabela / Kartice).</summary>
     public const string AccentSelectedOverlayKey = "Accent.SelectedOverlay";
 
-    // Status colors (green = success, red = error, orange = warning), one soft set per theme.
-    // *.Text: text/icons on the page, WCAG AA (4.5:1) on white (light) and on #424242 (dark).
-    // *.Background / *.Foreground: the colored notification at the bottom - a pale tint with
-    // dark text in light mode, a deep tint with light text in dark mode (both well above 7:1).
     private static readonly (string Key, Color Light, Color Dark)[] StatusColors =
     {
         ("Status.Success.Text",       Color.FromRgb(0x2E, 0x7D, 0x32), Color.FromRgb(0x81, 0xC7, 0x84)),
@@ -35,14 +26,10 @@ public class ThemeService
         ("Status.Error.Foreground",   Color.FromRgb(0x7F, 0x1D, 0x1D), Color.FromRgb(0xFA, 0xDB, 0xDA)),
     };
 
-    // Worst-case page surfaces the accent text must stay readable on:
-    // white in light mode, the lightest dark surface (cards/dialogs) in dark mode.
     private static readonly Color LightSurface = Colors.White;
     private static readonly Color DarkSurface = Color.FromRgb(0x42, 0x42, 0x42);
 
-    // WCAG AA for normal text is 4.5:1 - keep a small margin above it
     private const float MinContrast = 4.6f;
-    // Hue the gradient moves toward (raspberry), and how far it may move
     private const double GradientTargetHue = 335;
     private const double MaxHueShift = 72;
     private const double MinGradientSaturation = 0.55;
@@ -73,11 +60,6 @@ public class ThemeService
         }
     }
 
-    /// <summary>
-    /// The accent color itself is not always readable as text on the page: dark violet on a dark
-    /// background, or yellow on a white one. For text and outlines we use the same hue, made
-    /// lighter (dark mode) or darker (light mode) until it meets WCAG AA (4.5:1) on the page.
-    /// </summary>
     private static void ApplyAccentBrushes(bool isDark, Color primary)
     {
         Color text = ReadableOn(primary, isDark ? DarkSurface : LightSurface, lighten: isDark);
@@ -85,7 +67,6 @@ public class ThemeService
         var textBrush = new SolidColorBrush(text);
         textBrush.Freeze();
 
-        // A soft tint of the accent; text on it stays the normal page text color
         var overlay = new SolidColorBrush(Color.FromArgb(isDark ? (byte)0x66 : (byte)0x38, primary.R, primary.G, primary.B));
         overlay.Freeze();
 
@@ -106,18 +87,11 @@ public class ThemeService
         return result;
     }
 
-    /// <summary>
-    /// Sidebar = vertical gradient from the accent color to a "sunset" partner color.
-    /// MaterialDesign shows black or white text on the accent (whichever contrasts more);
-    /// the partner color is adjusted until that same text still meets WCAG AA on it,
-    /// so the menu stays readable for ANY color the user picks.
-    /// </summary>
     private static void ApplySidebar(Color primary)
     {
         Color foreground = primary.ContrastingForegroundColor();
         LinearGradientBrush gradient = CreateSidebarGradient(primary);
 
-        // Selected page: darken under white text, lighten under black text (contrast only goes up)
         var selected = new SolidColorBrush(foreground == Colors.White
             ? Color.FromArgb(0x40, 0, 0, 0)
             : Color.FromArgb(0x59, 0xFF, 0xFF, 0xFF));
@@ -128,7 +102,6 @@ public class ThemeService
         resources[SidebarSelectedBackgroundKey] = selected;
     }
 
-    /// <summary>The sidebar gradient for an accent color (also used for the color swatches in Settings).</summary>
     public static LinearGradientBrush CreateSidebarGradient(Color primary)
     {
         Color end = GradientEnd(primary, primary.ContrastingForegroundColor());
@@ -141,25 +114,17 @@ public class ThemeService
     {
         ToHsl(primary, out double h, out double s, out double l);
 
-        // Move the hue toward raspberry (violet -> raspberry, orange -> pink, blue -> purple...).
-        // Colors already near raspberry go the other way (toward violet); colors on the
-        // opposite side of the wheel go toward blue, which looks better than yellow/olive.
         double diff = ((GradientTargetHue - h + 540) % 360) - 180;
         double shift = Math.Abs(diff) < 30 ? -60
                      : Math.Abs(diff) > 120 ? MaxHueShift
                      : Math.Clamp(diff, -MaxHueShift, MaxHueShift);
         bool darken = foreground == Colors.White;
 
-        // Light accents (black text: orange, yellow...) always take the full shift,
-        // otherwise their gradient looks too flat
         if (!darken)
             shift = Math.Sign(shift) * MaxHueShift;
 
         h = (h + shift + 360) % 360;
 
-        // Muted/dark colors (brown, blue grey) barely change with a hue shift alone,
-        // so give the partner color some saturation and lightness to make the gradient visible.
-        // The contrast loop below still brings it back to a readable shade.
         s = Math.Max(s, MinGradientSaturation);
         if (darken)
             l = Math.Max(l, MinGradientLightness);
