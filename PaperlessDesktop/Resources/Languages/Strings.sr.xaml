@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <!-- App & navigation -->
     <sys:String x:Key="App_Title">Paperless Desktop</sys:String>
     <sys:String x:Key="Nav_Documents">Dokumenti</sys:String>
     <sys:String x:Key="Nav_Upload">Dodaj dokument</sys:String>
@@ -10,20 +9,16 @@
     <sys:String x:Key="Nav_Settings">Podešavanja</sys:String>
     <sys:String x:Key="Common_ComingSoon">Uskoro...</sys:String>
 
-    <!-- Documents page -->
     <sys:String x:Key="Documents_Title">Dokumenti</sys:String>
     <sys:String x:Key="Documents_Subtitle">Svi vaši dokumenti na jednom mjestu.</sys:String>
     <sys:String x:Key="Documents_BackToAnalytics">Nazad na analitiku</sys:String>
 
     <sys:String x:Key="Documents_Total">Ukupno dokumenata:</sys:String>
 
-    <!-- Other pages -->
-    
     <sys:String x:Key="Tags_Title">Upravljanje tagovima</sys:String>
     <sys:String x:Key="Settings_Title">Podešavanja</sys:String>
     <sys:String x:Key="Settings_Language">Jezik</sys:String>
 
-    <!-- Errors (key = "Error_" + ApiErrorKind) -->
     <sys:String x:Key="Error_Unreachable">Server je nedostupan. Provjerite internet konekciju.</sys:String>
     <sys:String x:Key="Error_Timeout">Server ne odgovara. Pokušajte ponovo.</sys:String>
     <sys:String x:Key="Error_Unauthorized">Pristup odbijen. API token nije ispravan.</sys:String>
@@ -36,11 +31,8 @@
     <sys:String x:Key="Error_UnexpectedRecovered">Došlo je do neočekivane greške. Aplikacija nastavlja s radom, a detalji su sačuvani u log fajlu.</sys:String>
     <sys:String x:Key="Notification_Dismiss">Zatvori obavještenje</sys:String>
 
-
-    <!-- Common -->
     <sys:String x:Key="Common_Refresh">Osvježi</sys:String>
 
-    <!-- Document list -->
     <sys:String x:Key="Documents_Empty">Nema dokumenata za prikaz.</sys:String>
     <sys:String x:Key="Documents_Add">Dodaj dokument</sys:String>
     <sys:String x:Key="Documents_Delete">Obriši dokument</sys:String>
@@ -56,14 +48,11 @@
     <sys:String x:Key="View_Table">Lista</sys:String>
     <sys:String x:Key="View_Cards">Kartice</sys:String>
 
-
-    <!-- Search -->
     <sys:String x:Key="Search_Hint">Pretraži po nazivu ili sadržaju...</sys:String>
     <sys:String x:Key="Search_KeyboardTip">Enter: traži odmah · Esc: obriši</sys:String>
     <sys:String x:Key="Search_NoResults">Nema rezultata za</sys:String>
     <sys:String x:Key="Search_Clear">Obriši pretragu</sys:String>
 
-    <!-- Filters -->
     <sys:String x:Key="Filter_AddTag">+ Tag</sys:String>
     <sys:String x:Key="Filter_AddCorrespondent">+ Korespondent</sys:String>
     <sys:String x:Key="Filter_AddDocumentType">+ Tip dokumenta</sys:String>
@@ -76,15 +65,12 @@
     <sys:String x:Key="Filter_NoResults">Nema dokumenata koji odgovaraju pretrazi i filterima.</sys:String>
     <sys:String x:Key="Filter_ResetAll">Poništi pretragu i filtere</sys:String>
     
-
-    <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Strana</sys:String>
     <sys:String x:Key="Pagination_Of">od</sys:String>
     <sys:String x:Key="Pagination_PageSize">Po strani:</sys:String>
     <sys:String x:Key="Pagination_Previous">Prethodna strana</sys:String>
     <sys:String x:Key="Pagination_Next">Sljedeća strana</sys:String>
 
-    <!-- Preview panel -->
     <sys:String x:Key="Preview_Close">Zatvori pregled (Esc)</sys:String>
     <sys:String x:Key="Preview_OpenExternal">Otvori u podrazumijevanoj aplikaciji</sys:String>
     <sys:String x:Key="Preview_MoreDetails">Više detalja</sys:String>
@@ -104,21 +90,18 @@
     <sys:String x:Key="Preview_TagRemoved">Tag „{0}“ je uklonjen sa dokumenta.</sys:String>
     <sys:String x:Key="Preview_TagCreated">Tag „{0}“ je kreiran i dodat dokumentu.</sys:String>
 
-    <!-- Common actions -->
     <sys:String x:Key="Common_Cancel">Odustani</sys:String>
     <sys:String x:Key="Common_Save">Sačuvaj</sys:String>
     <sys:String x:Key="Common_Edit">Uredi</sys:String>
     <sys:String x:Key="Common_Delete">Obriši</sys:String>
     <sys:String x:Key="Common_Undo">Poništi</sys:String>
 
-    <!-- Tags page -->
     <sys:String x:Key="Tags_Subtitle">Kreirajte, uredite i obrišite tagove.</sys:String>
     <sys:String x:Key="Tags_New">Novi tag</sys:String>
     <sys:String x:Key="Tags_Col_Tag">Tag</sys:String>
     <sys:String x:Key="Tags_Col_Documents">Broj dokumenata</sys:String>
     <sys:String x:Key="Tags_Empty">Još nema tagova. Kreirajte prvi klikom na „Novi tag“.</sys:String>
 
-    <!-- Tag editor -->
     <sys:String x:Key="Tags_NewTitle">Novi tag</sys:String>
     <sys:String x:Key="Tags_EditTitle">Uredi tag</sys:String>
     <sys:String x:Key="Tags_Name">Naziv taga *</sys:String>
@@ -130,7 +113,6 @@
     <sys:String x:Key="Tags_Error_NameExists">Tag sa ovim nazivom već postoji.</sys:String>
     <sys:String x:Key="Tags_Error_Rejected">Server nije prihvatio tag.</sys:String>
 
-    <!-- Upload page -->
     <sys:String x:Key="Upload_Title">Dodavanje dokumenta</sys:String>
     <sys:String x:Key="Upload_Subtitle">Dodajte novi dokument u Paperless.</sys:String>
     <sys:String x:Key="Upload_DropHint">Prevucite fajl ovdje</sys:String>
@@ -160,7 +142,6 @@
     <sys:String x:Key="Upload_UploadAnother">Dodaj još jedan dokument</sys:String>
     <sys:String x:Key="Upload_ShowDocuments">Prikaži dokumente</sys:String>
 
-    <!-- Upload status -->
     <sys:String x:Key="Upload_StatusHeader">Status</sys:String>
     <sys:String x:Key="Upload_Step_Send">1. Dodavanje dokumenta</sys:String>
     <sys:String x:Key="Upload_Step_Ready">2. Dokument je spreman</sys:String>
@@ -173,7 +154,6 @@
     <sys:String x:Key="Upload_Status_CancelUncertain">Slanje je prekinuto, ali nije sigurno da je dokument uklonjen sa servera. Ako se pojavi u listi dokumenata, možete ga obrisati tamo.</sys:String>
     <sys:String x:Key="Upload_Status_StillProcessing">Priprema traje duže nego obično. Dokument će se pojaviti u listi kada bude spreman.</sys:String>
 
-    <!-- Upload errors -->
     <sys:String x:Key="Upload_Error_Type">Fajlovi tipa „{0}“ nisu podržani. Možete dodati: {1}. Savjet: Word ili Excel dokument sačuvajte kao PDF (Datoteka → Sačuvaj kao → PDF).</sys:String>
     <sys:String x:Key="Upload_Error_TooLarge">Fajl je prevelik ({0}). Najveća dozvoljena veličina je {1}.</sys:String>
     <sys:String x:Key="Upload_Error_Empty">Fajl je prazan.</sys:String>
@@ -185,7 +165,6 @@
     <sys:String x:Key="Upload_Error_Processing">Server nije uspio pripremiti dokument. Detalji: {0}</sys:String>
     <sys:String x:Key="Upload_Error_Send">Slanje nije uspjelo: {0}</sys:String>
 
-    <!-- Settings page -->
     <sys:String x:Key="Settings_Subtitle">Promjene se primjenjuju odmah i automatski čuvaju.</sys:String>
     <sys:String x:Key="Settings_Theme">Tema</sys:String>
     <sys:String x:Key="Settings_ThemeLight">Svijetla</sys:String>
@@ -199,8 +178,6 @@
     <sys:String x:Key="Settings_SavedAt">Sačuvano u {0}</sys:String>
     <sys:String x:Key="Settings_SaveFailed">Podešavanja nije moguće sačuvati. Promjene važe samo dok je aplikacija otvorena.</sys:String>
 
-
-    <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
     <sys:String x:Key="Tags_Created">Tag „{0}“ je kreiran.</sys:String>
     <sys:String x:Key="Tags_Updated">Tag „{0}“ je sačuvan.</sys:String>
     <sys:String x:Key="Tags_Deleted">Tag „{0}“ je obrisan.</sys:String>
@@ -208,7 +185,6 @@
     <sys:String x:Key="Tags_DeleteConfirm">Da li ste sigurni da želite obrisati tag „{0}“? Ova radnja se ne može poništiti.</sys:String>
     <sys:String x:Key="Tags_DeleteConfirmUsed">Tag „{0}“ je dodijeljen dokumentima: {1}. Tag će biti uklonjen sa svih njih, a sami dokumenti ostaju sačuvani. Ova radnja se ne može poništiti.</sys:String>
 
-    <!-- Analytics -->
     <sys:String x:Key="Nav_Analytics">Analitika</sys:String>
     <sys:String x:Key="Analytics_Title">Analitika</sys:String>
     <sys:String x:Key="Analytics_ClickHint">Kliknite na dio grafikona, mjesec ili tag da vidite te dokumente.</sys:String>
@@ -230,6 +206,4 @@
     <sys:String x:Key="Analytics_Empty">Još nema dokumenata za prikaz statistike.</sys:String>
     <sys:String x:Key="Filter_Month">Mjesec</sys:String>
     
-    
-
 </ResourceDictionary>

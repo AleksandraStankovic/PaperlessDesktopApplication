@@ -4,7 +4,6 @@ using System.Windows.Data;
 
 namespace PaperlessDesktop.Converters;
 
-/// <summary>true → TrueLength (e.g. "2*"), false → 0. Used to show/hide a grid column.</summary>
 public class BoolToGridLengthConverter : IValueConverter
 {
     public GridLength TrueLength { get; set; } = new(1, GridUnitType.Star);

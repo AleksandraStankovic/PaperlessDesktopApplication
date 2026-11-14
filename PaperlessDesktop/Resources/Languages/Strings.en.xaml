@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    
     <sys:String x:Key="App_Title">Paperless Desktop</sys:String>
     <sys:String x:Key="Nav_Documents">Documents</sys:String>
     <sys:String x:Key="Nav_Upload">Upload</sys:String>
@@ -10,20 +9,16 @@
     <sys:String x:Key="Nav_Settings">Settings</sys:String>
     <sys:String x:Key="Common_ComingSoon">Coming soon...</sys:String>
 
-    
     <sys:String x:Key="Documents_Title">Documents</sys:String>
     <sys:String x:Key="Documents_Subtitle">All your documents in one place.</sys:String>
     <sys:String x:Key="Documents_BackToAnalytics">Back to analytics</sys:String>
    
     <sys:String x:Key="Documents_Total">Total documents:</sys:String>
 
-   
-    
     <sys:String x:Key="Tags_Title">Manage tags</sys:String>
     <sys:String x:Key="Settings_Title">Settings</sys:String>
     <sys:String x:Key="Settings_Language">Language</sys:String>
 
-    
     <sys:String x:Key="Error_Unreachable">The server is unreachable. Check your internet connection.</sys:String>
     <sys:String x:Key="Error_Timeout">The server is not responding. Please try again.</sys:String>
     <sys:String x:Key="Error_Unauthorized">Access denied. The API token is invalid.</sys:String>
@@ -36,10 +31,8 @@
     <sys:String x:Key="Error_UnexpectedRecovered">An unexpected error occurred. The app keeps running, and the details were saved to the log file.</sys:String>
     <sys:String x:Key="Notification_Dismiss">Close notification</sys:String>
 
-    <!-- Common -->
     <sys:String x:Key="Common_Refresh">Refresh</sys:String>
 
-    <!-- Document list -->
     <sys:String x:Key="Documents_Empty">No documents to show.</sys:String>
     <sys:String x:Key="Documents_Add">Upload document</sys:String>
     <sys:String x:Key="Documents_Delete">Delete document</sys:String>
@@ -55,13 +48,11 @@
     <sys:String x:Key="View_Table">List</sys:String>
     <sys:String x:Key="View_Cards">Cards</sys:String>
 
-    <!-- Search -->
     <sys:String x:Key="Search_Hint">Search by title or content...</sys:String>
     <sys:String x:Key="Search_KeyboardTip">Enter: search now · Esc: clear</sys:String>
     <sys:String x:Key="Search_NoResults">No results for</sys:String>
     <sys:String x:Key="Search_Clear">Clear search</sys:String>
 
-    <!-- Filters -->
     <sys:String x:Key="Filter_AddTag">+ Tag</sys:String>
     <sys:String x:Key="Filter_AddCorrespondent">+ Correspondent</sys:String>
     <sys:String x:Key="Filter_AddDocumentType">+ Document type</sys:String>
@@ -74,14 +65,12 @@
     <sys:String x:Key="Filter_NoResults">No documents match your search and filters.</sys:String>
     <sys:String x:Key="Filter_ResetAll">Reset search and filters</sys:String>
 
-    <!-- Pagination -->
     <sys:String x:Key="Pagination_Page">Page</sys:String>
     <sys:String x:Key="Pagination_Of">of</sys:String>
     <sys:String x:Key="Pagination_PageSize">Per page:</sys:String>
     <sys:String x:Key="Pagination_Previous">Previous page</sys:String>
     <sys:String x:Key="Pagination_Next">Next page</sys:String>
 
-    <!-- Preview panel -->
     <sys:String x:Key="Preview_Close">Close preview (Esc)</sys:String>
     <sys:String x:Key="Preview_OpenExternal">Open in default app</sys:String>
     <sys:String x:Key="Preview_MoreDetails">More details</sys:String>
@@ -101,21 +90,18 @@
     <sys:String x:Key="Preview_TagRemoved">Tag "{0}" was removed from the document.</sys:String>
     <sys:String x:Key="Preview_TagCreated">Tag "{0}" was created and added to the document.</sys:String>
 
-    <!-- Common actions -->
     <sys:String x:Key="Common_Cancel">Cancel</sys:String>
     <sys:String x:Key="Common_Save">Save</sys:String>
     <sys:String x:Key="Common_Edit">Edit</sys:String>
     <sys:String x:Key="Common_Delete">Delete</sys:String>
     <sys:String x:Key="Common_Undo">Undo</sys:String>
 
-    <!-- Tags page -->
     <sys:String x:Key="Tags_Subtitle">Create, edit and delete tags.</sys:String>
     <sys:String x:Key="Tags_New">New tag</sys:String>
     <sys:String x:Key="Tags_Col_Tag">Tag</sys:String>
     <sys:String x:Key="Tags_Col_Documents">Documents</sys:String>
     <sys:String x:Key="Tags_Empty">No tags yet. Create the first one with "New tag".</sys:String>
 
-    <!-- Tag editor -->
     <sys:String x:Key="Tags_NewTitle">New tag</sys:String>
     <sys:String x:Key="Tags_EditTitle">Edit tag</sys:String>
     <sys:String x:Key="Tags_Name">Tag name *</sys:String>
@@ -127,7 +113,6 @@
     <sys:String x:Key="Tags_Error_NameExists">A tag with this name already exists.</sys:String>
     <sys:String x:Key="Tags_Error_Rejected">The server did not accept the tag.</sys:String>
 
-    <!-- Upload page -->
     <sys:String x:Key="Upload_Title">Upload document</sys:String>
     <sys:String x:Key="Upload_Subtitle">Add a new document to Paperless.</sys:String>
     <sys:String x:Key="Upload_DropHint">Drag a file here</sys:String>
@@ -158,7 +143,6 @@
     <sys:String x:Key="Upload_UploadAnother">Upload another document</sys:String>
     <sys:String x:Key="Upload_ShowDocuments">Show documents</sys:String>
 
-    <!-- Upload status -->
     <sys:String x:Key="Upload_StatusHeader">Status</sys:String>
     <sys:String x:Key="Upload_Step_Send">1. Adding the document</sys:String>
     <sys:String x:Key="Upload_Step_Ready">2. Document is ready</sys:String>
@@ -171,7 +155,6 @@
     <sys:String x:Key="Upload_Status_CancelUncertain">Sending was cancelled, but it is not certain that the document was removed from the server. If it appears in the document list, you can delete it there.</sys:String>
     <sys:String x:Key="Upload_Status_StillProcessing">Preparation is taking longer than usual. The document will appear in the list when it's ready.</sys:String>
 
-    <!-- Upload errors -->
     <sys:String x:Key="Upload_Error_Type">"{0}" files are not supported. You can add: {1}. Tip: save Word or Excel documents as PDF (File → Save as → PDF).</sys:String>
     <sys:String x:Key="Upload_Error_TooLarge">The file is too large ({0}). The maximum size is {1}.</sys:String>
     <sys:String x:Key="Upload_Error_Empty">The file is empty.</sys:String>
@@ -183,8 +166,6 @@
     <sys:String x:Key="Upload_Error_Processing">The server could not prepare the document. Details: {0}</sys:String>
     <sys:String x:Key="Upload_Error_Send">Sending failed: {0}</sys:String>
 
-
-    <!-- Settings page -->
     <sys:String x:Key="Settings_Subtitle">Changes apply immediately and are saved automatically.</sys:String>
     <sys:String x:Key="Settings_Theme">Theme</sys:String>
     <sys:String x:Key="Settings_ThemeLight">Light</sys:String>
@@ -198,9 +179,6 @@
     <sys:String x:Key="Settings_SavedAt">Saved at {0}</sys:String>
     <sys:String x:Key="Settings_SaveFailed">Settings could not be saved. Changes only apply while the app is open.</sys:String>
     
-    
-
-    <!-- Tag messages ({0} = tag name, {1} = number of documents) -->
     <sys:String x:Key="Tags_Created">Tag "{0}" was created.</sys:String>
     <sys:String x:Key="Tags_Updated">Tag "{0}" was saved.</sys:String>
     <sys:String x:Key="Tags_Deleted">Tag "{0}" was deleted.</sys:String>
@@ -208,7 +186,6 @@
     <sys:String x:Key="Tags_DeleteConfirm">Are you sure you want to delete the tag "{0}"? This can't be undone.</sys:String>
     <sys:String x:Key="Tags_DeleteConfirmUsed">The tag "{0}" is assigned to {1} documents. It will be removed from all of them; the documents themselves are kept. This can't be undone.</sys:String>
 
-    <!-- Analytics -->
     <sys:String x:Key="Nav_Analytics">Analytics</sys:String>
     <sys:String x:Key="Analytics_Title">Analytics</sys:String>
     <sys:String x:Key="Analytics_ClickHint">Click a chart slice, a month or a tag to see those documents.</sys:String>
@@ -229,6 +206,5 @@
     <sys:String x:Key="Analytics_InSelectedPeriod">In the selected period:</sys:String>
     <sys:String x:Key="Analytics_Empty">There are no documents to show statistics for yet.</sys:String>
     <sys:String x:Key="Filter_Month">Month</sys:String>
-
 
 </ResourceDictionary>

@@ -8,7 +8,6 @@
         Background="{DynamicResource MaterialDesign.Brush.Background}"
         TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}">
 
-    <!-- Dialogs (confirmations, tag editor) appear on top of everything inside this host -->
     <materialDesign:DialogHost Identifier="RootDialog">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -16,23 +15,18 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- ===== Sidebar ===== -->
             <materialDesign:ColorZone Grid.Column="0" Mode="PrimaryMid" VerticalAlignment="Stretch"
                                       Background="{DynamicResource Sidebar.Background}">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="{DynamicResource App_Title}"
                                FontSize="20" FontWeight="SemiBold" Margin="20,24,20,16" />
 
-                    <!-- HCI: menu text follows the accent color (black or white, whichever contrasts more),
-                         instead of the page text color. Keeps WCAG AA (4.5:1) for any accent color, in both themes. -->
                     <ListBox SelectedIndex="{Binding SelectedPageIndex}"
                              Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                                 <Setter Property="Padding" Value="20,12" />
                                 <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
-                                <!-- Selected page: tinted background, a bar on the left and bold text,
-                                     so the selection is not shown by color alone -->
                                 <Setter Property="materialDesign:ListBoxItemAssist.SelectedFocusedBackground"
                                         Value="{DynamicResource Sidebar.SelectedBackground}" />
                                 <Setter Property="materialDesign:ListBoxItemAssist.SelectedUnfocusedBackground"
@@ -80,20 +74,12 @@
                 </DockPanel>
             </materialDesign:ColorZone>
 
-            <!-- ===== Current page ===== -->
             <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="32,24"
                             HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
 
-            <!-- ===== Notifications (errors, success messages) ===== -->
-            <!-- Success = soft green, error = soft red, other messages keep the neutral look.
-                 Colors come from ThemeService, so they fit the light and the dark theme. -->
             <materialDesign:Snackbar Grid.Column="1" MessageQueue="{Binding MessageQueue}">
                 <materialDesign:Snackbar.Style>
                     <Style TargetType="materialDesign:Snackbar" BasedOn="{StaticResource {x:Type materialDesign:Snackbar}}">
-                        <!-- Action button ("Prikaži dokumente") uses the message's text color, bold.
-                             Own template: MaterialDesign's hover is a fixed dark grey that looks wrong on
-                             the green/red background. Here hover is a light tint of the text color,
-                             so it fits every message color in both themes. -->
                         <Setter Property="ActionButtonStyle">
                             <Setter.Value>
                                 <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignSnackbarActionButton}">

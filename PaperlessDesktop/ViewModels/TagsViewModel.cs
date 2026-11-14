@@ -22,7 +22,6 @@ namespace PaperlessDesktop.ViewModels
 
         public bool ShowEmptyState => !IsLoading && Tags.Count == 0;
 
-        /// <summary>Raised after a tag was created, edited or deleted (other pages refresh their tag info).</summary>
         public event EventHandler? TagsChanged;
 
         public TagsViewModel(PaperlessApiClient api, DialogService dialogs,
@@ -34,17 +33,13 @@ namespace PaperlessDesktop.ViewModels
             _localization = localization;
         }
 
-        /// <summary>Load the list the first time the user opens this page.</summary>
         public void OnNavigatedTo()
         {
             if (!_loadedOnce)
                 _ = LoadAsync();
         }
 
-        /// <summary>Tags or their document counts changed elsewhere (document preview): reload on the next visit.</summary>
         public void Invalidate() => _loadedOnce = false;
-
-        // ---------- Commands ----------
 
         [RelayCommand]
         private async Task LoadAsync()
@@ -75,7 +70,7 @@ namespace PaperlessDesktop.ViewModels
         {
             var editor = new TagEditorViewModel(_api, _localization, Tags, tagToEdit: null);
             if (await _dialogs.ShowAsync(editor) is not Tag saved)
-                return;   // cancelled
+                return;
 
             _notifications.ShowSuccess(string.Format(_localization.Get("Tags_Created"), saved.Name));
             await AfterChangeAsync();
@@ -101,7 +96,6 @@ namespace PaperlessDesktop.ViewModels
             if (tag is null)
                 return;
 
-            // HCI: say what will happen and how many documents are affected (H5)
             string message = tag.DocumentCount > 0
                 ? string.Format(_localization.Get("Tags_DeleteConfirmUsed"), tag.Name, tag.DocumentCount)
                 : string.Format(_localization.Get("Tags_DeleteConfirm"), tag.Name);
@@ -131,8 +125,8 @@ namespace PaperlessDesktop.ViewModels
 
         private async Task AfterChangeAsync()
         {
-            await LoadAsync();                                   // fresh list (with updated counts)
-            TagsChanged?.Invoke(this, EventArgs.Empty);          // tell other pages
+            await LoadAsync();
+            TagsChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

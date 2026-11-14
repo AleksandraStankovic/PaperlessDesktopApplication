@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace PaperlessDesktop.Views
 {
-    /// <summary>
-    /// Interaction logic for TagEditorView.xaml
-    /// </summary>
     public partial class TagEditorView : UserControl
     {
         public TagEditorView()
@@ -25,10 +22,6 @@ namespace PaperlessDesktop.Views
             InitializeComponent();
         }
 
-        // The name box is focused when the dialog opens, which would normally paint its border and
-        // label in the accent color before the user has done anything. The XAML gives it neutral
-        // colors instead; as soon as the user types or leaves the box, the local values are cleared
-        // and the box goes back to the normal style (accent while focused, like every other text box).
         private void OnNameBoxLoaded(object sender, RoutedEventArgs e)
         {
             NameBox.Loaded -= OnNameBoxLoaded;

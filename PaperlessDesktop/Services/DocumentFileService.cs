@@ -5,7 +5,6 @@ using PaperlessDesktop.Models;
 
 namespace PaperlessDesktop.Services;
 
-/// <summary>Downloads document files to a temp folder (for preview) and opens them externally.</summary>
 public class DocumentFileService
 {
     private readonly PaperlessApiClient _api;
@@ -16,12 +15,10 @@ public class DocumentFileService
         _api = api;
     }
 
-    /// <summary>Returns a local file path for the document's preview, downloading it if needed.</summary>
     public async Task<string> GetPreviewFileAsync(Document document, CancellationToken ct)
     {
         Directory.CreateDirectory(_folder);
 
-        // File name includes the "modified" time: if the document changes on the server, we download it again
         string baseName = $"{document.Id}_{document.Modified?.Ticks ?? 0}";
 
         string? cached = Directory.EnumerateFiles(_folder, baseName + ".*").FirstOrDefault();
@@ -30,7 +27,6 @@ public class DocumentFileService
 
         var (data, contentType) = await _api.GetPreviewAsync(document.Id, ct);
 
-        // Write to a temporary name first, then rename: a cancelled download never leaves a broken file behind
         string finalPath = Path.Combine(_folder, baseName + ExtensionFor(contentType));
         string partialPath = Path.Combine(_folder, $"tmp_{Guid.NewGuid():N}.part");
         await File.WriteAllBytesAsync(partialPath, data, ct);
@@ -39,7 +35,6 @@ public class DocumentFileService
         return finalPath;
     }
 
-    /// <summary>Opens a file in the app Windows uses for that file type (e.g. Adobe Reader, Edge).</summary>
     public bool TryOpenWithDefaultApp(string path)
     {
         try
@@ -49,7 +44,7 @@ public class DocumentFileService
         }
         catch (Win32Exception)
         {
-            return false;   // no app is associated with this file type
+            return false;
         }
         catch (InvalidOperationException)
         {
@@ -57,7 +52,6 @@ public class DocumentFileService
         }
     }
 
-    /// <summary>Deletes preview files from earlier sessions.</summary>
     public void CleanUp()
     {
         try
@@ -67,7 +61,6 @@ public class DocumentFileService
         }
         catch (IOException)
         {
-            // A file is still in use - not important, we'll try again next start
         }
         catch (UnauthorizedAccessException)
         {

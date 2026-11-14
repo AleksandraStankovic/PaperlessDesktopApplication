@@ -10,7 +10,6 @@ public partial class SettingsViewModel : ObservableObject
 {
     private const int SaveDelayMilliseconds = 400;
 
-    // Quick choices for the accent color (Material Design palette)
     private static readonly string[] PresetColorValues =
     {
         "#6D28D9", "#2563EB", "#00897B", "#388E3C", "#FACC15", "#F57C00",
@@ -27,11 +26,9 @@ public partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<string> PresetColors => PresetColorValues;
 
-    // 0 = Srpski, 1 = English
     [ObservableProperty]
     private int _languageIndex;
 
-    // 0 = light, 1 = dark
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsDarkTheme))]
     private int _themeIndex;
@@ -44,7 +41,6 @@ public partial class SettingsViewModel : ObservableObject
 
     public string PrimaryColorHex => ThemeService.ToHex(PrimaryColor);
 
-    /// <summary>"✓ Saved at 16:52:10" - visible confirmation (H1).</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSavedText))]
     private string? _savedText;
@@ -61,15 +57,12 @@ public partial class SettingsViewModel : ObservableObject
         _settings = settings;
         _notifications = notifications;
 
-        // Show the loaded settings without re-applying or re-saving them
         _initializing = true;
         LanguageIndex = settings.Language == "en" ? 1 : 0;
         ThemeIndex = settings.IsDarkTheme ? 1 : 0;
         PrimaryColor = ThemeService.ParseColor(settings.PrimaryColor, ThemeService.DefaultPrimary);
         _initializing = false;
     }
-
-    // ---------- Commands ----------
 
     [RelayCommand]
     private void SetPresetColor(string? hex)
@@ -87,13 +80,11 @@ public partial class SettingsViewModel : ObservableObject
         PrimaryColor = ThemeService.DefaultPrimary;
     }
 
-    // ---------- Every change: apply immediately, then save ----------
-
     partial void OnLanguageIndexChanged(int oldValue, int newValue)
     {
         if (newValue < 0)
         {
-            LanguageIndex = oldValue;   // clicking the selected option again must not "unselect" it
+            LanguageIndex = oldValue;
             return;
         }
         if (_initializing)
@@ -126,14 +117,8 @@ public partial class SettingsViewModel : ObservableObject
         ScheduleSave();
     }
 
-    // ---------- Helpers ----------
-
     private void ApplyTheme() => _theme.Apply(IsDarkTheme, PrimaryColor);
 
-    /// <summary>
-    /// Dragging in the color picker changes the color many times per second.
-    /// We only write the file once the user pauses (same idea as the search delay).
-    /// </summary>
     private void ScheduleSave()
     {
         _saveCts?.Cancel();
@@ -150,7 +135,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            return;   // another change came in - a newer save is scheduled
+            return;
         }
 
         _settings.Language = LanguageIndex == 1 ? "en" : "sr";

@@ -6,14 +6,10 @@ using PaperlessDesktop.Services;
 
 namespace PaperlessDesktop.ViewModels;
 
-/// <summary>The "new tag" / "edit tag" dialog. Validates input and saves to the server.</summary>
 public partial class TagEditorViewModel : ObservableObject
 {
-    internal const int MaxNameLength = 128;   // Paperless limit
+    internal const int MaxNameLength = 128;
 
-    // Paperless' own default palette (so tags made here look at home in the web UI too), plus
-    // extra colors. 24 swatches = exactly 2 full rows of 12 in the 440 px wide dialog
-    // (28 px swatch + 6 px gap = 34 px each, 12 x 34 = 408 px; a 13th would not fit).
     internal static readonly string[] PresetColorValues =
     {
         "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c",
@@ -48,20 +44,17 @@ public partial class TagEditorViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private bool _isSaving;
 
-    /// <summary>Error from the server (shown at the bottom of the dialog).</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasServerError))]
     private string? _serverError;
 
     public string ColorHex => $"#{SelectedColor.R:x2}{SelectedColor.G:x2}{SelectedColor.B:x2}";
 
-    /// <summary>Black text on light colors, white on dark - same rule Paperless uses.</summary>
     public string TextColorHex =>
         0.299 * SelectedColor.R + 0.587 * SelectedColor.G + 0.114 * SelectedColor.B > 150 ? "#000000" : "#ffffff";
 
     public string PreviewName => string.IsNullOrWhiteSpace(Name) ? "Tag" : Name.Trim();
 
-    /// <summary>Validation message for the name field, or null if valid / not touched yet.</summary>
     public string? NameError => _nameTouched ? Validate() : null;
     public bool HasNameError => NameError is not null;
     public bool HasServerError => ServerError is not null;
@@ -73,7 +66,6 @@ public partial class TagEditorViewModel : ObservableObject
         _localization = localization;
         _original = tagToEdit;
 
-        // Names of all OTHER tags (renaming a tag to its own name is fine)
         _otherTagNames = new HashSet<string>(
             existingTags.Where(t => t.Id != tagToEdit?.Id).Select(t => t.Name),
             StringComparer.CurrentCultureIgnoreCase);
@@ -83,8 +75,6 @@ public partial class TagEditorViewModel : ObservableObject
         SelectedColor = ParseColor(tagToEdit?.Color ?? PresetColorValues[1]);
         _initializing = false;
     }
-
-    // ---------- Commands ----------
 
     [RelayCommand]
     private void SetPresetColor(string? hex)
@@ -111,11 +101,10 @@ public partial class TagEditorViewModel : ObservableObject
                 ? await _api.CreateTagAsync(name, ColorHex)
                 : await _api.UpdateTagAsync(_original!.Id, name, ColorHex);
 
-            DialogService.Close(saved);   // hand the saved tag back to TagsViewModel
+            DialogService.Close(saved);
         }
         catch (ApiException ex) when (ex.Kind == ApiErrorKind.BadRequest)
         {
-            // The server explains what's wrong (e.g. a name used by a tag we can't see)
             ServerError = ex.TryGetServerMessage() ?? _localization.Get("Tags_Error_Rejected");
         }
         catch (ApiException ex)
@@ -137,15 +126,12 @@ public partial class TagEditorViewModel : ObservableObject
     [RelayCommand]
     private void Cancel() => DialogService.Close(null);
 
-    // ---------- Validation ----------
-
     partial void OnNameChanged(string value)
     {
         if (!_initializing)
-            _nameTouched = true;   // only show errors after the user started typing
+            _nameTouched = true;
     }
 
-    /// <summary>Returns an error message, or null if the name is valid.</summary>
     private string? Validate()
     {
         string name = Name?.Trim() ?? "";

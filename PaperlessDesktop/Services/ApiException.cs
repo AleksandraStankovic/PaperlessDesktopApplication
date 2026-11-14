@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 namespace PaperlessDesktop.Services
 {
 
-
-
     public enum ApiErrorKind
     {
         Unreachable,      
@@ -20,7 +18,6 @@ namespace PaperlessDesktop.Services
         ServerError,      
         InvalidResponse   
     }
-
 
     internal class ApiException : Exception
     {
@@ -37,11 +34,6 @@ namespace PaperlessDesktop.Services
             ResponseBody = responseBody;
         }
 
-
-        /// <summary>
-        /// For 400 errors, Paperless explains what's wrong, e.g. {"name": ["Tag with this name already exists."]}.
-        /// Returns the first message, or null.
-        /// </summary>
         public string? TryGetServerMessage()
         {
             if (string.IsNullOrWhiteSpace(ResponseBody))

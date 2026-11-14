@@ -4,13 +4,8 @@ using System.Windows.Media;
 
 namespace PaperlessDesktop.Converters;
 
-/// <summary>
-/// Makes a darker shade of a solid color (same hue, less light).
-/// Used for the circle behind the ✕ on chips, so it matches the tag's own color.
-/// </summary>
 public class DarkerBrushConverter : IValueConverter
 {
-    /// <summary>How much of the original brightness is kept (0–1). Lower = darker.</summary>
     public double Factor { get; set; } = 0.75;
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

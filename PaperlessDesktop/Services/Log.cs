@@ -3,10 +3,6 @@ using System.Text;
 
 namespace PaperlessDesktop.Services;
 
-/// <summary>
-/// Writes errors and important events to a daily log file in %AppData%\PaperlessDesktop\logs.
-/// Logging must NEVER crash the app, so every failure here is swallowed.
-/// </summary>
 public static class Log
 {
     private const int KeepDays = 7;
@@ -20,7 +16,6 @@ public static class Log
     public static void Warning(string message, Exception? ex = null) => Write("WARN", message, ex);
     public static void Error(string message, Exception? ex = null) => Write("ERROR", message, ex);
 
-    /// <summary>Removes log files older than a week, so they don't pile up.</summary>
     public static void DeleteOldFiles()
     {
         try
@@ -36,7 +31,6 @@ public static class Log
         }
         catch
         {
-            // not important - try again next start
         }
     }
 
@@ -50,9 +44,9 @@ public static class Log
                 .AppendLine(message);
 
             if (ex is not null)
-                text.AppendLine(ex.ToString());   // type, message and the full stack trace
+                text.AppendLine(ex.ToString());
 
-            lock (Sync)   // several threads may log at the same time
+            lock (Sync)
             {
                 Directory.CreateDirectory(Folder);
                 File.AppendAllText(Path.Combine(Folder, $"app-{DateTime.Now:yyyy-MM-dd}.log"), text.ToString());
@@ -60,7 +54,6 @@ public static class Log
         }
         catch
         {
-            // logging must never take the app down
         }
     }
 }

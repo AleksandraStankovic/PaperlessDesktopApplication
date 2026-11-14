@@ -8,7 +8,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- ===== Header ===== -->
         <DockPanel Grid.Row="0" Margin="0,0,0,16">
             <Button DockPanel.Dock="Right" VerticalAlignment="Center"
                     Command="{Binding LoadCommand}"
@@ -20,7 +19,6 @@
                 </StackPanel>
             </Button>
 
-            <!-- Primary action: prominent (your HCI note: the web's main action button was not) -->
             <Button DockPanel.Dock="Right" VerticalAlignment="Center" Margin="0,0,12,0"
                     Command="{Binding CreateTagCommand}">
                 <StackPanel Orientation="Horizontal">
@@ -35,7 +33,6 @@
             </StackPanel>
         </DockPanel>
 
-        <!-- ===== List ===== -->
         <Grid Grid.Row="1">
             <DataGrid ItemsSource="{Binding Tags}"
                       AutoGenerateColumns="False" IsReadOnly="True"
@@ -61,10 +58,6 @@
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
 
-                    <!-- Actions: icon buttons with tooltips. Fixed width (2 x 48 px buttons + 2 x 16 px cell padding):
-                         with Width="Auto" the column was sized only after the rows loaded, when the * column had
-                         already taken all the space, so in the default (smaller) window the buttons were pushed
-                         out of view. -->
                     <DataGridTemplateColumn Width="128" CanUserResize="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

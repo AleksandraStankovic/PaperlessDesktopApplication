@@ -3,16 +3,12 @@ using System.Windows.Media;
 
 namespace PaperlessDesktop.Helpers;
 
-/// <summary>Builds the shape of one donut-chart slice.</summary>
 public static class PieGeometry
 {
-    /// <param name="startAngle">Degrees, 0 = top, clockwise.</param>
-    /// <param name="sweepAngle">How many degrees the slice covers.</param>
     public static Geometry CreateSlice(double startAngle, double sweepAngle, double radius, double innerRadius)
     {
         var center = new Point(radius, radius);
 
-        // A single slice of 100% can't be drawn as an arc - draw a full ring instead
         if (sweepAngle >= 359.99)
         {
             var ring = new CombinedGeometry(GeometryCombineMode.Exclude,
@@ -24,7 +20,7 @@ public static class PieGeometry
 
         Point PointAt(double angle, double r)
         {
-            double radians = (angle - 90) * Math.PI / 180;   // -90 so that 0° is at the top
+            double radians = (angle - 90) * Math.PI / 180;
             return new Point(center.X + r * Math.Cos(radians), center.Y + r * Math.Sin(radians));
         }
 

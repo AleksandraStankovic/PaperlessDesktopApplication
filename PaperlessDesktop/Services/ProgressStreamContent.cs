@@ -4,13 +4,9 @@ using System.Net.Http;
 
 namespace PaperlessDesktop.Services;
 
-/// <summary>
-/// Sends a file in chunks and reports how much has been sent (0.0 - 1.0),
-/// so the UI can show a real progress bar.
-/// </summary>
 internal sealed class ProgressStreamContent : HttpContent
 {
-    private const int BufferSize = 81920;   // 80 KB per chunk
+    private const int BufferSize = 81920;
 
     private readonly Stream _source;
     private readonly IProgress<double>? _progress;

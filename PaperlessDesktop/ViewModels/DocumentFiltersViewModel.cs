@@ -6,26 +6,18 @@ using PaperlessDesktop.Services;
 
 namespace PaperlessDesktop.ViewModels;
 
-/// <summary>
-/// Filter options (dropdowns) and active filters (chips) for the document list.
-/// Raises FiltersChanged whenever the user adds or removes a filter.
-/// </summary>
 public partial class DocumentFiltersViewModel : ObservableObject
 {
-    // Options for the three dropdowns
     public ObservableCollection<Tag> AvailableTags { get; } = new();
     public ObservableCollection<Correspondent> AvailableCorrespondents { get; } = new();
     public ObservableCollection<DocumentType> AvailableDocumentTypes { get; } = new();
 
-    // Currently active filters, shown as chips
     public ObservableCollection<FilterChip> ActiveFilters { get; } = new();
 
     public bool HasActiveFilters => ActiveFilters.Count > 0;
 
-    /// <summary>Raised when the user adds or removes a filter.</summary>
     public event EventHandler? FiltersChanged;
 
-    // The dropdowns are "pickers": choosing an item adds a chip, then the dropdown resets
     [ObservableProperty]
     private Tag? _tagToAdd;
 
@@ -40,10 +32,6 @@ public partial class DocumentFiltersViewModel : ObservableObject
         ActiveFilters.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasActiveFilters));
     }
 
-    /// <summary>
-    /// Fills the dropdowns from the lookup cache (alphabetically, č/ć/š sorted correctly)
-    /// and keeps active chips in sync after tags were renamed, recolored or deleted.
-    /// </summary>
     public void UpdateOptions(LookupCache lookups)
     {
         var comparer = StringComparer.CurrentCultureIgnoreCase;
@@ -68,13 +56,12 @@ public partial class DocumentFiltersViewModel : ObservableObject
             };
 
             if (updated is null)
-                ActiveFilters.RemoveAt(i);      // the item was deleted - drop its filter
+                ActiveFilters.RemoveAt(i);
             else
-                ActiveFilters[i] = updated;     // refresh name / color
+                ActiveFilters[i] = updated;
         }
     }
 
-    /// <summary>Copies the active filters into the API query.</summary>
     public void ApplyTo(DocumentQuery query)
     {
         query.TagIds = ActiveFilters
@@ -89,20 +76,14 @@ public partial class DocumentFiltersViewModel : ObservableObject
         query.CreatedMonth = month is null ? null : month.Id % 100;
     }
 
-    /// <summary>Removes all filters without raising FiltersChanged (used by "reset everything").</summary>
     public void ClearSilently() => ActiveFilters.Clear();
 
-
-    /// <summary>Replaces all filters with this one, without raising FiltersChanged (used by Analytics).</summary>
     public void SetOnlySilently(FilterChip chip)
     {
         ActiveFilters.Clear();
         ActiveFilters.Add(chip);
     }
 
-    // ---------- Commands ----------
-
-    /// <summary>The ✕ on a chip: remove just this one filter.</summary>
     [RelayCommand]
     private void RemoveFilter(FilterChip? chip)
     {
@@ -110,7 +91,6 @@ public partial class DocumentFiltersViewModel : ObservableObject
             RaiseFiltersChanged();
     }
 
-    /// <summary>"Clear all filters" button.</summary>
     [RelayCommand]
     private void ClearAll()
     {
@@ -120,14 +100,11 @@ public partial class DocumentFiltersViewModel : ObservableObject
         RaiseFiltersChanged();
     }
 
-    // ---------- Reactions to the dropdowns ----------
-
     partial void OnTagToAddChanged(Tag? value)
     {
         if (value is null)
             return;
 
-        // Tags: several allowed, but not the same tag twice
         bool alreadyActive = ActiveFilters.Any(f => f.Kind == FilterKind.Tag && f.Id == value.Id);
         if (!alreadyActive)
         {
@@ -153,14 +130,11 @@ public partial class DocumentFiltersViewModel : ObservableObject
         _ = ResetPickersAsync();
     }
 
-    // ---------- Helpers ----------
-
-    /// <summary>Correspondent and type: only one at a time, a new choice replaces the old chip.</summary>
     private void SetSingleFilter(FilterKind kind, int id, string name)
     {
         var existing = ActiveFilters.FirstOrDefault(f => f.Kind == kind);
         if (existing?.Id == id)
-            return;   // same choice again - nothing to do
+            return;
 
         if (existing is not null)
             ActiveFilters.Remove(existing);
@@ -171,7 +145,6 @@ public partial class DocumentFiltersViewModel : ObservableObject
 
     private async Task ResetPickersAsync()
     {
-        // Wait until the ComboBox has finished handling the click, then clear its selection
         await Task.Yield();
         TagToAdd = null;
         CorrespondentToSet = null;
