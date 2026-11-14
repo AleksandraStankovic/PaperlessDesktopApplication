@@ -28,6 +28,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     private const int MaxTitleLength = 128;
     private static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(1.5);
     private static readonly TimeSpan MaxProcessingWait = TimeSpan.FromMinutes(3);
+    private static readonly TimeSpan CancelWithoutTaskWait = TimeSpan.FromSeconds(45);
 
     private readonly PaperlessApiClient _api;
     private readonly LookupCache _lookups;
@@ -130,12 +131,20 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(UploadCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     [NotifyCanExecuteChangedFor(nameof(ClearFileCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CancelUploadCommand))]
     private bool _isBusy;
 
-    /// <summary>True while the file is being sent (the only time cancelling is possible).</summary>
+    /// <summary>True while the file is being sent (the progress bar is shown).</summary>
+    [ObservableProperty]
+    private bool _isSending;
+
+    /// <summary>
+    /// True after "Prekini slanje" was clicked while the server already had the file:
+    /// the app waits for the server to finish and then removes the document again.
+    /// </summary>
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CancelUploadCommand))]
-    private bool _isSending;
+    private bool _isCancelling;
 
     [ObservableProperty]
     private double _uploadProgress;   // 0 - 100
@@ -258,6 +267,11 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         string title = Title.Trim();
         bool succeeded = false;
 
+        // Needed to undo the upload if the user cancels after the server already has the file
+        string? taskId = null;
+        bool fileFullySent = false;
+        IReadOnlySet<int> existingIds = new HashSet<int>();
+
         IsBusy = true;
         IsSending = true;
         IsFinished = false;
@@ -271,22 +285,28 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         try
         {
             // Send the file (with a real progress bar)
-            var progress = new Progress<double>(fraction => UploadProgress = fraction * 100);
+            var uiProgress = new Progress<double>(fraction => UploadProgress = fraction * 100);
+            var progress = new InlineProgress<double>(fraction =>
+            {
+                if (fraction >= 1)
+                    fileFullySent = true;   // set right away (Progress<T> reaches the UI a bit later)
+                ((IProgress<double>)uiProgress).Report(fraction);
+            });
             var request = new DocumentUploadRequest(
                 SelectedFilePath, title,
                 SelectedCorrespondent?.Id, SelectedDocumentType?.Id,
                 SelectedTags.Select(t => t.Id).ToList());
 
             // Remember which documents with this title already exist, so plan B only accepts a NEW one
-            var existingIds = await FindDocumentIdsWithTitleAsync(title, cts.Token);
-            string taskId = await _api.UploadDocumentAsync(request, progress, cts.Token);
+            existingIds = await FindDocumentIdsWithTitleAsync(title, cts.Token);
+            taskId = await _api.UploadDocumentAsync(request, progress, cts.Token);
 
             // The file is on the server. It still has to be prepared there,
             // but the user doesn't need those details - step 1 simply stays active (H8).
             IsSending = false;
             StatusMessage = _localization.Get("Upload_Status_Processing");
 
-            PaperlessTask? task = await WaitForProcessingAsync(taskId, title, existingIds, cts.Token);
+            PaperlessTask? task = await WaitForProcessingAsync(taskId, title, existingIds, MaxProcessingWait, cts.Token);
             if (task is null)
             {
                 // Took too long - be honest, don't pretend it failed
@@ -313,10 +333,10 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
                 _notifications.Show(StatusMessage, NotificationKind.Error);
             }
         }
-        catch (OperationCanceledException)
+        catch (Exception) when (cts.IsCancellationRequested)
         {
-            SendStep = UploadStepState.Pending;
-            StatusMessage = _localization.Get("Upload_Status_Cancelled");
+            // "Prekini slanje" was clicked (whatever exception the cancelled request ended with)
+            await FinishCancelAsync(taskId, fileFullySent || taskId is not null, title, existingIds);
         }
         catch (IOException)
         {
@@ -337,6 +357,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         {
             IsBusy = false;
             IsSending = false;
+            IsCancelling = false;
             IsFinished = true;
             _uploadCts = null;
             cts.Dispose();
@@ -356,9 +377,93 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
                                 && !HasDuplicateWarning
                                 && ValidateTitle() is null;
 
-    /// <summary>HCI problem 2: the user CAN stop the upload while it's being sent (H3).</summary>
-    [RelayCommand(CanExecute = nameof(IsSending))]
+    /// <summary>
+    /// HCI problem 2: the user can stop the upload at any moment while it runs (H3 user control),
+    /// not only during the short time the bytes are being sent.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanCancelUpload))]
     private void CancelUpload() => _uploadCts?.Cancel();
+
+    private bool CanCancelUpload() => IsBusy && !IsCancelling;
+
+    /// <summary>
+    /// After "Prekini slanje": if the file never fully reached the server, nothing was added.
+    /// Otherwise Paperless will still add it, so wait until it's processed and delete it again.
+    /// The message only says "not added" when that is really true (H1, honest status).
+    /// </summary>
+    private async Task FinishCancelAsync(string? taskId, bool fileReachedServer,
+                                         string title, IReadOnlySet<int> existingIds)
+    {
+        IsSending = false;
+
+        if (fileReachedServer)
+        {
+            IsCancelling = true;
+            StatusMessage = _localization.Get("Upload_Status_Cancelling");
+
+            if (!await UndoUploadAsync(taskId, title, existingIds))
+            {
+                SendStep = UploadStepState.Failed;
+                StatusIsError = true;
+                StatusMessage = _localization.Get("Upload_Status_CancelUncertain");
+                _notifications.Show(StatusMessage, NotificationKind.Error);
+                DocumentUploaded?.Invoke(this, EventArgs.Empty);   // it may show up in the list
+                return;
+            }
+        }
+
+        SendStep = UploadStepState.Pending;
+        StatusMessage = _localization.Get("Upload_Status_Cancelled");
+        if (fileReachedServer)
+            _notifications.Show(StatusMessage);   // the user may be on another page by now
+    }
+
+    /// <summary>Removes a document the user cancelled after the server already received it.
+    /// Returns true if nothing was left behind on the server.</summary>
+    private async Task<bool> UndoUploadAsync(string? taskId, string title, IReadOnlySet<int> existingIds)
+    {
+        try
+        {
+            // Without a task ID (cancelled while waiting for the server's answer) only plan B is possible,
+            // and if the server never accepted the file, nothing will appear - so don't wait as long.
+            TimeSpan maxWait = taskId is null ? CancelWithoutTaskWait : MaxProcessingWait;
+            using var cts = new CancellationTokenSource(maxWait + TimeSpan.FromSeconds(30));
+
+            PaperlessTask? task = await WaitForProcessingAsync(taskId, title, existingIds, maxWait, cts.Token);
+            if (task is null)
+                return false;            // not processed in time - we can't be sure what happens
+            if (!task.IsSuccess)
+                return true;             // the server rejected it (e.g. duplicate) - nothing was added
+
+            int? documentId = task.RelatedDocument;
+            if (documentId is null)
+            {
+                var currentIds = await FindDocumentIdsWithTitleAsync(title, cts.Token);
+                documentId = currentIds.Where(id => !existingIds.Contains(id))
+                                       .Select(id => (int?)id)
+                                       .FirstOrDefault();
+            }
+            if (documentId is not int uploadedId)
+                return false;
+
+            await _api.DeleteDocumentAsync(uploadedId, cts.Token);
+
+            // Newer servers move deleted documents to a trash and would then reject the same file
+            // as a duplicate. Empty it for this document; older servers have no trash, which is fine.
+            try
+            {
+                await _api.EmptyTrashForDocumentAsync(uploadedId, cts.Token);
+            }
+            catch (ApiException)
+            {
+            }
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     [RelayCommand(CanExecute = nameof(IsFormEnabled))]
     private void ClearFile()
@@ -419,17 +524,19 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
 
 
     /// <summary>
-    /// Plan B: finds a document with exactly this title that was added after the upload started.
-    /// Returns its ID, or null if it isn't there (yet).
+    /// Waits until the server has processed the uploaded file. Returns the finished task,
+    /// or null if it still wasn't finished after <paramref name="maxWait"/>.
     /// </summary>
-    private async Task<PaperlessTask?> WaitForProcessingAsync(string taskId, string title,
-                                                           IReadOnlySet<int> existingIds, CancellationToken ct)
+    private async Task<PaperlessTask?> WaitForProcessingAsync(string? taskId, string title,
+                                                           IReadOnlySet<int> existingIds, TimeSpan maxWait,
+                                                           CancellationToken ct)
     {
-        var deadline = DateTime.UtcNow + MaxProcessingWait;
+        var deadline = DateTime.UtcNow + maxWait;
 
         // Plan A: ask the tasks endpoint (also tells us about duplicates / failures).
         // Some servers don't let ordinary users read tasks - then we switch to plan B.
-        bool canReadTasks = true;
+        // Without a task ID only plan B is possible.
+        bool canReadTasks = taskId is not null;
 
         while (DateTime.UtcNow < deadline)
         {
@@ -439,7 +546,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
             {
                 if (canReadTasks)
                 {
-                    var task = await _api.GetTaskAsync(taskId, ct);
+                    var task = await _api.GetTaskAsync(taskId!, ct);
                     if (task is { IsFinished: true })
                         return task;
                 }
@@ -451,7 +558,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
                                            .Select(id => (int?)id)
                                            .FirstOrDefault();
                     if (newId is not null)
-                        return new PaperlessTask { TaskId = taskId, Status = "SUCCESS", RelatedDocument = newId };
+                        return new PaperlessTask { TaskId = taskId ?? "", Status = "SUCCESS", RelatedDocument = newId };
                 }
             }
             catch (ApiException ex) when (canReadTasks && ex.Kind is ApiErrorKind.Forbidden
@@ -676,6 +783,14 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         < 1024 * 1024 => $"{bytes / 1024.0:0} KB",
         _ => $"{bytes / (1024.0 * 1024.0):0.#} MB"
     };
+
+    /// <summary>Reports progress immediately on the calling thread (unlike Progress&lt;T&gt;).</summary>
+    private sealed class InlineProgress<T> : IProgress<T>
+    {
+        private readonly Action<T> _report;
+        public InlineProgress(Action<T> report) => _report = report;
+        public void Report(T value) => _report(value);
+    }
 
     private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> items)
     {

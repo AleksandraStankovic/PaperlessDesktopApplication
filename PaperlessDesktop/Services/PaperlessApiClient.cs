@@ -266,6 +266,23 @@ namespace PaperlessDesktop.Services
             using var response = await SendAsync(request, ct);
         }
 
+        /// <summary>
+        /// Permanently removes a deleted document from the server's trash (Paperless-ngx 2.10+).
+        /// Otherwise the server would treat the same file as a duplicate when it's uploaded again.
+        /// </summary>
+        public async Task EmptyTrashForDocumentAsync(int id, CancellationToken ct = default)
+        {
+            string json = JsonSerializer.Serialize(new TrashRequest(new[] { id }, "empty"), JsonOptions);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/trash/")
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+            using var response = await SendAsync(request, ct);
+        }
+
+        /// <summary>What we send to the trash endpoint (becomes {"documents": [1], "action": "empty"}).</summary>
+        private record TrashRequest(IReadOnlyList<int> Documents, string Action);
+
 
         /// <summary>Sends an object as JSON (POST/PATCH) and reads the JSON answer.</summary>
         private async Task<T> SendJsonAsync<T>(HttpMethod method, string relativeUrl, object body, CancellationToken ct)
