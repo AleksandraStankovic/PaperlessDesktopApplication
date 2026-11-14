@@ -53,7 +53,7 @@
     <sys:String x:Key="Col_Correspondent">Korespondent</sys:String>
     <sys:String x:Key="Col_DocumentType">Tip dokumenta</sys:String>
     <sys:String x:Key="Col_Tags">Tagovi</sys:String>
-    <sys:String x:Key="View_Table">Tabela</sys:String>
+    <sys:String x:Key="View_Table">Lista</sys:String>
     <sys:String x:Key="View_Cards">Kartice</sys:String>
 
 
