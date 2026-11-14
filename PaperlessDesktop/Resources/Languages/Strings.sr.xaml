@@ -169,6 +169,8 @@
     <sys:String x:Key="Upload_Status_Processing">Dokument se priprema. Ovo može potrajati do minut.</sys:String>
     <sys:String x:Key="Upload_Status_Done">Dokument „{0}“ je dodat i spreman je za pregled.</sys:String>
     <sys:String x:Key="Upload_Status_Cancelled">Slanje je prekinuto. Dokument nije dodat.</sys:String>
+    <sys:String x:Key="Upload_Status_Cancelling">Prekidam slanje... Server je već primio fajl, pa ga uklanjam. Ovo može potrajati do minut.</sys:String>
+    <sys:String x:Key="Upload_Status_CancelUncertain">Slanje je prekinuto, ali nije sigurno da je dokument uklonjen sa servera. Ako se pojavi u listi dokumenata, možete ga obrisati tamo.</sys:String>
     <sys:String x:Key="Upload_Status_StillProcessing">Priprema traje duže nego obično. Dokument će se pojaviti u listi kada bude spreman.</sys:String>
 
     <!-- Upload errors -->
