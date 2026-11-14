@@ -215,9 +215,12 @@
                                                     ToolTip="{Binding Tooltip}"
                                                     Command="{Binding DataContext.SelectTagCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}">
+                                                <!-- The pill stretches to the height of the tallest tag in its row,
+                                                     so the name is centered inside it instead of sitting at the top -->
                                                 <Border CornerRadius="12" Padding="10,2"
                                                         Background="{Binding Tag.Color, Converter={StaticResource HexToBrush}}">
                                                     <TextBlock Text="{Binding Tag.Name}" FontSize="{Binding FontSize}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
                                                                Foreground="{Binding Tag.TextColor, Converter={StaticResource HexToBrush}, ConverterParameter=#000000}" />
                                                 </Border>
                                             </Button>
