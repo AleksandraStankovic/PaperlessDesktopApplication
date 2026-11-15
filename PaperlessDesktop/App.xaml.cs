@@ -70,7 +70,13 @@ public partial class App : Application
                 documentsViewModel.ShowWithFilter(chip);
                 mainViewModel.ShowDocuments();
             };
+            tagsViewModel.ShowDocumentsRequested += (_, tag) =>
+            {
+                documentsViewModel.ShowWithFilter(FilterChip.ForTag(tag), fromTags: true);
+                mainViewModel.ShowDocuments();
+            };
             documentsViewModel.BackToAnalyticsRequested += (_, _) => mainViewModel.ShowAnalytics();
+            documentsViewModel.BackToTagsRequested += (_, _) => mainViewModel.ShowTags();
             documentsViewModel.AddDocumentRequested += (_, _) => mainViewModel.ShowUpload();
             uploadViewModel.ShowDocumentsRequested += (_, _) => mainViewModel.ShowDocuments();
 

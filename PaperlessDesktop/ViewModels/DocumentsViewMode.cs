@@ -125,14 +125,23 @@ public partial class DocumentsViewModel : ObservableObject
     [RelayCommand]
     private void BackToAnalytics() => BackToAnalyticsRequested?.Invoke(this, EventArgs.Empty);
 
+    [ObservableProperty]
+    private bool _cameFromTags;
+
+    public event EventHandler? BackToTagsRequested;
+
+    [RelayCommand]
+    private void BackToTags() => BackToTagsRequested?.Invoke(this, EventArgs.Empty);
+
     public event EventHandler? AddDocumentRequested;
 
     [RelayCommand]
     private void AddDocument() => AddDocumentRequested?.Invoke(this, EventArgs.Empty);
 
-    public void ShowWithFilter(FilterChip chip)
+    public void ShowWithFilter(FilterChip chip, bool fromTags = false)
     {
-        CameFromAnalytics = true;
+        CameFromAnalytics = !fromTags;
+        CameFromTags = fromTags;
         Filters.SetOnlySilently(chip);
         SearchText = "";
         _searchDelayCts?.Cancel();

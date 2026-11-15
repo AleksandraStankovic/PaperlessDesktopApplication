@@ -12,6 +12,7 @@
     <sys:String x:Key="Documents_Title">Dokumenti</sys:String>
     <sys:String x:Key="Documents_Subtitle">Svi vaši dokumenti na jednom mjestu.</sys:String>
     <sys:String x:Key="Documents_BackToAnalytics">Nazad na analitiku</sys:String>
+    <sys:String x:Key="Documents_BackToTags">Nazad na tagove</sys:String>
 
     <sys:String x:Key="Documents_Total">Ukupno dokumenata:</sys:String>
 
@@ -101,6 +102,7 @@
     <sys:String x:Key="Tags_New">Novi tag</sys:String>
     <sys:String x:Key="Tags_Col_Tag">Tag</sys:String>
     <sys:String x:Key="Tags_Col_Documents">Broj dokumenata</sys:String>
+    <sys:String x:Key="Tags_ShowDocuments">Prikaži dokumente sa ovim tagom</sys:String>
     <sys:String x:Key="Tags_Empty">Još nema tagova. Kreirajte prvi klikom na „Novi tag“.</sys:String>
 
     <sys:String x:Key="Tags_NewTitle">Novi tag</sys:String>
