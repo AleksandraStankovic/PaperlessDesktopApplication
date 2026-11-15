@@ -201,7 +201,7 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,8">
+        <StackPanel x:Name="FilterPanel" Grid.Row="1" Margin="0,0,0,8">
 
             <Grid x:Name="FilterGrid">
                 <Grid.ColumnDefinitions>
@@ -302,7 +302,7 @@
                 <ColumnDefinition x:Name="PreviewColumn" Width="0" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0">
+            <Grid x:Name="ListPanel" Grid.Column="0">
 
                 <DataGrid x:Name="DocumentsGrid" SizeChanged="OnDocumentsGridSizeChanged"
                           ItemsSource="{Binding Documents}"
@@ -484,6 +484,19 @@
                                  IsVisibleChanged="OnPreviewVisibilityChanged"
                                  SizeChanged="OnPreviewCardSizeChanged">
                 <DockPanel>
+
+                    <Button x:Name="BackToListButton" DockPanel.Dock="Top"
+                            HorizontalAlignment="Left" Margin="8,8,0,0" Padding="8,0" Height="30"
+                            Command="{Binding CloseCommand}"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="{DynamicResource Accent.Text}"
+                            ToolTip="{DynamicResource Preview_Close}"
+                            Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ArrowLeft" VerticalAlignment="Center" />
+                            <TextBlock Text="{DynamicResource Preview_BackToList}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
 
                     <DockPanel DockPanel.Dock="Top" Margin="16,12,8,4">
                         <Button DockPanel.Dock="Right" Command="{Binding CloseCommand}"
@@ -693,7 +706,7 @@
             </materialDesign:Card>
         </Grid>
 
-        <DockPanel Grid.Row="3" Margin="0,12,0,0" LastChildFill="False">
+        <DockPanel x:Name="PagerPanel" Grid.Row="3" Margin="0,12,0,0" LastChildFill="False">
             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Opacity="0.7">
                 <Run Text="{DynamicResource Documents_Total}" />
                 <Run Text="{Binding TotalCount, Mode=OneWay}" />

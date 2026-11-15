@@ -26,7 +26,7 @@ namespace PaperlessDesktop.Views
         private bool? _filtersWide;
         private bool? _headerWide;
 
-        private const double PreviewOverlayMaxWidth = 760;
+        private const double SingleDocumentMaxWidth = 1100;
 
         private const double ListMinWidth = 280;
         private const double PreviewMinWidth = 320;
@@ -221,13 +221,15 @@ namespace PaperlessDesktop.Views
         private void UpdateContentColumns()
         {
             bool open = PreviewCard.Visibility == Visibility.Visible;
-            bool overlay = ContentGrid.ActualWidth > 0 && ContentGrid.ActualWidth < PreviewOverlayMaxWidth;
+            bool singleDocument = open && ContentGrid.ActualWidth > 0 && ContentGrid.ActualWidth < SingleDocumentMaxWidth;
+
+            SetSingleDocumentMode(singleDocument);
 
             if (!open)
             {
                 SetColumns(new GridLength(1, GridUnitType.Star), 0, new GridLength(0), 0, splitter: false);
             }
-            else if (overlay)
+            else if (singleDocument)
             {
                 SetColumns(new GridLength(1, GridUnitType.Star), 0, new GridLength(0), 0, splitter: false);
                 Place(PreviewCard, 0, 0, 3, new Thickness(0));
@@ -239,6 +241,25 @@ namespace PaperlessDesktop.Views
             }
 
             Place(PreviewCard, 0, 2, 1, new Thickness(0));
+        }
+
+        private bool _singleDocument;
+
+        private void SetSingleDocumentMode(bool singleDocument)
+        {
+            if (_singleDocument == singleDocument)
+                return;
+
+            _singleDocument = singleDocument;
+
+            var listVisibility = singleDocument ? Visibility.Collapsed : Visibility.Visible;
+            ListPanel.Visibility = listVisibility;
+            FilterPanel.Visibility = listVisibility;
+            PagerPanel.Visibility = listVisibility;
+            BackToListButton.Visibility = singleDocument ? Visibility.Visible : Visibility.Collapsed;
+
+            if (singleDocument)
+                Dispatcher.InvokeAsync(() => BackToListButton.Focus(), DispatcherPriority.Input);
         }
 
         private void SetColumns(GridLength list, double listMin, GridLength preview, double previewMin, bool splitter)

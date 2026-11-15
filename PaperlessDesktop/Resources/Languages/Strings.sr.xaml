@@ -73,6 +73,7 @@
 
     <sys:String x:Key="Preview_Close">Zatvori pregled (Esc)</sys:String>
     <sys:String x:Key="Preview_OpenExternal">Otvori u podrazumijevanoj aplikaciji</sys:String>
+    <sys:String x:Key="Preview_BackToList">Nazad na listu</sys:String>
     <sys:String x:Key="Preview_MoreDetails">Više detalja</sys:String>
     <sys:String x:Key="Preview_Modified">Posljednja izmjena</sys:String>
     <sys:String x:Key="Preview_OriginalFile">Originalni fajl</sys:String>
