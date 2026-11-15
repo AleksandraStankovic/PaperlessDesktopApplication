@@ -71,6 +71,35 @@ namespace PaperlessDesktop.Views
             ViewModel.SelectFile(files[0], multipleDropped: files.Length > 1);
         }
 
+        private void FileCard_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is not true)
+                return;
+
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded,
+                                   new Action(ScrollFormIntoView));
+        }
+
+        // After a file is picked, scroll just far enough that "Podaci o dokumentu" and the
+        // "Dodaj dokument" button are both on screen. If the window is too short for both,
+        // keep the section header at the top so the form reads from its start.
+        private void ScrollFormIntoView()
+        {
+            if (!MetadataHeader.IsVisible || !ActionsRow.IsVisible)
+                return;
+
+            double headerTop = MetadataHeader.TransformToAncestor(PageContent).Transform(new Point(0, 0)).Y;
+            double actionsBottom = ActionsRow.TransformToAncestor(PageContent)
+                                             .Transform(new Point(0, ActionsRow.ActualHeight)).Y;
+
+            const double padding = 16;
+            double needed = actionsBottom + padding - PageScroll.ViewportHeight;
+            double target = Math.Min(needed, headerTop - padding);
+
+            if (target > PageScroll.VerticalOffset)
+                PageScroll.ScrollToVerticalOffset(target);
+        }
+
         private void StatusCard_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue is not true)

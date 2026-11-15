@@ -36,8 +36,8 @@
             <TextBlock Text="{DynamicResource Upload_Subtitle}" Opacity="0.7" Margin="0,4,0,0" />
         </StackPanel>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel MaxWidth="720" Margin="16,0,16,16">
+        <ScrollViewer x:Name="PageScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="PageContent" MaxWidth="720" Margin="16,0,16,16">
 
                 <Grid AllowDrop="True" Background="Transparent"
                       DragEnter="DropZone_DragOver" DragOver="DropZone_DragOver"
@@ -132,6 +132,7 @@
                 </StackPanel>
 
                 <materialDesign:Card Margin="0,12,0,0" Padding="16,10"
+                                     IsVisibleChanged="FileCard_IsVisibleChanged"
                                      Visibility="{Binding HasFile, Converter={StaticResource BoolToVis}}">
                     <DockPanel>
                         <Button DockPanel.Dock="Right" Command="{Binding ClearFileCommand}"
@@ -156,7 +157,7 @@
                     </DockPanel>
                 </materialDesign:Card>
 
-                <TextBlock Text="{DynamicResource Upload_MetadataHeader}" FontSize="16" FontWeight="SemiBold"
+                <TextBlock x:Name="MetadataHeader" Text="{DynamicResource Upload_MetadataHeader}" FontSize="16" FontWeight="SemiBold"
                            Margin="0,24,0,8" />
 
                 <StackPanel IsEnabled="{Binding IsFormEnabled}">
@@ -220,7 +221,7 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <StackPanel x:Name="ActionsRow" Orientation="Horizontal" Margin="0,20,0,0">
                     <Button Command="{Binding UploadCommand}"
                             Visibility="{Binding IsBusy, Converter={StaticResource InverseBoolToVis}}">
                         <StackPanel Orientation="Horizontal">
