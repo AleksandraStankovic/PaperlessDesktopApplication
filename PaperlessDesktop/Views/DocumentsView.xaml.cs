@@ -148,6 +148,7 @@ namespace PaperlessDesktop.Views
         {
             _listWidth = ListColumn.Width;
             _previewWidth = PreviewColumn.Width;
+            QueueColumnWidthRefresh();
         }
 
         private void OnPreviewCardSizeChanged(object sender, SizeChangedEventArgs e)
@@ -164,6 +165,7 @@ namespace PaperlessDesktop.Views
                 var visibility = showDates ? Visibility.Visible : Visibility.Collapsed;
                 DocumentsGrid.Columns[1].Visibility = visibility;
                 DocumentsGrid.Columns[2].Visibility = visibility;
+                QueueColumnWidthRefresh();
             }
 
             bool showMeta = e.NewSize.Width >= ListMetaMinWidth;
@@ -173,6 +175,7 @@ namespace PaperlessDesktop.Views
                 var visibility = showMeta ? Visibility.Visible : Visibility.Collapsed;
                 DocumentsGrid.Columns[3].Visibility = visibility;
                 DocumentsGrid.Columns[4].Visibility = visibility;
+                QueueColumnWidthRefresh();
             }
         }
 
@@ -218,12 +221,20 @@ namespace PaperlessDesktop.Views
             return null;
         }
 
+        private bool _previewWasOpen;
+
         private void UpdateContentColumns()
         {
             bool open = PreviewCard.Visibility == Visibility.Visible;
             bool singleDocument = open && ContentGrid.ActualWidth > 0 && ContentGrid.ActualWidth < SingleDocumentMaxWidth;
 
             SetSingleDocumentMode(singleDocument);
+
+            if (_previewWasOpen != open)
+            {
+                _previewWasOpen = open;
+                QueueColumnWidthRefresh();
+            }
 
             if (!open)
             {
