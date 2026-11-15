@@ -56,6 +56,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     [NotifyPropertyChangedFor(nameof(HasFile))]
     [NotifyPropertyChangedFor(nameof(FileName))]
     [NotifyCanExecuteChangedFor(nameof(UploadCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private string? _selectedFilePath;
     private CancellationTokenSource? _duplicateCts;
 
@@ -67,6 +68,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasFileError))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private string? _fileError;
 
     public bool HasFileError => FileError is not null;
@@ -74,6 +76,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasDuplicateWarning))]
     [NotifyCanExecuteChangedFor(nameof(UploadCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private string? _duplicateWarning;
 
     public bool HasDuplicateWarning => DuplicateWarning is not null;
@@ -95,15 +98,18 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     [NotifyPropertyChangedFor(nameof(TitleError))]
     [NotifyPropertyChangedFor(nameof(HasTitleError))]
     [NotifyCanExecuteChangedFor(nameof(UploadCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private string _title = "";
 
     public string? TitleError => _titleTouched ? ValidateTitle() : null;
     public bool HasTitleError => TitleError is not null;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private Correspondent? _selectedCorrespondent;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private DocumentType? _selectedDocumentType;
 
     [ObservableProperty]
@@ -134,6 +140,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
     private UploadStepState _readyStep;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private bool _showStatus;
 
     [ObservableProperty]
@@ -154,6 +161,8 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         _lookups = lookups;
         _notifications = notifications;
         _localization = localization;
+
+        SelectedTags.CollectionChanged += (_, _) => ResetCommand.NotifyCanExecuteChanged();
     }
 
     public void OnNavigatedTo() => _ = LoadOptionsAsync();
@@ -412,7 +421,7 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
             SetTitleInternally("");
     }
 
-    [RelayCommand(CanExecute = nameof(IsFormEnabled))]
+    [RelayCommand(CanExecute = nameof(CanReset))]
     private void Reset()
     {
         ClearFile();
@@ -427,6 +436,17 @@ public partial class UploadViewModel : ObservableObject, INavigationAware
         SelectedTags.Clear();
         ClearStatus();
     }
+
+    private bool CanReset() => !IsBusy && HasAnythingToReset;
+
+    private bool HasAnythingToReset => HasFile
+                                       || !string.IsNullOrWhiteSpace(Title)
+                                       || SelectedCorrespondent is not null
+                                       || SelectedDocumentType is not null
+                                       || SelectedTags.Count > 0
+                                       || HasFileError
+                                       || HasDuplicateWarning
+                                       || ShowStatus;
 
     [RelayCommand]
     private void RemoveTag(Tag? tag)
