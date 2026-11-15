@@ -80,9 +80,6 @@ namespace PaperlessDesktop.Views
                                    new Action(ScrollFormIntoView));
         }
 
-        // After a file is picked, scroll just far enough that "Podaci o dokumentu" and the
-        // "Dodaj dokument" button are both on screen. If the window is too short for both,
-        // keep the section header at the top so the form reads from its start.
         private void ScrollFormIntoView()
         {
             if (!MetadataHeader.IsVisible || !ActionsRow.IsVisible)
@@ -105,7 +102,6 @@ namespace PaperlessDesktop.Views
             if (e.NewValue is not true)
                 return;
 
-            // Wait until the card has been measured, then scroll the page so the progress is on screen.
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded,
                                    new Action(() => StatusCard.BringIntoView()));
         }
