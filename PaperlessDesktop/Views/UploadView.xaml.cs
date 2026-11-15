@@ -71,5 +71,15 @@ namespace PaperlessDesktop.Views
             ViewModel.SelectFile(files[0], multipleDropped: files.Length > 1);
         }
 
+        private void StatusCard_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is not true)
+                return;
+
+            // Wait until the card has been measured, then scroll the page so the progress is on screen.
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded,
+                                   new Action(() => StatusCard.BringIntoView()));
+        }
+
     }
 }

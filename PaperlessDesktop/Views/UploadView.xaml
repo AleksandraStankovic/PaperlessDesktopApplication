@@ -242,7 +242,8 @@
                     Foreground="{DynamicResource Accent.Text}" Margin="8,0,0,0" />
                 </StackPanel>
 
-                <materialDesign:Card Margin="0,24,0,0" Padding="20,16"
+                <materialDesign:Card x:Name="StatusCard" Margin="0,24,0,0" Padding="20,16"
+                                     IsVisibleChanged="StatusCard_IsVisibleChanged"
                                      Visibility="{Binding ShowStatus, Converter={StaticResource BoolToVis}}">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Upload_StatusHeader}" FontSize="16" FontWeight="SemiBold"
