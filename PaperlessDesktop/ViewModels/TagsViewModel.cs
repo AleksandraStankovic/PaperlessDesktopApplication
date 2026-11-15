@@ -24,6 +24,8 @@ namespace PaperlessDesktop.ViewModels
 
         public event EventHandler? TagsChanged;
 
+        public event EventHandler<Tag>? ShowDocumentsRequested;
+
         public TagsViewModel(PaperlessApiClient api, DialogService dialogs,
                              NotificationService notifications, LocalizationService localization)
         {
@@ -63,6 +65,13 @@ namespace PaperlessDesktop.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        [RelayCommand]
+        private void ShowDocuments(Tag? tag)
+        {
+            if (tag is not null)
+                ShowDocumentsRequested?.Invoke(this, tag);
         }
 
         [RelayCommand]

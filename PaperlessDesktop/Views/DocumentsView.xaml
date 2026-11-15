@@ -144,6 +144,16 @@
                         <TextBlock Text="{DynamicResource Documents_BackToAnalytics}" Margin="6,0,0,0" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
+                <Button HorizontalAlignment="Left" Margin="-8,0,0,4" Padding="8,0" Height="30"
+                        Command="{Binding BackToTagsCommand}"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="{DynamicResource Accent.Text}"
+                        Visibility="{Binding CameFromTags, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ArrowLeft" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Documents_BackToTags}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
                 <TextBlock Text="{DynamicResource Documents_Title}" FontSize="26" FontWeight="SemiBold"
                            TextTrimming="CharacterEllipsis" />
                 <TextBlock Text="{DynamicResource Documents_Subtitle}" Opacity="0.7" Margin="0,4,0,0"

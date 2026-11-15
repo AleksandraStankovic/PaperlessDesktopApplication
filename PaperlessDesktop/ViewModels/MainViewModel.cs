@@ -45,6 +45,8 @@ public partial class MainViewModel : ObservableObject
 
     public void ShowUpload() => SelectedPageIndex = 2;
 
+    public void ShowTags() => SelectedPageIndex = 3;
+
     partial void OnSelectedPageIndexChanged(int value)
     {
         if (value < 0 || value >= _pages.Length)
@@ -53,7 +55,10 @@ public partial class MainViewModel : ObservableObject
         CurrentPage = _pages[value];
 
         if (value != 0)
+        {
             _documents.CameFromAnalytics = false;
+            _documents.CameFromTags = false;
+        }
 
         if (CurrentPage is INavigationAware page)
             page.OnNavigatedTo();

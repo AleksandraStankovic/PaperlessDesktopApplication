@@ -46,8 +46,16 @@
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource TagChipTemplate}"
-                                                  HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                <Border Background="Transparent" Cursor="Hand"
+                                        ToolTip="{DynamicResource Tags_ShowDocuments}">
+                                    <Border.InputBindings>
+                                        <MouseBinding Gesture="LeftClick"
+                                                      Command="{Binding DataContext.ShowDocumentsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      CommandParameter="{Binding}" />
+                                    </Border.InputBindings>
+                                    <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource TagChipTemplate}"
+                                                      HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                </Border>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

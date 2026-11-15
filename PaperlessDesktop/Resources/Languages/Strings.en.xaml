@@ -12,6 +12,7 @@
     <sys:String x:Key="Documents_Title">Documents</sys:String>
     <sys:String x:Key="Documents_Subtitle">All your documents in one place.</sys:String>
     <sys:String x:Key="Documents_BackToAnalytics">Back to analytics</sys:String>
+    <sys:String x:Key="Documents_BackToTags">Back to tags</sys:String>
    
     <sys:String x:Key="Documents_Total">Total documents:</sys:String>
 
@@ -101,6 +102,7 @@
     <sys:String x:Key="Tags_New">New tag</sys:String>
     <sys:String x:Key="Tags_Col_Tag">Tag</sys:String>
     <sys:String x:Key="Tags_Col_Documents">Documents</sys:String>
+    <sys:String x:Key="Tags_ShowDocuments">Show documents with this tag</sys:String>
     <sys:String x:Key="Tags_Empty">No tags yet. Create the first one with "New tag".</sys:String>
 
     <sys:String x:Key="Tags_NewTitle">New tag</sys:String>
