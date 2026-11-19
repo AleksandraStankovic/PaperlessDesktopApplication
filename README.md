@@ -20,7 +20,7 @@ Desktop klijent za [Paperless-ngx](https://docs.paperless-ngx.com/), napravljen 
 
 Potrebni su Windows, .NET 8 SDK i WebView2 Runtime (na Windows 10/11 je uglavnom već instaliran).
 
-1. U fajlu `PaperlessDesktop/appsettings.json` upisati adresu Paperless servera i API token:
+1. Adresa Paperless servera i API token su već upisani u `PaperlessDesktop/appsettings.json`, pa aplikacija radi bez dodatnog podešavanja. Za drugi server dovoljno je promijeniti ta dva polja:
 
    ```json
    {
